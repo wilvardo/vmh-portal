@@ -1,0 +1,47 @@
+/** Solicitud de restablecimiento. Un campo y un boton: no hay nada mas que
+ * decidir en esta pantalla. */
+.recovery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    text-align: center;
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    color: var(--color-fg);
+  }
+
+  &__subtitle {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+
+  &__notice-title {
+    display: block;
+    font-weight: 600;
+  }
+
+  &__notice-detail {
+    display: block;
+    font-size: var(--fs-body-sm);
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  &__link {
+    align-self: center;
+    font-size: var(--fs-body-sm);
+    color: var(--color-primary);
+  }
+}

@@ -24,3 +24,11 @@ export const API_ERROR_CODE = {
 
 /** Codigo de error del API con tratamiento propio en el portal. */
 export type ApiErrorCode = (typeof API_ERROR_CODE)[keyof typeof API_ERROR_CODE]
+
+/**
+ * Formato de correo compartido por las pantallas publicas.
+ *
+ * Valida la FORMA antes de gastar una peticion, no la existencia: quien decide
+ * si ese correo tiene cuenta es el API, y responde igual exista o no.
+ */
+export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
