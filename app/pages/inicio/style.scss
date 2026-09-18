@@ -1,0 +1,69 @@
+/** Tablero del atleta. Una columna: se abre desde el telefono, de pie, entre
+ * una sesion y otra. */
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  &__heading {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    color: var(--color-fg);
+  }
+
+  &__subtitle {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+
+  &__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius-lg);
+  }
+
+  &__block-title {
+    font-size: var(--fs-body-lg);
+    color: var(--color-fg);
+  }
+
+  &__block-empty {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+
+  &__edit {
+    align-self: flex-start;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+  }
+
+  &__field-error {
+    color: var(--color-danger-fg);
+  }
+
+  &__note {
+    font-size: var(--fs-caption);
+    color: var(--color-fg-muted);
+  }
+}

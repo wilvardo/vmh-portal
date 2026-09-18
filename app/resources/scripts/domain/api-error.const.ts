@@ -13,8 +13,15 @@ export const API_ERROR_CODE = {
   /** El correo del alta ya pertenece a otra cuenta. */
   EMAIL_TAKEN: 'VMH.AUTH.EMAIL_TAKEN',
 
-  /** El telefono del alta ya pertenece a otra cuenta. */
+  /**
+   * El telefono ya pertenece a otra cuenta.
+   *
+   * Sale del area AUTH en el alta y del area USR al corregir el perfil: son dos
+   * endpoints distintos y cada uno lo emite desde su modulo. Las dos claves
+   * viven aqui porque las dos pantallas hacen lo mismo con ellas.
+   */
   PHONE_TAKEN: 'VMH.AUTH.PHONE_TAKEN',
+  PROFILE_PHONE_TAKEN: 'VMH.USR.PHONE_TAKEN',
 
   /** El enlace del correo no existe, vencio o ya se habia usado. */
   TOKEN_INVALID: 'VMH.AUTH.TOKEN_INVALID',

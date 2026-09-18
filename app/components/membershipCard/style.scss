@@ -1,0 +1,68 @@
+.membership-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  &__header {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__label {
+    font-size: var(--fs-caption);
+    color: var(--color-fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+  }
+
+  &__plan {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    color: var(--color-fg);
+  }
+
+  &__detail,
+  &__empty {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+
+  &__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    margin-block-start: var(--space-2);
+  }
+
+  &__fact {
+    dt {
+      font-size: var(--fs-caption);
+      color: var(--color-fg-muted);
+    }
+
+    dd {
+      font-size: var(--fs-body);
+      color: var(--color-fg);
+    }
+  }
+
+  &__call {
+    padding: var(--space-3);
+    font-size: var(--fs-body-sm);
+    color: var(--color-warning-fg);
+    background: var(--color-warning-bg);
+    border-radius: var(--radius-md);
+  }
+
+  &__action {
+    align-self: flex-start;
+    font-size: var(--fs-body-sm);
+    color: var(--color-primary);
+  }
+}
