@@ -1,0 +1,21 @@
+{
+  "login_title": "Entra a tu cuenta",
+  "login_subtitle": "Tu membresía, tus sesiones y tus reservas en un solo lugar.",
+  "login_email_label": "Correo",
+  "login_password_label": "Contraseña",
+  "login_submit": "Entrar",
+  "login_submit_pending": "Entrando…",
+  "login_forgot": "Olvidé mi contraseña",
+  "login_no_account": "¿Todavía no tienes cuenta?",
+  "login_register": "Crear mi cuenta",
+  "login_resend": "Enviarme otro enlace de confirmación",
+  "login_error_required": "Escribe tu correo y tu contraseña.",
+  "login_error_email_format": "Revisa el formato del correo.",
+  "login_error_password_short": "La contraseña es más corta de lo que permite el sistema.",
+  "login_error_forbidden_title": "Esta cuenta no es de un atleta",
+  "login_error_forbidden_detail": "Si trabajas en el estudio, entra por el panel de administración.",
+  "login_error_unexpected_title": "No se pudo iniciar sesión",
+  "login_error_unexpected_detail": "Revisa tu conexión y vuelve a intentarlo. Si el problema sigue, avisa al estudio.",
+  "login_notice_expired": "Tu sesión terminó. Vuelve a entrar para continuar.",
+  "login_notice_forbidden": "Esa cuenta no tiene acceso al portal."
+}

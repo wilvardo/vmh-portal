@@ -1,0 +1,100 @@
+/**
+ * Alta de cuenta. Una sola columna y campos a lo ancho: se llena desde el
+ * telefono, con el teclado ocupando media pantalla.
+ */
+.register {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    text-align: center;
+  }
+
+  &__lockup {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: center;
+    margin-block-end: var(--space-2);
+  }
+
+  &__brand-name {
+    font-family: var(--font-display);
+    font-size: var(--fs-body-lg);
+    font-weight: var(--fw-display-strong);
+    letter-spacing: var(--tracking-title);
+    color: var(--color-primary);
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    color: var(--color-fg);
+  }
+
+  &__subtitle {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+
+  &__notice {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  &__notice-title {
+    display: block;
+    font-weight: 600;
+  }
+
+  &__notice-detail {
+    display: block;
+    font-size: var(--fs-body-sm);
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  &__privacy {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+
+    label {
+      font-size: var(--fs-body-sm);
+      color: var(--color-fg-secondary);
+    }
+  }
+
+  &__field-error {
+    color: var(--color-danger-fg);
+  }
+
+  &__hint {
+    font-size: var(--fs-caption);
+    color: var(--color-fg-muted);
+  }
+
+  &__link {
+    align-self: center;
+    font-size: var(--fs-body-sm);
+    color: var(--color-primary);
+  }
+
+  &__closing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    align-items: center;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+}
