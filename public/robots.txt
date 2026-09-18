@@ -1,0 +1,3 @@
+# Panel de administracion: fuera de buscadores por completo.
+User-agent: *
+Disallow: /

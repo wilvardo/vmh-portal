@@ -1,0 +1,11 @@
+{
+  // https://nuxt.com/docs/guide/concepts/typescript
+  // Nuxt 4 genera los alias (~, @ -> app/) y opciones estrictas en
+  // ./.nuxt/tsconfig.json. Aqui solo se extiende.
+  //
+  // NO reintroducir `allowImportingTsExtensions`: los SFC importan su script
+  // SIN extension (`import Script from './script'`). Sin el flag, un import con
+  // `.ts` explicito falla el `pnpm typecheck` (y el CI), evitando el patron que
+  // extensiones como Vetur marcan como error (TS2691). Ver `.claude/rules/architecture.md`.
+  "extends": "./.nuxt/tsconfig.json"
+}

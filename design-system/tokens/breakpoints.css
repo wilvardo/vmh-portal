@@ -1,0 +1,31 @@
+/**
+ * Plataforma VMH — Custom Media Queries (breakpoints)
+ *
+ * Definiciones globales consumidas por postcss-custom-media a través de
+ * @csstools/postcss-global-data. Permite escribir:
+ *
+ *   @media (--bp-lg) { ... }      // min-width: 1024px
+ *   @media (--bp-lg-down) { ... } // max-width: 1023.98px
+ *
+ * Los valores derivan 1:1 de los tokens `--bp-*` declarados en tokens.css.
+ * Cualquier ajuste de breakpoint se hace simultáneamente en ambos archivos.
+ *
+ * Convención `-down`: usa `value - 0.02px` para evitar solapamiento con la
+ * versión min-width del mismo breakpoint (estándar Bootstrap-style).
+ */
+
+/* ============ Min-width (mobile-first, principal) ============ */
+@custom-media --bp-xs (min-width: 375px);   /* 375px */
+@custom-media --bp-sm (min-width: 414px);   /* 414px */
+@custom-media --bp-md (min-width: 768px);   /* 768px */
+@custom-media --bp-lg (min-width: 1024px);  /* 1024px */
+@custom-media --bp-xl (min-width: 1280px);  /* 1280px */
+@custom-media --bp-2xl (min-width: 1440px); /* 1440px */
+
+/* ============ Max-width (legacy desktop-first, evitar en código nuevo) ============ */
+@custom-media --bp-xs-down (max-width: 375px);   /* < 375px */
+@custom-media --bp-sm-down (max-width: 414px);   /* < 414px */
+@custom-media --bp-md-down (max-width: 768px);   /* < 768px */
+@custom-media --bp-lg-down (max-width: 1024px);  /* < 1024px */
+@custom-media --bp-xl-down (max-width: 1280px);  /* < 1280px */
+@custom-media --bp-2xl-down (max-width: 1440px); /* < 1440px */

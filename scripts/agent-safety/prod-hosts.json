@@ -1,0 +1,4 @@
+{
+  "_comment": "Hosts de produccion que el guard de datos NO permite arrancar desde app/tests. Coincidencia por substring, case-insensitive, contra el host de BASE_API_PATH y SOCKET del .env. Reemplaza los placeholders por los dominios reales de prod; mientras esten como placeholder el guard de host esta inerte.",
+  "hosts": ["REEMPLAZAR-dominio-prod-api.example.com", "REEMPLAZAR-dominio-prod-socket.example.com"]
+}

@@ -1,0 +1,92 @@
+// Utilidades transversales del panel. Aqui solo vive lo que se comparte entre
+// slices y no cabe en tokens.css.
+
+// Contenedor canonico de input (ver `.claude/rules/components.md`):
+//
+//   <div class="input-box">
+//     <label for="email">{{ $t('email') }}</label>
+//     <InputText id="email" v-model="value" fluid />
+//   </div>
+//
+// El label vive encima del campo (MASTER 12.3: el placeholder nunca sustituye
+// al label) y la separacion es un solo token para que todos los formularios
+// respiren igual.
+.input-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  color: var(--color-fg);
+
+  label {
+    font-size: var(--fs-body-sm);
+    font-weight: var(--fw-medium);
+    color: var(--color-fg);
+    cursor: pointer;
+  }
+
+  // Texto de ayuda del campo, antes del error (MASTER 12.3).
+  &__help {
+    font-size: var(--fs-caption);
+    color: var(--color-fg-secondary);
+  }
+
+  // Error de captura del campo. Va debajo del input y el input lo referencia
+  // con `aria-describedby`, para que quien usa lector se entere de por que se
+  // rechazo sin tener que buscarlo (components.md).
+  &__error {
+    font-size: var(--fs-caption);
+    color: var(--color-danger-fg);
+  }
+}
+
+// Grids de formulario: 2 o 3 columnas en escritorio, una sola en movil.
+// `minmax(0, 1fr)` deja que la columna se encoja por debajo del ancho
+// intrinseco de su contenido; es lo que evita el desborde cuando un label
+// largo intenta forzar el track.
+.form-grid-2,
+.form-grid-3 {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.form-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (--bp-md-down) {
+  .form-grid-2,
+  .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Transicion entre paginas. Es el unico movimiento no ligado a feedback de
+// estado que el panel se permite (MASTER 11.3): un fundido corto que evita el
+// parpadeo al navegar, no una animacion editorial.
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--motion-fast) var(--ease-out);
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
+
+// Solo para lectores de pantalla: etiqueta un control sin ocupar espacio.
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

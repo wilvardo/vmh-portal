@@ -1,0 +1,12 @@
+# Gate mecanico completo antes de salir del repo local (barato -> caro).
+# Nota: los hooks se pueden saltar con `git push --no-verify`; la garantia real
+# es el CI con branch protection.
+pnpm lint
+pnpm lint:styles
+pnpm lint:terminology
+pnpm check:conventions
+pnpm typecheck
+# Una dependencia vulnerable no la introduce un cambio de codigo: aparece sola
+# cuando se publica el aviso. Sin este paso se descubre con el CI ya en rojo.
+pnpm audit --audit-level=high
+pnpm test

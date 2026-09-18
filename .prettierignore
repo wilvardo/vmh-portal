@@ -1,0 +1,21 @@
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+node_modules
+pnpm-lock.yaml
+design-system
+public
+# Reglas de gobernanza: se mantienen verbatim (Prettier no debe tocarlas).
+.claude
+.cursor
+CLAUDE.md
+README.md
+# Artefactos del editor de Claude Design: se re-exportan desde el editor, no se
+# formatean aqui (panel.dc.html son ~400 KB de una sola pieza).
+prototipo/**/*.dc.html
+prototipo/support.js
+# Espejo de los tokens del design-system (que ya esta ignorado arriba).
+prototipo/tokens.css

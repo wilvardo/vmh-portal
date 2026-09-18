@@ -1,0 +1,136 @@
+// Ajustes de PrimeVue que el preset no alcanza a expresar.
+//
+// REGLA (MASTER 11.3): ningun componente de la libreria se parcha con CSS suelto
+// dentro de una pagina. Cuando el preset no basta, el arreglo vive AQUI, es
+// global, esta comentado y se justifica contra el MASTER. Si un slice necesita
+// tocar una clase interna de Prime, la regla esta mal planteada.
+//
+// Todo valor sale de tokens: este archivo lo lintea Stylelint igual que el resto.
+
+// Densidad de panel (MASTER 14). El preset controla el padding, pero la altura
+// final de un campo depende del interlineado del texto: se fija el piso para que
+// un `<InputText>`, un `<Select>` y un `<Button>` de la misma fila midan lo
+// mismo (36px) sin depender de la tipografia cargada.
+.p-inputtext,
+.p-select,
+.p-multiselect,
+.p-datepicker-input,
+.p-inputnumber-input,
+.p-password-input,
+.p-togglebutton,
+.p-selectbutton .p-togglebutton,
+.p-button {
+  min-height: var(--field-height-sm);
+}
+
+// Los campos multilinea crecen: el piso de 36px los dejaria de una sola linea.
+.p-textarea {
+  min-height: calc(var(--field-height-sm) * 2);
+}
+
+// El boton de solo icono es cuadrado a la altura del campo, y su area util
+// llega al minimo tactil aunque el panel se use en una tableta (MASTER 2.7).
+.p-button-icon-only {
+  min-width: var(--field-height-sm);
+  padding-inline: 0;
+}
+
+// Foco visible unico en las tres superficies (MASTER 17.2). PrimeVue dibuja su
+// propio anillo; se alinea al de los tokens para que un control de la libreria y
+// uno propio se vean igual al tabular.
+.p-component:focus-visible,
+.p-inputtext:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+// Capas de la libreria dentro de la escala cerrada del sistema (MASTER 18):
+// Prime asigna sus propios z-index y sin esto un drawer podria quedar encima de
+// un modal, o un toast debajo de ambos.
+.p-drawer-mask {
+  z-index: var(--z-drawer) !important;
+}
+
+.p-dialog-mask {
+  z-index: var(--z-modal) !important;
+}
+
+.p-toast {
+  z-index: var(--z-toast) !important;
+}
+
+.p-tooltip {
+  z-index: var(--z-tooltip) !important;
+}
+
+// El scrim de modales y drawers usa el navy de la marca, no el negro por
+// defecto de la libreria (MASTER 12.7).
+.p-drawer-mask,
+.p-dialog-mask {
+  background: color-mix(in srgb, var(--color-bg-dark) 60%, transparent);
+}
+
+// Cifras de tabla alineadas a la derecha con numerales tabulares: la columna de
+// precios se lee de un vistazo (MASTER 12.5).
+.p-datatable-tbody > tr > td.is-numeric,
+.p-datatable-thead > tr > th.is-numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+// Fila de tabla de 44px (MASTER 14) y separadores solo horizontales.
+.p-datatable-tbody > tr > td {
+  block-size: var(--touch-target);
+}
+
+// El icono de un campo es un SVG propio de tablericons, no la fuente de iconos
+// de la libreria: `IconField` dimensiona un `<i>` con clase, y un SVG sin
+// tamaño intrinseco colapsa a 0x0 y el campo se queda sin su icono. Vive aqui y
+// no en el preset porque el preset no tiene token para el contenido del slot.
+.p-inputicon > svg {
+  inline-size: var(--icon-md);
+  block-size: var(--icon-md);
+}
+
+// Tamaño base de los controles (MASTER 14: el cuerpo del panel es de 14px).
+//
+// La libreria solo expone token de tamaño para las variantes `sm` y `lg`; el
+// tamaño normal lo deja al navegador, y un `<button>` o un `<input>` no heredan
+// el del documento: se quedan en los 16px del agente de usuario. El resultado
+// era un panel de 14 con botones y campos de 16.
+.p-button,
+.p-inputtext,
+.p-select-label,
+.p-textarea,
+.p-togglebutton-label {
+  font-size: var(--fs-body-sm);
+}
+
+// Altura unica de boton (MASTER 14: 36px). El preset solo controla el relleno,
+// asi que la altura acababa dependiendo del contenido: el interlineado de
+// lectura del cuerpo -1.6- hacia dos pixeles mas alto a todo boton con icono
+// que a uno de solo texto, y una fila con los dos se veia desalineada.
+.p-button {
+  min-block-size: var(--field-height-sm);
+  line-height: var(--lh-tight);
+}
+
+// El icono de un boton es un SVG propio de tablericons, y sin tamaño se estira
+// con la caja: en un boton cuyo texto salta a dos lineas crecia al doble. Mismo
+// motivo que en `.p-inputicon`.
+//
+// Mide 16 y no 20 porque el boton mide 36: veinte de icono mas el relleno y el
+// borde no caben, y el boton crecia dos pixeles solo por llevar icono. Se
+// declara una sola vez aqui; ningun slice fija el suyo, que es como cuatro
+// pantallas acabaron con iconos de tres tamaños en el mismo control.
+.p-button > svg {
+  inline-size: var(--icon-sm);
+  block-size: var(--icon-sm);
+  flex-shrink: 0;
+}
+
+// El nombre de una accion no se parte en dos lineas: un boton que crece hacia
+// abajo rompe la fila donde vive y deja de parecer un boton.
+.p-button-label {
+  white-space: nowrap;
+}

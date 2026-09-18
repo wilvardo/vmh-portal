@@ -1,0 +1,485 @@
+/**
+ * VMH — Design Tokens (CSS Custom Properties)
+ * Derivado de MASTER.md v1.1.0 · Identidad del cliente 2026-08-12.
+ *
+ * Fuente unica de valores visuales de las tres superficies de la plataforma:
+ *   - vmh-website  (Nuxt 4 SSR, sitio publico)
+ *   - vmh-portal   (Nuxt 4 SPA, portal del atleta)
+ *   - vmh-landlord (Nuxt 4 SPA, panel de administracion)
+ *
+ * Marca LIGHT-first: blanco y gris con tinta navy y un unico acento azul.
+ * Referencia de marca: `00-brain/05-consultorias/03-vmh/paquete-lanzamiento/
+ * 04-branding/00-referencia-cliente.md` (manda sobre este archivo ante duda).
+ *
+ * REGLAS DE USO
+ *   1. Los hex viven SOLO aqui. El SCSS de cada app consume `var(--...)`.
+ *   2. Las escalas 50-950 son PRIMITIVAS: no se usan directo en componentes.
+ *      Los componentes consumen los alias semanticos (`--color-fg`,
+ *      `--color-surface`, `--color-primary`...). Excepcion documentada:
+ *      graficas y estados decorativos.
+ *   3. Las rampas se generaron en OKLCH anclando el paso 600 (400 en neutral,
+ *      950 en ink) al hex medido de la lamina del cliente, con luminosidad
+ *      monotona. No se editan a mano tono por tono.
+ *   4. Un solo acento. `info` es alias de `primary` a proposito: la marca no
+ *      admite un segundo azul.
+ *
+ * Importacion:
+ *   - Website / Portal / Landlord (Nuxt): @use en assets/design-system/main.scss
+ *     antes de cualquier estilo de componente.
+ *   - Los breakpoints viven en `tokens/breakpoints.css` (custom media).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ============================================================
+   * 1. PRIMITIVAS DE COLOR — escalas 50-950
+   * Contrastes anotados: (B) sobre blanco #FFFFFF · (N) sobre navy #0D1B2A.
+   * ============================================================ */
+
+  /* ---- Ink · navy VMH (tinta de marca, ancla 950 = #0D1B2A) ---- */
+  --color-ink-50: #f7fbff;  /* B 1.04 · N 16.73 */
+  --color-ink-100: #dee7f0; /* B 1.25 · N 13.91 */
+  --color-ink-200: #c2d3e5; /* B 1.53 · N 11.38 */
+  --color-ink-300: #a7bfd9; /* B 1.89 · N  9.19 */
+  --color-ink-400: #8baacd; /* B 2.41 · N  7.23 */
+  --color-ink-500: #7295bc; /* B 3.12 · N  5.58 */
+  --color-ink-600: #5b7fa7; /* B 4.17 · N  4.17 */
+  --color-ink-700: #47698e; /* B 5.71 · N  3.05 */
+  --color-ink-800: #365270; /* B 8.08 · N  2.15 */
+  --color-ink-900: #243950; /* B 11.82 · N 1.47 */
+  --color-ink-950: #0d1b2a; /* B 17.39 · N 1.00 — NAVY VMH */
+
+  /* ---- Primary · azul VMH (accion, ancla 600 = #1046D6) ---- */
+  --color-primary-50: #f2faff;  /* B 1.06 · N 16.48 */
+  --color-primary-100: #d2e3ff; /* B 1.30 · N 13.39 */
+  --color-primary-200: #accbff; /* B 1.65 · N 10.55 */
+  --color-primary-300: #85b1ff; /* B 2.16 · N  8.06 */
+  --color-primary-400: #5c93ff; /* B 2.97 · N  5.86 */
+  --color-primary-500: #3771fb; /* B 4.27 · N  4.07 */
+  --color-primary-600: #1046d6; /* B 7.32 · N  2.38 — AZUL VMH */
+  --color-primary-700: #012eb6; /* B 10.16 · N 1.71 */
+  --color-primary-800: #001b8e; /* B 13.57 · N 1.28 */
+  --color-primary-900: #000b64; /* B 17.05 · N 1.02 */
+  --color-primary-950: #00023c; /* B 19.55 · N 1.12 */
+
+  /* Azul de la lamina para uso sobre navy (medido, AA 5.40 sobre #0D1B2A).
+   * Vive fuera de la rampa porque es un valor entregado por el cliente. */
+  --color-primary-bright: #5b8cf5;
+
+  /* ---- Neutral · grises de marca (ancla 400 = #9EA5A8 "acero") ---- */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f9fafb;  /* B 1.05 · N 16.64 */
+  --color-neutral-100: #e6e8e9; /* B 1.23 · N 14.15 */
+  --color-neutral-200: #d1d5d7; /* B 1.48 · N 11.77 */
+  --color-neutral-300: #bbc0c3; /* B 1.84 · N  9.48 */
+  --color-neutral-400: #9ea5a8; /* B 2.50 · N  6.96 — ACERO */
+  --color-neutral-500: #828a8d; /* B 3.52 · N  4.94 */
+  --color-neutral-600: #687073; /* B 5.06 · N  3.44 */
+  --color-neutral-700: #4f5659; /* B 7.48 · N  2.33 */
+  --color-neutral-800: #383e40; /* B 10.87 · N 1.60 */
+  --color-neutral-900: #232729; /* B 15.07 · N 1.15 */
+  --color-neutral-950: #0f1213; /* B 18.81 · N 1.08 */
+
+  /* Grises nominales de la lamina del cliente (se conservan literales porque
+   * son parte de la identidad, no derivados: bruma y nieve). */
+  --color-mist: #e2e5e8;  /* bruma — marco exterior, separadores */
+  --color-snow: #f7f7f7;  /* nieve — fondo base del sitio */
+
+  /* ---- Success (ancla 600 = #1F8A5B) ---- */
+  --color-success-50: #f4fdf7;
+  --color-success-100: #d9ede1;
+  --color-success-200: #b9dec8;
+  --color-success-300: #97cfae;
+  --color-success-400: #71bd94;
+  --color-success-500: #4ca87a;
+  --color-success-600: #1f8a5b; /* B 4.33 — NO usar como texto normal sobre blanco */
+  --color-success-700: #006b41; /* B 6.61 — texto de estado sobre claro */
+  --color-success-800: #004d2a;
+  --color-success-900: #003016;
+  --color-success-950: #001505;
+
+  /* ---- Warning (ancla 600 = #B07A12) ---- */
+  --color-warning-50: #fff9f1;
+  --color-warning-100: #f4e8d6;
+  --color-warning-200: #edd5b3;
+  --color-warning-300: #e4c18e;
+  --color-warning-400: #daac66;
+  --color-warning-500: #ca9641;
+  --color-warning-600: #b07a12; /* B 3.72 — solo fondo/borde/icono */
+  --color-warning-700: #8a5900; /* B 5.98 — texto de estado sobre claro */
+  --color-warning-800: #643c00;
+  --color-warning-900: #3f2100;
+  --color-warning-950: #1c0900;
+
+  /* ---- Danger (ancla 600 = #C0392B) ---- */
+  --color-danger-50: #fff6f3;
+  --color-danger-100: #ffddd7;
+  --color-danger-200: #fec1b6;
+  --color-danger-300: #faa294;
+  --color-danger-400: #f38170;
+  --color-danger-500: #e1604f;
+  --color-danger-600: #c0392b; /* B 5.44 — texto de error sobre claro (AA) */
+  --color-danger-700: #9c1b11;
+  --color-danger-800: #750300;
+  --color-danger-900: #4e0000;
+  --color-danger-950: #290000;
+
+  /* ---- Info — alias explicito de primary (un solo acento) ---- */
+  --color-info-50: var(--color-primary-50);
+  --color-info-100: var(--color-primary-100);
+  --color-info-300: var(--color-primary-300);
+  --color-info-600: var(--color-primary-600);
+  --color-info-700: var(--color-primary-700);
+
+  /* ---- Terceros (colores ajenos a la marca, uso obligado por el servicio) ---- */
+  --color-whatsapp: #25d366;
+
+  /* ============================================================
+   * 2. ALIAS SEMANTICOS — superficie clara (default de la marca)
+   * Son los unicos que deben aparecer en el CSS de componentes.
+   * ============================================================ */
+
+  /* Marca */
+  --color-primary: var(--color-primary-600);
+  --color-primary-strong: #0b34a8;              /* hover/pressed de la lamina */
+  --color-primary-pressed: var(--color-primary-800);
+  --color-primary-soft: var(--color-primary-50);
+  --color-on-primary: #ffffff;                  /* AA 7.32 sobre primary-600 */
+  --color-accent: var(--color-primary-bright);  /* acento sobre navy */
+
+  /* Superficies */
+  --color-bg-body: var(--color-mist);     /* marco exterior de la pagina */
+  --color-bg: var(--color-snow);          /* fondo base de secciones claras */
+  --color-surface: #ffffff;               /* cards y superficies elevadas */
+  --color-surface-sunken: var(--color-neutral-100);
+  --color-bg-dark: var(--color-ink-950);  /* secciones inmersivas navy */
+  --color-bg-darker: #091320;             /* footer */
+
+  /* Texto */
+  --color-fg: var(--color-ink-950);       /* tinta principal · 16.24 sobre nieve */
+  --color-fg-secondary: #5c666f;          /* 5.47 sobre nieve (AA) */
+  --color-fg-muted: var(--color-neutral-400); /* metadatos y hairlines, NO parrafos */
+  --color-fg-inverse: var(--color-snow);  /* texto sobre navy */
+  --color-fg-on-dark-muted: var(--color-ink-300);
+
+  /* Bordes y hairlines */
+  --color-border: var(--color-mist);
+  --color-border-strong: var(--color-neutral-300);
+  --color-hairline-dark: rgba(13, 27, 42, 0.12);
+  --color-hairline-light: rgba(255, 255, 255, 0.16);
+
+  /* Velo de modales y cajones. Navy de marca, nunca negro puro. */
+  --color-scrim: rgba(13, 27, 42, 0.6);
+
+  /* Estados semanticos (superficie clara) */
+  --color-success-bg: var(--color-success-50);
+  --color-success-border: var(--color-success-300);
+  --color-success-fg: var(--color-success-700);
+  --color-warning-bg: var(--color-warning-50);
+  --color-warning-border: var(--color-warning-300);
+  --color-warning-fg: var(--color-warning-700);
+  --color-danger-bg: var(--color-danger-50);
+  --color-danger-border: var(--color-danger-300);
+  --color-danger-fg: var(--color-danger-600);
+  --color-info-bg: var(--color-info-50);
+  --color-info-border: var(--color-info-300);
+  --color-info-fg: var(--color-info-700);
+  --color-on-status: #ffffff;
+
+  /* ---- Superficie de navegacion del panel (v1.2.0) ----
+   * La barra lateral del panel va en azul profundo: desviacion declarada y
+   * acotada a esa superficie. Sus tintas son blanco con alfa, y viven aqui
+   * para que ningun componente vuelva a escribirlas a mano.
+   * Contrastes sobre #000B64: blanco 17.05 AAA · 0.72 = 9.01 AAA ·
+   * 0.55 = 5.57 AA · 0.22 = 1.84, hairline y NUNCA texto.
+   * REGLA: si algo azul se pinta directamente sobre esta superficie —un punto
+   * de aviso, un distintivo— usa --color-primary-bright (5.29), nunca
+   * --color-primary (2.33). Es la misma regla que rige sobre navy. */
+  --color-bg-nav: var(--color-primary-900);
+  --color-nav-fg: #ffffff;                        /* 17.05 — wordmark, item activo sobre su superficie */
+  --color-nav-fg-secondary: rgba(255, 255, 255, 0.72); /* 9.01 — items del menu, nombre de la cuenta */
+  --color-nav-fg-muted: rgba(255, 255, 255, 0.55);     /* 5.57 — etiquetas de grupo, rol, version, "pronto" */
+  --color-nav-hairline: rgba(255, 255, 255, 0.22);     /* 1.84 — separadores. Nunca texto */
+
+  /* Data viz (panel y portal). Azul de marca + neutros + estados; sin paleta
+   * decorativa nueva. Orden de asignacion de series. */
+  --data-1: var(--color-primary-600);
+  --data-2: var(--color-ink-600);
+  --data-3: var(--color-primary-300);
+  --data-4: var(--color-neutral-400);
+  --data-5: var(--color-success-600);
+  --data-6: var(--color-warning-600);
+  --data-7: var(--color-ink-300);
+  --data-8: var(--color-danger-500);
+
+  /* ============================================================
+   * 3. TIPOGRAFIA
+   * Display: geometrica fina (Jost, sustituto vivo de la del lockup).
+   * Cuerpo/UI: Inter. Sin italicas. Sin tracking negativo.
+   * ============================================================ */
+  --font-display: 'Jost', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Escala en rem. Los tamanos display son fluidos: escalan con el viewport
+   * sin romper el ritmo vertical. */
+  --fs-display: clamp(2.5rem, 1.4rem + 4.4vw, 4rem);   /* 40 → 64 */
+  --fs-h1: clamp(2rem, 1.4rem + 2.4vw, 2.75rem);       /* 32 → 44 */
+  --fs-h2: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);        /* 24 → 32 */
+  --fs-h3: 1.375rem;                                    /* 22 */
+  --fs-body-lg: 1.125rem;                               /* 18 */
+  --fs-body: 1rem;                                      /* 16 — minimo de lectura */
+  --fs-body-sm: 0.875rem;                               /* 14 */
+  --fs-caption: 0.78125rem;                             /* 12.5 — caja alta */
+
+  --lh-display: 1.05;
+  --lh-heading: 1.15;
+  --lh-body: 1.6;
+  --lh-tight: 1.3;
+
+  --fw-light: 300;   /* display grande editorial */
+  --fw-regular: 400;
+  --fw-medium: 500;  /* cita, pregunta, label */
+  --fw-display-strong: 560; /* titulares de impacto del sitio: hero, paso, servicio */
+  --fw-semibold: 600; /* UI: botones, labels, tablas · y cifra de precio */
+
+  /* Tracking.
+   * La geometrica fina pide aire en lo pequeno y compresion en lo grande: por
+   * debajo de 20 px el tracking SIEMPRE es positivo; a partir de 26 px los
+   * titulares de impacto cierran para ganar densidad editorial (v1.1.0). */
+  --tracking-display: 0.01em;
+  --tracking-wordmark: 0.34em;
+  --tracking-caption: 0.22em;
+  --tracking-button: 0.04em;
+  --tracking-label: 0.16em;    /* etiqueta de interfaz en caja alta del panel (12.5 px) */
+  --tracking-tight: -0.02em;   /* cita, nombre de servicio, pregunta, titulo de pantalla (>=20 px) */
+  --tracking-title: -0.03em;   /* titular de paso y cifra de precio (>=28 px) */
+  --tracking-hero: -0.035em;   /* titular de hero (>=48 px) */
+
+  /* ============================================================
+   * 4. ESPACIADO — grid de 4pt en rem
+   * ============================================================ */
+  --space-1: 0.25rem;  /* 4 */
+  --space-2: 0.5rem;   /* 8 */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.25rem;  /* 20 */
+  --space-6: 1.5rem;   /* 24 */
+  --space-8: 2rem;     /* 32 */
+  --space-10: 2.5rem;  /* 40 */
+  --space-12: 3rem;    /* 48 */
+  --space-16: 4rem;    /* 64 */
+  --space-20: 5rem;    /* 80 */
+  --space-24: 6rem;    /* 96 */
+
+  /* Ritmo vertical de seccion del sitio publico (fluido). */
+  --space-section: clamp(4rem, 2rem + 8vw, 6rem);
+
+  /* ============================================================
+   * 5. RADIOS — marca geometrica: radios cortos, default md
+   * ============================================================ */
+  --radius-sm: 0.25rem;  /* 4 — inputs, chips */
+  --radius-md: 0.5rem;   /* 8 — default */
+  --radius-lg: 1rem;     /* 16 — cards de datos, modales, tope de UI */
+  --radius-pill: 999px;  /* botones */
+  --radius-base: var(--radius-md);
+
+  /* Radios editoriales del sitio publico (v1.1.0). El radio crece con la pieza:
+   * mientras mas grande y mas fotografica, mas suave el corte. NO se usan en
+   * portal ni panel, donde el tope sigue siendo --radius-lg. */
+  --radius-xl: 1.25rem;   /* 20 — tarjeta de precio */
+  --radius-2xl: 1.375rem; /* 22 — foto de servicio, tarjeta flotante */
+  --radius-3xl: 1.625rem; /* 26 — marco de foto con parallax */
+
+  /* ============================================================
+   * 6. ELEVACION — 4 niveles. La profundidad la da el aire, no la sombra.
+   * ============================================================ */
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px rgba(13, 27, 42, 0.06);
+  --elevation-2: 0 10px 30px rgba(13, 27, 42, 0.08), 0 2px 6px rgba(13, 27, 42, 0.05);
+  --elevation-3: 0 24px 60px rgba(13, 27, 42, 0.12), 0 6px 16px rgba(13, 27, 42, 0.06);
+  /* Alias historicos del website */
+  --shadow-sm: var(--elevation-1);
+  --shadow-md: var(--elevation-2);
+  --shadow-lg: var(--elevation-3);
+
+  /* ============================================================
+   * 7. MOTION
+   * UI (portal y panel): <=300 ms. Editorial (website): reveals largos.
+   * ============================================================ */
+  --motion-instant: 90ms;
+  --motion-fast: 150ms;
+  --motion-base: 220ms;
+  --motion-slow: 300ms;   /* tope absoluto en UI */
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-soft: cubic-bezier(0.37, 0, 0.28, 1); /* fundidos largos, sin frenado */
+
+  --reveal-dur: 0.9s;   /* solo website: entrada de secciones */
+  --reveal-delay: 0s;
+
+  /* ============================================================
+   * 8. ICONOGRAFIA — SVG de linea, una tinta, grid 24
+   * ============================================================ */
+  --icon-sm: 1rem;      /* 16 */
+  --icon-md: 1.25rem;   /* 20 — default en UI */
+  --icon-lg: 1.5rem;    /* 24 */
+  --icon-xl: 2rem;      /* 32 */
+  --icon-stroke: 1.5;   /* 1.5 en <=24px · 1.75 en piezas grandes */
+
+  /* ============================================================
+   * 9. DIMENSIONES DE COMPONENTE
+   * ============================================================ */
+  --field-height: 3rem;       /* 48 — input y boton default */
+  --field-height-sm: 2.25rem; /* 36 — densidad alta en panel */
+  --touch-target: 44px;       /* minimo tactil (px reales, no rem) */
+  --header-height: 4.5rem;    /* 72 */
+  --header-height-scrolled: 3.75rem;
+
+  /* ============================================================
+   * 10. LAYOUT
+   * ============================================================ */
+  --pad-x: clamp(1.25rem, 4vw, 3.5rem);
+  --content-max: 1440px;  /* banners a sangre; el texto no pasa de aqui */
+  --measure: 68ch;        /* ancho maximo de parrafo legible */
+  --edge: max(var(--pad-x), calc((100% - var(--content-max)) / 2));
+  --edge-vw: max(var(--pad-x), calc((100vw - var(--content-max)) / 2));
+
+  /* Breakpoints — espejo exacto de tokens/breakpoints.css.
+   * Cualquier cambio se hace en AMBOS archivos. */
+  --bp-xs: 375px;
+  --bp-sm: 414px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1440px;
+
+  /* Safe area (portal instalado como PWA) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* ============================================================
+   * 11. FOCUS
+   * Un solo patron en las tres superficies: anillo azul de 2px con offset.
+   * ============================================================ */
+  --focus-ring-color: var(--color-primary-600);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-halo: 0 0 0 4px var(--color-primary-100);
+
+  /* ============================================================
+   * 12. Z-INDEX — escala cerrada; no se inventan valores en componentes
+   * ============================================================ */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-header: 200;
+  --z-drawer: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* ============================================================
+   * 13. OPACIDAD SEMANTICA
+   * ============================================================ */
+  --opacity-disabled: 0.45;
+  --opacity-muted: 0.7;
+  --opacity-scrim: 0.6;
+}
+
+/* ============================================================
+ * SUPERFICIE INMERSIVA (navy)
+ * Se aplica con `data-surface="deep"` en el contenedor de la seccion.
+ * Invierte los semanticos: el codigo del componente no cambia.
+ * REGLA: sobre navy nunca se usa `--color-primary-600` como texto.
+ * ============================================================ */
+[data-surface='deep'] {
+  color-scheme: dark;
+
+  --color-bg: var(--color-ink-950);
+  --color-surface: #12233a;
+  --color-surface-sunken: #091320;
+  --color-fg: var(--color-snow);
+  --color-fg-secondary: var(--color-ink-300);
+  --color-fg-muted: var(--color-ink-400);
+  --color-fg-inverse: var(--color-ink-950);
+
+  --color-primary: var(--color-primary-bright); /* 5.40 sobre navy */
+  --color-primary-strong: var(--color-primary-300);
+  --color-primary-soft: rgba(91, 140, 245, 0.14);
+  --color-on-primary: var(--color-ink-950);
+
+  --color-border: rgba(255, 255, 255, 0.16);
+  --color-border-strong: rgba(255, 255, 255, 0.28);
+
+  --color-success-fg: var(--color-success-300);
+  --color-warning-fg: var(--color-warning-300);
+  --color-danger-fg: var(--color-danger-300);
+  --color-info-fg: var(--color-primary-300);
+
+  --focus-ring-color: var(--color-primary-bright);
+  --focus-halo: 0 0 0 4px rgba(91, 140, 245, 0.28);
+
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --elevation-2: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --elevation-3: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================
+ * BASE OBLIGATORIA
+ * Reglas que dependen de tokens y aplican a las tres superficies.
+ * ============================================================ */
+
+/* Foco visible unico. Nunca `outline: none` sin sustituto. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Seleccion de texto con el acento de marca. */
+::selection {
+  background: var(--color-primary-600);
+  color: #ffffff;
+}
+[data-surface='deep'] ::selection {
+  background: var(--color-primary-bright);
+  color: var(--color-ink-950);
+}
+
+/* Hover solo en dispositivos con puntero real: evita estados pegados en touch. */
+@media (hover: none) {
+  :where(a, button):hover {
+    /* Los componentes definen su hover dentro de @media (hover: hover). */
+  }
+}
+
+/* Objetivo tactil minimo. Utilidad, no default global. */
+.touch-target {
+  min-inline-size: var(--touch-target);
+  min-block-size: var(--touch-target);
+}
+
+/* Reduced motion: la marca no negocia accesibilidad por estetica. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  :root {
+    --reveal-dur: 0.01ms;
+  }
+}
+
+/* Forced colors (alto contraste de Windows): conservar bordes de foco. */
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid CanvasText;
+  }
+}

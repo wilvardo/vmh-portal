@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint + Styles + Terminology + Conventions + Typecheck + Test + Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (ESLint - reglas duras, fronteras, JSDoc en exports)
+        run: pnpm lint
+
+      - name: Lint de estilos (Stylelint - tokens de color, sin hex/rgb)
+        run: pnpm lint:styles
+
+      - name: Terminologia (frontera de cliente, marca y emojis)
+        run: pnpm lint:terminology
+
+      - name: Convenciones (naming, sufijos de domain, tests colocados)
+        run: pnpm check:conventions
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build (SPA)
+        run: pnpm build
+
+  security:
+    name: Auditoria de dependencias
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Vulnerabilidades altas y criticas
+        run: pnpm audit --audit-level=high

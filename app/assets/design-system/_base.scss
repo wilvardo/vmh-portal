@@ -1,0 +1,76 @@
+// Reset minimo y base del documento del panel.
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  // Densidad alta: el cuerpo del panel es de 14px (MASTER 14).
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+// Titulos del panel: geometrica fina de la marca, sin italicas.
+//
+// La escala vive AQUI y en ningun otro lado. Un `h2` mide lo mismo en el
+// catalogo, en personas y dentro de un cajon, y ninguna pantalla la
+// sobrescribe: cuando cada slice fijaba su propio tamaño, el mismo rol acababa
+// midiendo 32 en una pantalla y 22 en la de al lado.
+//
+// Va un peldaño por debajo de la escala del sitio publico. El panel es denso
+// (MASTER 14) y sus titulos no son editoriales: nombran una pantalla, no abren
+// una pagina. Los tamaños fluidos de `--fs-h1`/`--fs-h2` estan pensados para
+// una portada que escala con el viewport, no para una herramienta de trabajo.
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--lh-heading);
+  margin: 0;
+}
+
+// Titulo de pantalla. Uno por pantalla (MASTER 17.4).
+h1 {
+  font-size: var(--fs-h3);
+}
+
+// Titulo de seccion, de cajon y de estado.
+h2 {
+  font-size: var(--fs-body-lg);
+}
+
+// Titulo de bloque dentro de una seccion.
+h3 {
+  font-size: var(--fs-body);
+}
+
+// Cifras y fechas del panel siempre con numerales tabulares (MASTER 12.5): en
+// una columna de precios, las cifras deben alinearse digito con digito.
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+// Etiqueta corta en caja alta (encabezados de bloque y metadatos).
+.eyebrow {
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--color-fg-secondary);
+}
