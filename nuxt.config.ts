@@ -25,6 +25,11 @@ export default defineNuxtConfig({
 
   modules: ['@primevue/nuxt-module', '@nuxtjs/i18n', '@nuxt/eslint'],
 
+  // Lo retirado con prefijo __DELETED__ se conserva en disco hasta borrarlo a
+  // mano. Nuxt no lo enruta, no lo auto-importa ni lo compila aunque alguien lo
+  // regrese por error a app/.
+  ignore: ['**/__DELETED__*', '**/__DELETED__*/**'],
+
   i18n: {
     locales: [{ code: 'es', name: 'Espanol', file: 'es.json' }],
     defaultLocale: 'es',

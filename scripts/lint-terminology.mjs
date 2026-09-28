@@ -60,7 +60,8 @@ const TEXT_EXTENSIONS =
 const walk = async (dir) => {
   const out = []
   for (const entry of await readdir(dir)) {
-    if (EXCLUDED_DIRS.has(entry)) continue
+    // Lo retirado con prefijo __DELETED__ ya no es fuente del repo.
+    if (EXCLUDED_DIRS.has(entry) || entry.startsWith('__DELETED__')) continue
     const full = join(dir, entry)
     const info = await stat(full)
     if (info.isDirectory()) out.push(...(await walk(full)))

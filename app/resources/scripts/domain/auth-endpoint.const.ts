@@ -12,12 +12,6 @@ export const AUTH_ENDPOINT = {
   LOGOUT: '/auth/logout',
   /** Devuelve la persona dueña del token de acceso. */
   ME: '/auth/me',
-  /** Alta publica de una cuenta de atleta. */
-  REGISTER: '/auth/register',
-  /** Consume el enlace de confirmacion del correo. */
-  VERIFY_EMAIL: '/auth/verify-email',
-  /** Emite un enlace de confirmacion nuevo. */
-  RESEND_VERIFICATION: '/auth/resend-verification',
   /**
    * Pide el codigo de primer acceso. Responde lo mismo exista o no la cuenta, y
    * solo emite codigo a cuentas que nunca definieron contrasena.

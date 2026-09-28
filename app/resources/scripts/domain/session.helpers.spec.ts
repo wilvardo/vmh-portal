@@ -5,9 +5,7 @@ import {
   LOGIN_PATH,
   PASSWORD_RECOVERY_PATH,
   POST_LOGIN_REDIRECT_PATH,
-  REGISTER_PATH,
-  SET_PASSWORD_PATH,
-  VERIFY_EMAIL_PATH
+  SET_PASSWORD_PATH
 } from './session.const'
 import type { AuthUser } from './session.interface'
 import {
@@ -29,13 +27,16 @@ const buildUser = (overrides: Partial<AuthUser> = {}): AuthUser => ({
 })
 
 describe('isPublicPath', () => {
-  it('reconoce como publicas el acceso y las pantallas de alta', () => {
+  it('reconoce como publicas el acceso, el primer acceso y la recuperacion', () => {
     expect(isPublicPath(LOGIN_PATH)).toBe(true)
-    expect(isPublicPath(REGISTER_PATH)).toBe(true)
-    expect(isPublicPath(VERIFY_EMAIL_PATH)).toBe(true)
     expect(isPublicPath(FIRST_ACCESS_PATH)).toBe(true)
     expect(isPublicPath(PASSWORD_RECOVERY_PATH)).toBe(true)
     expect(isPublicPath(SET_PASSWORD_PATH)).toBe(true)
+  })
+
+  it('ya no abre las pantallas de alta retiradas', () => {
+    expect(isPublicPath('/registro')).toBe(false)
+    expect(isPublicPath('/verificar-correo')).toBe(false)
   })
 
   it('exige sesion en cualquier ruta no declarada', () => {

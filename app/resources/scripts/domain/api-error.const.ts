@@ -24,23 +24,15 @@ export const API_ERROR_CODE = {
   CODE_EXPIRED: 'VMH.AUTH.CODE_EXPIRED',
   CODE_LOCKED: 'VMH.AUTH.CODE_LOCKED',
 
-  /** El correo del alta ya pertenece a otra cuenta. */
-  EMAIL_TAKEN: 'VMH.AUTH.EMAIL_TAKEN',
-
   /**
    * El telefono ya pertenece a otra cuenta.
    *
-   * Sale del area AUTH en el alta y del area USR al corregir el perfil: son dos
-   * endpoints distintos y cada uno lo emite desde su modulo. Las dos claves
-   * viven aqui porque las dos pantallas hacen lo mismo con ellas.
+   * Sale del area USR al corregir el perfil. La clave del area AUTH la emitia
+   * el alta publica, ya retirada; la correccion del perfil la sigue aceptando
+   * por si el API la reutiliza, y no cuesta nada tenerla.
    */
   PHONE_TAKEN: 'VMH.AUTH.PHONE_TAKEN',
-  PROFILE_PHONE_TAKEN: 'VMH.USR.PHONE_TAKEN',
-
-  /** El enlace del correo no existe, vencio o ya se habia usado. */
-  TOKEN_INVALID: 'VMH.AUTH.TOKEN_INVALID',
-  TOKEN_EXPIRED: 'VMH.AUTH.TOKEN_EXPIRED',
-  TOKEN_ALREADY_USED: 'VMH.AUTH.TOKEN_ALREADY_USED'
+  PROFILE_PHONE_TAKEN: 'VMH.USR.PHONE_TAKEN'
 } as const
 
 /** Codigo de error del API con tratamiento propio en el portal. */

@@ -10,8 +10,8 @@
 
 <script setup lang="ts">
 // Forma de las pantallas sin sesion del portal: lienzo completo, movil primero.
-// La composicion la pone cada pantalla; las usan el acceso, el registro, la
-// confirmacion de correo y la recuperacion de contrasena.
+// La composicion la pone cada pantalla; las usan el acceso, el primer acceso y
+// la recuperacion de contrasena.
 </script>
 
 <style lang="scss" scoped>

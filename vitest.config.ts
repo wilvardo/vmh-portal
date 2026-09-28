@@ -1,3 +1,4 @@
+import { configDefaults } from 'vitest/config'
 import { defineVitestConfig } from '@nuxt/test-utils/config'
 
 export default defineVitestConfig({
@@ -18,6 +19,8 @@ export default defineVitestConfig({
     },
     passWithNoTests: true,
     include: ['app/**/*.{test,spec}.ts', 'tests/**/*.{test,spec}.ts'],
+    // Lo retirado con prefijo __DELETED__ no corre aunque se mueva de vuelta.
+    exclude: [...configDefaults.exclude, '**/__DELETED__*/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

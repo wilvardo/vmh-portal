@@ -17,5 +17,7 @@ README.md
 # formatean aqui (panel.dc.html son ~400 KB de una sola pieza).
 prototipo/**/*.dc.html
 prototipo/support.js
+# Codigo retirado a mano: se conserva hasta borrarlo desde Finder.
+__DELETED__*
 # Espejo de los tokens del design-system (que ya esta ignorado arriba).
 prototipo/tokens.css

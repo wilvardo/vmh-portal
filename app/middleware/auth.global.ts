@@ -15,10 +15,10 @@ import { canAccessPortal, isPublicPath } from '~/resources/scripts/domain/sessio
  *    entra: se cierra su sesion local y se le explica por que, en vez de dejarla
  *    en una pantalla en blanco. Es la imagen espejo de la regla del panel, que
  *    rechaza al atleta.
- * 2. Quien ya tiene sesion no vuelve a ver las pantallas de alta ni de acceso:
- *    se le manda a su tablero antes de renderizar, sin el parpadeo del
- *    formulario. Incluye el registro y la recuperacion: pedirlas con sesion
- *    viva es siempre un enlace viejo.
+ * 2. Quien ya tiene sesion no vuelve a ver las pantallas publicas: se le manda
+ *    a su tablero antes de renderizar, sin el parpadeo del formulario. Incluye
+ *    el primer acceso y la recuperacion: pedirlas con sesion viva es siempre un
+ *    enlace viejo.
  * 3. Todo lo demas exige sesion.
  *
  * Se usa un middleware propio en vez del de una libreria de auth porque las

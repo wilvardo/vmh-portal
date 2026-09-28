@@ -11,6 +11,12 @@ export default withNuxt(
     ignores: ['prototipo/support.js', 'prototipo/_versiones/**', 'prototipo/_to_delete/**']
   },
 
+  // Codigo retirado con prefijo __DELETED__: se conserva en disco hasta que se
+  // borre a mano, pero ya no es fuente del repo ni se revisa.
+  {
+    ignores: ['**/__DELETED__*/**', '**/__DELETED__*']
+  },
+
   // Reglas duras del proyecto (ver .claude/rules/forbidden.md y code-style.md).
   {
     rules: {

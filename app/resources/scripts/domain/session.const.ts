@@ -16,15 +16,6 @@ export const SESSION_STORAGE_KEY = 'vmh-portal-session'
  */
 export const LOGIN_PATH = '/'
 
-/** Alta de cuenta. */
-export const REGISTER_PATH = '/registro'
-
-/**
- * Confirmacion del correo. El token llega como query, no como segmento, porque
- * asi es como el API ya arma el enlace que manda en el correo.
- */
-export const VERIFY_EMAIL_PATH = '/verificar-correo'
-
 /**
  * Primer acceso: quien nacio con cuenta (desde la agenda del sitio o desde el
  * mostrador) define aqui su contrasena con un codigo que le llega al correo.
@@ -55,13 +46,12 @@ export const POST_LOGIN_REDIRECT_PATH = '/inicio'
 /**
  * Rutas exactas que no requieren sesion.
  *
- * Son todas las del alta y la recuperacion, y ninguna mas. Fail-closed: lo que
+ * Son el acceso, el primer acceso y la recuperacion, y ninguna mas. El alta ya
+ * no vive en el portal: la cuenta nace al agendar en el sitio o en el mostrador. Fail-closed: lo que
  * no este aqui exige sesion.
  */
 export const PUBLIC_PATHS: readonly string[] = [
   LOGIN_PATH,
-  REGISTER_PATH,
-  VERIFY_EMAIL_PATH,
   FIRST_ACCESS_PATH,
   PASSWORD_RECOVERY_PATH,
   SET_PASSWORD_PATH
