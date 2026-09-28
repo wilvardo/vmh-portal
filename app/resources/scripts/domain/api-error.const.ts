@@ -10,6 +10,20 @@ export const API_ERROR_CODE = {
   /** La cuenta existe y la contrasena es correcta, pero falta confirmar el correo. */
   EMAIL_NOT_VERIFIED: 'VMH.AUTH.EMAIL_NOT_VERIFIED',
 
+  /** Correo o contrasena incorrectos. El API no distingue cual de los dos. */
+  INVALID_CREDENTIALS: 'VMH.AUTH.INVALID_CREDENTIALS',
+
+  /** La cuenta existe pero nunca definio contrasena: le toca el primer acceso. */
+  PASSWORD_NOT_SET: 'VMH.AUTH.PASSWORD_NOT_SET',
+
+  /**
+   * El codigo de primer acceso no coincide, vencio o se bloqueo por intentos.
+   * Los tres regresan a la persona al paso del codigo.
+   */
+  CODE_INVALID: 'VMH.AUTH.CODE_INVALID',
+  CODE_EXPIRED: 'VMH.AUTH.CODE_EXPIRED',
+  CODE_LOCKED: 'VMH.AUTH.CODE_LOCKED',
+
   /** El correo del alta ya pertenece a otra cuenta. */
   EMAIL_TAKEN: 'VMH.AUTH.EMAIL_TAKEN',
 

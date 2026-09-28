@@ -18,6 +18,13 @@ export const AUTH_ENDPOINT = {
   VERIFY_EMAIL: '/auth/verify-email',
   /** Emite un enlace de confirmacion nuevo. */
   RESEND_VERIFICATION: '/auth/resend-verification',
+  /**
+   * Pide el codigo de primer acceso. Responde lo mismo exista o no la cuenta, y
+   * solo emite codigo a cuentas que nunca definieron contrasena.
+   */
+  FIRST_ACCESS_CODE: '/auth/first-access/code',
+  /** Canjea el codigo, fija la contrasena y emite la sesion igual que el login. */
+  FIRST_ACCESS: '/auth/first-access',
   /** Pide el enlace para restablecer la contrasena. */
   PASSWORD_RECOVERY: '/auth/password-recovery',
   /** Fija una contrasena nueva a partir del enlace. */

@@ -1,5 +1,6 @@
 import { ofetch } from 'ofetch'
 import { AUTH_ENDPOINT } from '../domain/auth-endpoint.const'
+import type { Acknowledgement } from '../domain/acknowledgement.interface'
 
 /** Datos del alta, tal como los pide el API. */
 export interface RegisterParams {
@@ -23,11 +24,6 @@ export interface PendingAccount {
   emailVerified: boolean
 }
 
-/** Respuesta de los endpoints que solo confirman que la peticion se atendio. */
-export interface Acknowledgement {
-  /** Texto en espanol listo para mostrar, tal como lo manda el API. */
-  message: string
-}
 
 /**
  * Da de alta una cuenta de atleta.

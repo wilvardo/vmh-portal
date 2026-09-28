@@ -1,6 +1,6 @@
 import { ofetch } from 'ofetch'
 import { AUTH_ENDPOINT } from '../domain/auth-endpoint.const'
-import type { Acknowledgement } from './registration.repository'
+import type { Acknowledgement } from '../domain/acknowledgement.interface'
 
 /**
  * Pide el enlace para restablecer la contrasena.

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { AUTH_ROLE } from './auth-role.enum'
 import {
+  FIRST_ACCESS_PATH,
   LOGIN_PATH,
   PASSWORD_RECOVERY_PATH,
   POST_LOGIN_REDIRECT_PATH,
@@ -32,6 +33,7 @@ describe('isPublicPath', () => {
     expect(isPublicPath(LOGIN_PATH)).toBe(true)
     expect(isPublicPath(REGISTER_PATH)).toBe(true)
     expect(isPublicPath(VERIFY_EMAIL_PATH)).toBe(true)
+    expect(isPublicPath(FIRST_ACCESS_PATH)).toBe(true)
     expect(isPublicPath(PASSWORD_RECOVERY_PATH)).toBe(true)
     expect(isPublicPath(SET_PASSWORD_PATH)).toBe(true)
   })

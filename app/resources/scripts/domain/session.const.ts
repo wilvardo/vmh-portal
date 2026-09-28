@@ -25,6 +25,18 @@ export const REGISTER_PATH = '/registro'
  */
 export const VERIFY_EMAIL_PATH = '/verificar-correo'
 
+/**
+ * Primer acceso: quien nacio con cuenta (desde la agenda del sitio o desde el
+ * mostrador) define aqui su contrasena con un codigo que le llega al correo.
+ */
+export const FIRST_ACCESS_PATH = '/primer-acceso'
+
+/**
+ * Parametro con el que el acceso le pasa al primer acceso el correo que la
+ * persona ya escribio, para no hacerla teclearlo dos veces.
+ */
+export const FIRST_ACCESS_EMAIL_QUERY = 'correo'
+
 /** Solicitud de restablecimiento de contrasena. */
 export const PASSWORD_RECOVERY_PATH = '/recuperar-contrasena'
 
@@ -50,6 +62,7 @@ export const PUBLIC_PATHS: readonly string[] = [
   LOGIN_PATH,
   REGISTER_PATH,
   VERIFY_EMAIL_PATH,
+  FIRST_ACCESS_PATH,
   PASSWORD_RECOVERY_PATH,
   SET_PASSWORD_PATH
 ]
