@@ -31,11 +31,28 @@
     >
       <span class="access__notice-title">{{ errorTitle }}</span>
       <span v-if="errorDetail" class="access__notice-detail">{{ errorDetail }}</span>
-      <!-- La cuenta existe y la contrasena era correcta: lo unico que falta es
-           el enlace del correo, asi que se ofrece aqui mismo en vez de dejar a
-           la persona buscando donde pedirlo. -->
-      <NuxtLink v-if="needsVerification" class="access__notice-action" :to="resendPath">
-        {{ $t('login_resend') }}
+      <!-- La salida se ofrece junto al rechazo para no dejar a la persona
+           buscando por donde seguir. Ante credenciales invalidas es solo una
+           sugerencia: no afirma que la cuenta exista. -->
+      <NuxtLink
+        v-if="errorAction === errorActions.FIRST_ACCESS"
+        class="access__notice-action"
+        :to="firstAccessPath"
+      >
+        {{ $t('login_first_access_action') }}
+      </NuxtLink>
+      <span v-else-if="errorAction === errorActions.FIRST_ACCESS_HINT" class="access__notice-hint">
+        {{ $t('login_first_access_hint') }}
+        <NuxtLink class="access__notice-hint-link" :to="firstAccessPath">
+          {{ $t('login_first_access_hint_link') }}
+        </NuxtLink>
+      </span>
+      <NuxtLink
+        v-else-if="errorAction === errorActions.RECOVERY"
+        class="access__notice-action"
+        :to="passwordRecoveryPath"
+      >
+        {{ $t('login_recovery_action') }}
       </NuxtLink>
     </Message>
 
@@ -81,9 +98,23 @@
       <NuxtLink class="access__link" :to="passwordRecoveryPath">{{ $t('login_forgot') }}</NuxtLink>
     </form>
 
-    <footer class="access__closing">
+    <!-- Puerta de quien nacio con cuenta (agenda del sitio o mostrador) y
+         nunca definio contrasena. Secundario: la accion principal es entrar. -->
+    <div class="access__first-time">
+      <span class="access__first-time-prompt">{{ $t('login_first_time_prompt') }}</span>
+      <Button
+        as="router-link"
+        :to="firstAccessPath"
+        :label="$t('login_first_time')"
+        variant="outlined"
+        severity="secondary"
+        fluid
+      />
+    </div>
+
+    <footer v-if="bookingUrl" class="access__closing">
       <span>{{ $t('login_no_account') }}</span>
-      <NuxtLink class="access__link" :to="registerPath">{{ $t('login_register') }}</NuxtLink>
+      <a class="access__link" :href="bookingUrl">{{ $t('login_book') }}</a>
     </footer>
   </section>
 </template>

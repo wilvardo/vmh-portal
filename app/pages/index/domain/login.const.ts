@@ -7,3 +7,9 @@ export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 /** Largo minimo de contrasena que el formulario exige antes de enviar. */
 export const PASSWORD_MIN_LENGTH = 8
+
+/**
+ * Pagina de agenda del sitio publico. Quien todavia no tiene cuenta la obtiene
+ * agendando su evaluacion: el portal ya no da de alta.
+ */
+export const BOOKING_SITE_PATH = '/agendar'

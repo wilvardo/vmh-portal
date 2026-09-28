@@ -1,7 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AUTH_ROLE } from '~/resources/scripts/domain/auth-role.enum'
 import type { AuthSession } from '~/resources/scripts/domain/session.interface'
+import { LOGIN_ERROR_ACTION } from '../domain/login.enum'
 import { useLoginForm } from './use-login-form'
+
+const apiRejection = (status: number, code: string, title: string) => ({
+  response: { status },
+  data: { title, detail: `Detalle de ${code}`, key: 'clave', code }
+})
 
 const buildSession = (role: string = AUTH_ROLE.ATHLETE): AuthSession =>
   ({
@@ -160,5 +166,63 @@ describe('useLoginForm', () => {
     await first
 
     expect(signIn).toHaveBeenCalledTimes(1)
+  })
+
+  describe('salida junto al rechazo', () => {
+    /** Arma el formulario con datos validos y lo envia contra el rechazo dado. */
+    const submitAgainst = async (rejection: unknown) => {
+      signIn.mockRejectedValue(rejection)
+      const form = useLoginForm({ signIn, onAuthenticated, messages })
+      form.email.value = 'atleta@correo.mx'
+      form.password.value = 'contrasena-larga'
+      await form.submit()
+      return form
+    }
+
+    it('ofrece el primer acceso destacado cuando la cuenta no definio contrasena', async () => {
+      const form = await submitAgainst(
+        apiRejection(403, 'VMH.AUTH.PASSWORD_NOT_SET', 'Falta definir tu contraseña')
+      )
+
+      expect(form.errorTitle.value).toBe('Falta definir tu contraseña')
+      expect(form.errorAction.value).toBe(LOGIN_ERROR_ACTION.FIRST_ACCESS)
+    })
+
+    it('sugiere el primer acceso ante credenciales invalidas sin cambiar el texto del API', async () => {
+      const form = await submitAgainst(
+        apiRejection(401, 'VMH.AUTH.INVALID_CREDENTIALS', 'Credenciales invalidas')
+      )
+
+      expect(form.errorTitle.value).toBe('Credenciales invalidas')
+      expect(form.errorDetail.value).toBe('Detalle de VMH.AUTH.INVALID_CREDENTIALS')
+      expect(form.errorAction.value).toBe(LOGIN_ERROR_ACTION.FIRST_ACCESS_HINT)
+    })
+
+    it('manda a la recuperacion cuando falta confirmar el correo', async () => {
+      const form = await submitAgainst(
+        apiRejection(403, 'VMH.AUTH.EMAIL_NOT_VERIFIED', 'Falta confirmar tu correo')
+      )
+
+      expect(form.errorAction.value).toBe(LOGIN_ERROR_ACTION.RECOVERY)
+    })
+
+    it('no ofrece salida ante una cuenta suspendida', async () => {
+      const form = await submitAgainst(
+        apiRejection(403, 'VMH.AUTH.ACCOUNT_SUSPENDED', 'Cuenta suspendida')
+      )
+
+      expect(form.errorAction.value).toBe(LOGIN_ERROR_ACTION.NONE)
+    })
+
+    it('retira la salida anterior al volver a intentar', async () => {
+      const form = await submitAgainst(
+        apiRejection(403, 'VMH.AUTH.PASSWORD_NOT_SET', 'Falta definir tu contraseña')
+      )
+      form.password.value = ''
+
+      await form.submit()
+
+      expect(form.errorAction.value).toBe(LOGIN_ERROR_ACTION.NONE)
+    })
   })
 })

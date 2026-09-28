@@ -1,8 +1,8 @@
 import { extractApiError } from '~/resources/scripts/domain/api-error.helpers'
 import { canAccessPortal } from '~/resources/scripts/domain/session.helpers'
 import type { AuthSession } from '~/resources/scripts/domain/session.interface'
-import { validateLoginForm } from '../domain/login.helpers'
-import { API_ERROR_CODE } from '~/resources/scripts/domain/api-error.const'
+import { resolveLoginErrorAction, validateLoginForm } from '../domain/login.helpers'
+import { LOGIN_ERROR_ACTION, type LoginErrorAction } from '../domain/login.enum'
 
 interface LoginFormMessages {
   /** Mensajes de validacion local, indexados por la clave que devuelve el dominio. */
@@ -38,12 +38,11 @@ interface UseLoginFormReturn {
   /** Cuerpo del error visible, o cadena vacia. */
   errorDetail: Ref<string>
   /**
-   * Indica que el rechazo fue por correo sin confirmar. La pantalla lo usa para
-   * ofrecer el reenvio ahi mismo: la persona escribio bien sus datos y lo unico
-   * que le falta es el enlace, asi que mandarla a buscar donde pedirlo es
-   * hacerle repetir el camino.
+   * Salida que se ofrece junto al rechazo (primer acceso destacado, primer
+   * acceso como sugerencia o recuperacion). La pantalla la pinta ahi mismo para
+   * no dejar a la persona buscando por donde seguir.
    */
-  needsVerification: Ref<boolean>
+  errorAction: Ref<LoginErrorAction>
   /** Intenta iniciar sesion con lo capturado. */
   submit: () => Promise<void>
 }
@@ -60,7 +59,8 @@ interface UseLoginFormReturn {
  *    sesion sin acceso viva en el navegador.
  * 2. El error de credenciales se muestra tal como lo manda el API, sin
  *    reinterpretarlo: el servidor responde igual exista o no el correo, y
- *    cualquier matiz que agregue la interfaz rompe esa defensa.
+ *    cualquier matiz que agregue la interfaz rompe esa defensa. La sugerencia
+ *    de primer acceso que lo acompana no afirma nada sobre la cuenta.
  *
  * @param params Peticion, destino y textos del formulario.
  * @returns El estado del formulario y la accion de envio.
@@ -71,7 +71,7 @@ export const useLoginForm = (params: UseLoginFormParams): UseLoginFormReturn => 
   const isSubmitting = ref(false)
   const errorTitle = ref('')
   const errorDetail = ref('')
-  const needsVerification = ref(false)
+  const errorAction = ref<LoginErrorAction>(LOGIN_ERROR_ACTION.NONE)
 
   /** Deja visible un error de una sola linea (validacion local). */
   const showValidationError = (messageKey: string): void => {
@@ -84,7 +84,7 @@ export const useLoginForm = (params: UseLoginFormParams): UseLoginFormReturn => 
 
     errorTitle.value = ''
     errorDetail.value = ''
-    needsVerification.value = false
+    errorAction.value = LOGIN_ERROR_ACTION.NONE
 
     const validation = validateLoginForm(email.value, password.value)
     if (!validation.isValid) {
@@ -112,7 +112,7 @@ export const useLoginForm = (params: UseLoginFormParams): UseLoginFormReturn => 
       const apiError = extractApiError(error)
       errorTitle.value = apiError?.title ?? params.messages.unexpectedTitle
       errorDetail.value = apiError?.detail ?? params.messages.unexpectedDetail
-      needsVerification.value = apiError?.code === API_ERROR_CODE.EMAIL_NOT_VERIFIED
+      errorAction.value = resolveLoginErrorAction(apiError?.code ?? null)
     } finally {
       isSubmitting.value = false
       // La contrasena no se queda en memoria despues del intento.
@@ -120,5 +120,5 @@ export const useLoginForm = (params: UseLoginFormParams): UseLoginFormReturn => 
     }
   }
 
-  return { email, password, isSubmitting, errorTitle, errorDetail, needsVerification, submit }
+  return { email, password, isSubmitting, errorTitle, errorDetail, errorAction, submit }
 }

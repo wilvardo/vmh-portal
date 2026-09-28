@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { LOGIN_REASON } from '~/resources/scripts/domain/session.const'
-import { resolveReasonMessageKey, validateLoginForm } from './login.helpers'
+import { LOGIN_ERROR_ACTION } from './login.enum'
+import {
+  resolveLoginErrorAction,
+  resolveReasonMessageKey,
+  validateLoginForm
+} from './login.helpers'
 
 describe('validateLoginForm', () => {
   it('acepta un correo con formato y una contrasena de largo suficiente', () => {
@@ -45,5 +50,29 @@ describe('resolveReasonMessageKey', () => {
   it('no inventa aviso cuando no hay motivo', () => {
     expect(resolveReasonMessageKey(null)).toBe('')
     expect(resolveReasonMessageKey('cualquier-otra-cosa')).toBe('')
+  })
+})
+
+describe('resolveLoginErrorAction', () => {
+  it('ofrece el primer acceso destacado a la cuenta sin contrasena definida', () => {
+    expect(resolveLoginErrorAction('VMH.AUTH.PASSWORD_NOT_SET')).toBe(
+      LOGIN_ERROR_ACTION.FIRST_ACCESS
+    )
+  })
+
+  it('sugiere el primer acceso en segundo plano ante credenciales invalidas', () => {
+    expect(resolveLoginErrorAction('VMH.AUTH.INVALID_CREDENTIALS')).toBe(
+      LOGIN_ERROR_ACTION.FIRST_ACCESS_HINT
+    )
+  })
+
+  it('manda a la recuperacion a quien no confirmo su correo', () => {
+    expect(resolveLoginErrorAction('VMH.AUTH.EMAIL_NOT_VERIFIED')).toBe(LOGIN_ERROR_ACTION.RECOVERY)
+  })
+
+  it('no ofrece salida para cualquier otro rechazo o un fallo sin contrato', () => {
+    expect(resolveLoginErrorAction('VMH.AUTH.ACCOUNT_SUSPENDED')).toBe(LOGIN_ERROR_ACTION.NONE)
+    expect(resolveLoginErrorAction('VMH.AUTH.RATE_LIMITED')).toBe(LOGIN_ERROR_ACTION.NONE)
+    expect(resolveLoginErrorAction(null)).toBe(LOGIN_ERROR_ACTION.NONE)
   })
 })
