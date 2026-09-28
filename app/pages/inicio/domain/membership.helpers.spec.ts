@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { needsAction, parseProfileView } from './membership.helpers'
+import { formatAmount, formatDayMonth, needsAction, parseProfileView } from './membership.helpers'
 
 /** Respuesta completa del API, para alterar una pieza por prueba. */
 const buildView = (): unknown => ({
@@ -18,9 +18,21 @@ const buildView = (): unknown => ({
     paymentMode: 'monthly',
     startsAt: '2026-09-01',
     endsAt: '2027-03-01',
-    nextPayment: { dueDate: '2026-10-01', amount: 1200 }
-  }
+    nextPayment: { dueDate: '2026-10-01', amount: 1200 },
+    amountDueOnArrival: null
+  },
+  upcomingReservations: [
+    {
+      id: 1,
+      reservationType: 'evaluation',
+      startsAt: '2026-09-30T18:00:00.000Z',
+      serviceName: null
+    }
+  ]
 })
+
+/** Perfil valido, para armar respuestas con una membresia a la medida. */
+const validProfile = (): unknown => (buildView() as { profile: unknown }).profile
 
 describe('parseProfileView', () => {
   it('devuelve el perfil cuando la respuesta cumple el contrato', () => {
@@ -32,17 +44,52 @@ describe('parseProfileView', () => {
 
   it('acepta el caso sin membresia, que no es un error', () => {
     const view = parseProfileView({
-      profile: (buildView() as { profile: unknown }).profile,
-      membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null }
+      profile: validProfile(),
+      membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null },
+      upcomingReservations: []
     })
 
     expect(view?.membership.displayStatus).toBe('sin-membresia')
   })
 
+  it('acepta la membresia pendiente de pago con su monto al llegar', () => {
+    const view = parseProfileView({
+      profile: validProfile(),
+      membership: {
+        id: 1,
+        displayStatus: 'pendiente-de-pago',
+        startsAt: '2026-09-30',
+        nextPayment: null,
+        amountDueOnArrival: 9000
+      },
+      upcomingReservations: []
+    })
+
+    expect(view?.membership.displayStatus).toBe('pendiente-de-pago')
+    expect(view?.membership.amountDueOnArrival).toBe(9000)
+  })
+
+  it('entrega las reservas por venir tal como llegan', () => {
+    const view = parseProfileView(buildView())
+
+    expect(view?.upcomingReservations).toHaveLength(1)
+    expect(view?.upcomingReservations[0]?.reservationType).toBe('evaluation')
+  })
+
   it('descarta un estado que el portal no sabe pintar en vez de adivinar', () => {
     const view = parseProfileView({
-      profile: (buildView() as { profile: unknown }).profile,
-      membership: { displayStatus: 'en-tramite' }
+      profile: validProfile(),
+      membership: { displayStatus: 'en-tramite' },
+      upcomingReservations: []
+    })
+
+    expect(view).toBeNull()
+  })
+
+  it('descarta una respuesta sin la lista de reservas en vez de decir que no hay', () => {
+    const view = parseProfileView({
+      profile: validProfile(),
+      membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null }
     })
 
     expect(view).toBeNull()
@@ -65,5 +112,25 @@ describe('needsAction', () => {
   it('no pide nada cuando la membresia esta al corriente', () => {
     expect(needsAction('activa')).toBe(false)
     expect(needsAction('sin-membresia')).toBe(false)
+  })
+
+  it('no alarma a quien solo tiene pendiente su primer pago', () => {
+    expect(needsAction('pendiente-de-pago')).toBe(false)
+  })
+})
+
+describe('formatDayMonth', () => {
+  it('escribe el dia y el mes sin correr la fecha al dia anterior', () => {
+    expect(formatDayMonth('2026-09-30')).toBe('30 de septiembre')
+  })
+
+  it('sin fecha pinta un guion y no una cadena vacia', () => {
+    expect(formatDayMonth(null)).toBe('—')
+  })
+})
+
+describe('formatAmount', () => {
+  it('escribe el importe en pesos con centavos', () => {
+    expect(formatAmount(9000)).toBe('$9,000.00')
   })
 })

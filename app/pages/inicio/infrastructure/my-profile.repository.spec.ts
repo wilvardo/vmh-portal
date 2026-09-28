@@ -12,7 +12,8 @@ const view = {
     email: 'ana@correo.mx',
     phone: '5512000010'
   },
-  membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null }
+  membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null },
+  upcomingReservations: []
 }
 
 describe('repositorio del perfil propio', () => {
@@ -34,6 +35,34 @@ describe('repositorio del perfil propio', () => {
 
     expect(apiFetch).toHaveBeenCalledWith(MY_PROFILE_ENDPOINT)
     expect(result.profile.email).toBe('ana@correo.mx')
+  })
+
+  it('descarta los campos de la reserva que el portal no declara', async () => {
+    apiFetch.mockResolvedValue({
+      data: {
+        ...view,
+        upcomingReservations: [
+          {
+            id: 7,
+            reservationType: 'evaluation',
+            startsAt: '2026-09-30T18:00:00.000Z',
+            serviceName: null,
+            createdVia: 'website'
+          }
+        ]
+      }
+    })
+
+    const result = await fetchMyProfile({ apiFetch })
+
+    expect(result.upcomingReservations).toEqual([
+      {
+        id: 7,
+        reservationType: 'evaluation',
+        startsAt: '2026-09-30T18:00:00.000Z',
+        serviceName: null
+      }
+    ])
   })
 
   it('rechaza una respuesta que no cumple el contrato en vez de pintarla', async () => {

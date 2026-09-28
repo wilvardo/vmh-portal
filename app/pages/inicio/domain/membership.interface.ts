@@ -1,13 +1,16 @@
+import type { MyUpcomingReservation } from './upcoming-reservation.interface'
+
 /**
  * Estado de la membresia tal como lo manda el API.
  *
- * Son seis y no cuatro: a los estados que la base guarda se suman "por vencer"
- * y "sin membresia", que el API deriva al leer. El portal no los recalcula ni
- * los interpreta, solo decide como se ven.
+ * Son siete y no cuatro: a los estados que la base guarda se suman "por
+ * vencer", "pendiente de pago" y "sin membresia", que el API deriva al leer.
+ * El portal no los recalcula ni los interpreta, solo decide como se ven.
  */
 export type MembershipDisplayStatus =
   | 'activa'
   | 'por-vencer'
+  | 'pendiente-de-pago'
   | 'suspendida'
   | 'morosa'
   | 'vencida'
@@ -32,6 +35,8 @@ export interface MyMembership {
   startsAt: string | null
   endsAt: string | null
   nextPayment: NextPayment | null
+  /** Lo que se paga al llegar; solo en "pendiente de pago", nulo en el resto. */
+  amountDueOnArrival: number | null
 }
 
 /** Datos de contacto del atleta. */
@@ -47,4 +52,6 @@ export interface MyProfile {
 export interface MyProfileView {
   profile: MyProfile
   membership: MyMembership
+  /** Reservas activas por venir, de la mas proxima a la mas lejana. */
+  upcomingReservations: MyUpcomingReservation[]
 }

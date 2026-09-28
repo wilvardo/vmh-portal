@@ -41,15 +41,23 @@
   }
 
   &__fact {
-    dt {
-      font-size: var(--fs-caption);
-      color: var(--color-fg-muted);
-    }
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
 
-    dd {
-      font-size: var(--fs-body);
-      color: var(--color-fg);
-    }
+  &__fact-label {
+    font-size: var(--fs-caption);
+    color: var(--color-fg-muted);
+  }
+
+  // El navegador le da a `dd` una sangria propia (`margin-inline-start`) que
+  // el reset del sistema no quita: sin anularla, el valor queda corrido a la
+  // derecha de su etiqueta.
+  &__fact-value {
+    margin: 0;
+    font-size: var(--fs-body);
+    color: var(--color-fg);
   }
 
   &__call {

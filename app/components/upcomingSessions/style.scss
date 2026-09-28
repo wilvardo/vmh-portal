@@ -1,0 +1,64 @@
+/** Lista corta de lo que viene: se lee de un vistazo en el telefono. */
+.upcoming-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+
+  &__title {
+    font-size: var(--fs-body-lg);
+    color: var(--color-fg);
+  }
+
+  &__empty {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  &__name {
+    overflow: hidden;
+    font-size: var(--fs-body);
+    color: var(--color-fg);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__when {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-muted);
+  }
+
+  &__day::first-letter {
+    text-transform: uppercase;
+  }
+
+  &__time {
+    font-variant-numeric: tabular-nums;
+  }
+}

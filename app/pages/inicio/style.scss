@@ -23,25 +23,6 @@
     color: var(--color-fg-muted);
   }
 
-  &__block {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-5);
-    background: var(--color-surface-sunken);
-    border-radius: var(--radius-lg);
-  }
-
-  &__block-title {
-    font-size: var(--fs-body-lg);
-    color: var(--color-fg);
-  }
-
-  &__block-empty {
-    font-size: var(--fs-body-sm);
-    color: var(--color-fg-muted);
-  }
-
   &__edit {
     align-self: flex-start;
   }

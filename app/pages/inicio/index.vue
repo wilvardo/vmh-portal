@@ -19,12 +19,7 @@
 
     <!-- Un tablero vacio y un tablero que fallo se ven igual, y quien ve el
          primero cree que perdio su membresia: el error se dice. -->
-    <Message
-      v-else-if="tablero.errorTitle.value"
-      severity="error"
-      :closable="false"
-      role="alert"
-    >
+    <Message v-else-if="tablero.errorTitle.value" severity="error" :closable="false" role="alert">
       <span>{{ tablero.errorTitle.value }}</span>
       <Button text size="small" :label="$t('home_retry')" @click="tablero.refresh()" />
     </Message>
@@ -32,12 +27,7 @@
     <template v-else-if="tablero.view.value">
       <membershipCard :membership="tablero.view.value.membership" :site-url="siteUrl" />
 
-      <section class="home__block">
-        <h2 class="home__block-title">{{ $t('home_sessions_title') }}</h2>
-        <!-- Hueco declarado del siguiente tramo: la agenda del atleta. Se deja
-             visible y explicado en vez de fingir que no existe. -->
-        <p class="home__block-empty">{{ $t('home_sessions_empty') }}</p>
-      </section>
+      <upcomingSessions :reservations="tablero.view.value.upcomingReservations" />
 
       <Button
         class="home__edit"
@@ -48,7 +38,11 @@
       />
     </template>
 
-    <Drawer v-model:visible="editor.isOpen.value" position="bottom" :header="$t('profile_editor_title')">
+    <Drawer
+      v-model:visible="editor.isOpen.value"
+      position="bottom"
+      :header="$t('profile_editor_title')"
+    >
       <form class="home__form" novalidate @submit.prevent="editor.submit()">
         <Message v-if="editor.errorTitle.value" severity="error" :closable="false" role="alert">
           {{ editor.errorTitle.value }}

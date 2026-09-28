@@ -1,0 +1,70 @@
+import { describe, expect, it } from 'vitest'
+import {
+  formatSessionDay,
+  formatSessionTime,
+  parseUpcomingReservations
+} from './upcoming-reservation.helpers'
+
+/** Evaluacion del miercoles 30 de septiembre a las 12:00 del estudio (18:00 UTC). */
+const evaluation = {
+  id: 1,
+  reservationType: 'evaluation',
+  startsAt: '2026-09-30T18:00:00.000Z',
+  serviceName: null
+}
+
+describe('parseUpcomingReservations', () => {
+  it('acepta una lista vacia, que no es un error', () => {
+    expect(parseUpcomingReservations([])).toEqual([])
+  })
+
+  it('conserva el orden y descarta los campos que el portal no declara', () => {
+    const training = {
+      id: 2,
+      reservationType: 'training',
+      startsAt: '2026-10-02T13:00:00.000Z',
+      serviceName: 'Fuerza',
+      localStartsAt: '2026-10-02T07:00'
+    }
+
+    const result = parseUpcomingReservations([evaluation, training])
+
+    expect(result).toEqual([
+      evaluation,
+      {
+        id: 2,
+        reservationType: 'training',
+        startsAt: '2026-10-02T13:00:00.000Z',
+        serviceName: 'Fuerza'
+      }
+    ])
+  })
+
+  it('descarta la lista entera si una reserva no cumple el contrato', () => {
+    expect(parseUpcomingReservations([evaluation, { ...evaluation, id: 'dos' }])).toBeNull()
+    expect(parseUpcomingReservations([{ ...evaluation, reservationType: 'clase' }])).toBeNull()
+    expect(parseUpcomingReservations([{ ...evaluation, startsAt: 'manana' }])).toBeNull()
+  })
+
+  it('descarta lo que no es una lista', () => {
+    expect(parseUpcomingReservations(undefined)).toBeNull()
+    expect(parseUpcomingReservations(null)).toBeNull()
+    expect(parseUpcomingReservations({})).toBeNull()
+  })
+})
+
+describe('formato de la sesion en la zona del estudio', () => {
+  it('escribe el dia de la semana y la fecha del estudio', () => {
+    expect(formatSessionDay(evaluation.startsAt)).toBe('miércoles, 30 de septiembre')
+  })
+
+  it('escribe la hora del reloj del estudio, no la del telefono', () => {
+    expect(formatSessionTime(evaluation.startsAt)).toBe('12:00')
+  })
+
+  it('una sesion de noche en el estudio no se pasa al dia siguiente', () => {
+    // 21:00 del estudio son las 03:00 UTC del dia siguiente.
+    expect(formatSessionDay('2026-10-01T03:00:00.000Z')).toBe('miércoles, 30 de septiembre')
+    expect(formatSessionTime('2026-10-01T03:00:00.000Z')).toBe('21:00')
+  })
+})

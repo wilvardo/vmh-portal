@@ -18,15 +18,30 @@
       <h2 class="membership-card__plan">{{ membership.serviceName }}</h2>
       <p class="membership-card__detail">{{ membership.planName }}</p>
 
-      <dl class="membership-card__facts">
+      <!-- Pendiente de pago: el contrato todavia no corre. Lo que la persona
+           necesita saber es cuando empieza y cuanto paga al llegar, no hasta
+           cuando "sigue vigente" algo que aun no arranca. -->
+      <dl v-if="isPendingPayment" class="membership-card__facts">
         <div class="membership-card__fact">
-          <dt>{{ $t('membership_valid_until') }}</dt>
-          <dd>{{ formattedEndsAt }}</dd>
+          <dt class="membership-card__fact-label">{{ $t('membership_starts_on') }}</dt>
+          <dd class="membership-card__fact-value">{{ formattedStartsAt }}</dd>
+        </div>
+
+        <div v-if="formattedAmountDue" class="membership-card__fact">
+          <dt class="membership-card__fact-label">{{ $t('membership_pay_on_arrival') }}</dt>
+          <dd class="membership-card__fact-value">{{ formattedAmountDue }}</dd>
+        </div>
+      </dl>
+
+      <dl v-else class="membership-card__facts">
+        <div class="membership-card__fact">
+          <dt class="membership-card__fact-label">{{ $t('membership_valid_until') }}</dt>
+          <dd class="membership-card__fact-value">{{ formattedEndsAt }}</dd>
         </div>
 
         <div v-if="membership.nextPayment" class="membership-card__fact">
-          <dt>{{ $t('membership_next_payment') }}</dt>
-          <dd>{{ formattedNextPayment }}</dd>
+          <dt class="membership-card__fact-label">{{ $t('membership_next_payment') }}</dt>
+          <dd class="membership-card__fact-value">{{ formattedNextPayment }}</dd>
         </div>
       </dl>
 

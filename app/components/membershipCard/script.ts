@@ -1,13 +1,13 @@
 import type { PropType } from 'vue'
 import { MEMBERSHIP_SEVERITY } from '~/pages/inicio/domain/membership.const'
-import { needsAction } from '~/pages/inicio/domain/membership.helpers'
+import { formatAmount, formatDayMonth, needsAction } from '~/pages/inicio/domain/membership.helpers'
 import type { MyMembership } from '~/pages/inicio/domain/membership.interface'
 
 /**
  * Tarjeta de la membresia del atleta.
  *
  * Es de presentacion pura: recibe la membresia ya resuelta por el API y decide
- * como se ve, nunca que significa. Los seis estados vienen del servidor; la
+ * como se ve, nunca que significa. Los siete estados vienen del servidor; la
  * tarjeta no deriva ninguno.
  */
 export default defineComponent({
@@ -44,16 +44,23 @@ export default defineComponent({
 
     const formattedEndsAt = computed<string>(() => formatDate(props.membership.endsAt))
 
+    const isPendingPayment = computed<boolean>(
+      () => props.membership.displayStatus === 'pendiente-de-pago'
+    )
+
+    const formattedStartsAt = computed<string>(() => formatDayMonth(props.membership.startsAt))
+
+    /** Sin monto del servidor no se pinta la fila: el portal no lo inventa. */
+    const formattedAmountDue = computed<string>(() => {
+      const amount = props.membership.amountDueOnArrival
+      return amount === null || amount === undefined ? '' : formatAmount(amount)
+    })
+
     const formattedNextPayment = computed<string>(() => {
       const next = props.membership.nextPayment
       if (next === null) return '—'
 
-      const amount = next.amount.toLocaleString('es-MX', {
-        style: 'currency',
-        currency: 'MXN'
-      })
-
-      return `${amount} · ${formatDate(next.dueDate)}`
+      return `${formatAmount(next.amount)} · ${formatDate(next.dueDate)}`
     })
 
     const actionMessage = computed<string>(() =>
@@ -62,6 +69,14 @@ export default defineComponent({
         : ''
     )
 
-    return { severity, formattedEndsAt, formattedNextPayment, actionMessage }
+    return {
+      severity,
+      isPendingPayment,
+      formattedEndsAt,
+      formattedStartsAt,
+      formattedAmountDue,
+      formattedNextPayment,
+      actionMessage
+    }
   }
 })
