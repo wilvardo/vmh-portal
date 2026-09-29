@@ -1,0 +1,7 @@
+{
+  "evaluation_notice_schedule_title": "Agenda tu evaluación inicial",
+  "evaluation_notice_schedule_detail": "Es el primer paso para entrenar: el entrenador te conoce y mide tu punto de partida.",
+  "evaluation_notice_schedule_action": "Ver horarios de evaluación",
+  "evaluation_notice_booked_title": "Tu evaluación es el {day} a las {time}",
+  "evaluation_notice_booked_detail": "Si necesitas cambiarla, cancélala y elige otro horario."
+}

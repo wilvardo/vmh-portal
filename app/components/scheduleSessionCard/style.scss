@@ -1,0 +1,66 @@
+// Tarjeta de una sesion. Tactil primero: la accion ocupa el ancho en el
+// telefono y ningun dato obliga a desplazarse de lado a 360 px.
+.schedule-session-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  // Con reserva: acento de marca en el borde, lo primero que se busca.
+  &[data-state='mine'] {
+    border-color: var(--color-primary-600);
+  }
+
+  // Llena, no disponible o pasada: se lee, pero ya no invita.
+  &[data-state='full'],
+  &[data-state='unavailable'],
+  &[data-state='past'] {
+    background: var(--color-surface-sunken);
+  }
+
+  &__header {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__time {
+    font-family: var(--font-display);
+    font-size: var(--fs-body-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-block-start: var(--space-1);
+  }
+
+  &__note {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+}

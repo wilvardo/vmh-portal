@@ -32,7 +32,19 @@ export const API_ERROR_CODE = {
    * por si el API la reutiliza, y no cuesta nada tenerla.
    */
   PHONE_TAKEN: 'VMH.AUTH.PHONE_TAKEN',
-  PROFILE_PHONE_TAKEN: 'VMH.USR.PHONE_TAKEN'
+  PROFILE_PHONE_TAKEN: 'VMH.USR.PHONE_TAKEN',
+
+  /**
+   * Rechazos de reservar y cancelar desde el portal (VMH-28). El portal decide
+   * con ellos la SALIDA -refrescar la semana, llevar a agendar la evaluacion-;
+   * el texto que ve la persona es siempre el `title` y el `detail` del API.
+   */
+  SLOT_FULL: 'VMH.RSV.SLOT_FULL',
+  ALREADY_RESERVED: 'VMH.RSV.ALREADY_RESERVED',
+  EVALUATION_REQUIRED: 'VMH.RSV.EVALUATION_REQUIRED',
+  EVALUATION_ALREADY_BOOKED: 'VMH.RSV.EVALUATION_ALREADY_BOOKED',
+  ALREADY_CANCELLED: 'VMH.RSV.ALREADY_CANCELLED',
+  RESERVATION_NOT_FOUND: 'VMH.RSV.NOT_FOUND'
 } as const
 
 /** Codigo de error del API con tratamiento propio en el portal. */

@@ -10,7 +10,8 @@ const evaluation: MyUpcomingReservation = {
   id: 1,
   reservationType: 'evaluation',
   startsAt: '2026-09-30T18:00:00.000Z',
-  serviceName: null
+  serviceName: null,
+  isCancellable: true
 }
 
 describe('upcomingSessions', () => {
@@ -39,7 +40,8 @@ describe('upcomingSessions', () => {
             id: 2,
             reservationType: 'training',
             startsAt: '2026-10-02T13:00:00.000Z',
-            serviceName: 'Fuerza'
+            serviceName: 'Fuerza',
+            isCancellable: true
           }
         ]
       }
@@ -54,5 +56,29 @@ describe('upcomingSessions', () => {
 
     expect(wrapper.text()).toContain('No tienes sesiones reservadas por ahora.')
     expect(wrapper.findAll('.upcoming-sessions__item')).toHaveLength(0)
+  })
+
+  it('en el vacio lleva a horarios', async () => {
+    const wrapper = await mountSuspended(upcomingSessions, { props: { reservations: [] } })
+
+    expect(wrapper.find('.upcoming-sessions__empty-action').attributes('href')).toBe('/horarios')
+  })
+
+  it('ofrece cancelar solo si el API dice que se puede, y avisa al tablero con el renglon', async () => {
+    const wrapper = await mountSuspended(upcomingSessions, {
+      props: {
+        reservations: [evaluation, { ...evaluation, id: 9, isCancellable: false }]
+      }
+    })
+
+    const buttons = wrapper.findAll('.upcoming-sessions__cancel')
+    expect(buttons).toHaveLength(1)
+    expect(wrapper.text()).toContain('Para cancelarla, contacta a recepción.')
+
+    await buttons[0]?.trigger('click')
+
+    const emitted = wrapper.emitted('cancel')
+    expect(emitted).toHaveLength(1)
+    expect(emitted?.[0]?.[0]).toMatchObject({ id: 1, name: 'Evaluación inicial', time: '12:00' })
   })
 })

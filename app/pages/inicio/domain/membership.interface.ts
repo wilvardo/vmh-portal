@@ -52,6 +52,11 @@ export interface MyProfile {
 export interface MyProfileView {
   profile: MyProfile
   membership: MyMembership
+  /**
+   * Cuando se asento la evaluacion inicial, instante ISO 8601; `null` mientras
+   * no la haya hecho. Decide si el tablero pide agendarla.
+   */
+  initialEvaluationCompletedAt: string | null
   /** Reservas activas por venir, de la mas proxima a la mas lejana. */
   upcomingReservations: MyUpcomingReservation[]
 }

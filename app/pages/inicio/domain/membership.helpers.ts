@@ -14,6 +14,19 @@ const KNOWN_STATUSES: readonly string[] = [
 ]
 
 /**
+ * Lee un instante que el contrato admite nulo.
+ *
+ * @param value Valor que llego por la red.
+ * @returns El instante, `null` si llego nulo, o `undefined` si no cumple el
+ *   contrato (ausente o ilegible).
+ */
+const parseInstantOrNull = (value: unknown): string | null | undefined => {
+  if (value === null) return null
+  if (typeof value === 'string' && !Number.isNaN(Date.parse(value))) return value
+  return undefined
+}
+
+/**
  * Valida que un valor tenga la forma del perfil del contrato del API.
  *
  * Se usa sobre datos que vienen de la red, donde nada garantiza la forma. Un
@@ -31,6 +44,7 @@ export const parseProfileView = (value: unknown): MyProfileView | null => {
   const candidate = value as {
     profile?: unknown
     membership?: unknown
+    initialEvaluationCompletedAt?: unknown
     upcomingReservations?: unknown
   }
   const profile = candidate.profile as Record<string, unknown> | undefined
@@ -52,6 +66,9 @@ export const parseProfileView = (value: unknown): MyProfileView | null => {
   const upcomingReservations = parseUpcomingReservations(candidate.upcomingReservations)
   if (upcomingReservations === null) return null
 
+  const evaluatedAt = parseInstantOrNull(candidate.initialEvaluationCompletedAt)
+  if (evaluatedAt === undefined) return null
+
   return {
     profile: {
       id: profile.id as number,
@@ -63,6 +80,7 @@ export const parseProfileView = (value: unknown): MyProfileView | null => {
     // El API ya valida la forma del contrato; aqui solo se verifico el estado,
     // que es lo unico que decide como se pinta la tarjeta.
     membership: membership as unknown as MyMembership,
+    initialEvaluationCompletedAt: evaluatedAt,
     upcomingReservations
   }
 }

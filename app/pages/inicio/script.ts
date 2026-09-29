@@ -1,15 +1,15 @@
-import { LOGIN_PATH } from '~/resources/scripts/domain/session.const'
 import { fetchMyProfile, updateMyProfile } from './infrastructure/my-profile.repository'
 import { useMyProfile } from './application/use-my-profile'
 import { useProfileEditor } from './application/use-profile-editor'
-import { useSignOut } from './application/use-sign-out'
+import { useCancelPrompt } from './application/use-cancel-prompt'
 import inicioEs from './domain/locales/inicio.es.json'
 
 /**
  * Tablero del atleta. Primera pantalla tras entrar.
  *
  * Es el orquestador del slice: resuelve los textos, cablea las peticiones al
- * cliente HTTP firmado y le entrega todo a los dos casos de uso.
+ * cliente HTTP firmado y le entrega todo a los casos de uso. La salida vive en
+ * el encabezado del portal.
  */
 export default defineComponent({
   name: 'homePage',
@@ -19,7 +19,7 @@ export default defineComponent({
 
     const config = useRuntimeConfig()
     const apiFetch = useApi()
-    const { user, closeSession } = useSession()
+    const { user } = useSession()
 
     const tablero = useMyProfile({
       load: () => fetchMyProfile({ apiFetch }),
@@ -37,7 +37,9 @@ export default defineComponent({
     })
 
     const greeting = computed<string>(() =>
-      i18n.t('home_greeting', { name: tablero.view.value?.profile.firstName ?? user.value?.firstName ?? '' })
+      i18n.t('home_greeting', {
+        name: tablero.view.value?.profile.firstName ?? user.value?.firstName ?? ''
+      })
     )
 
     const openEditor = (): void => {
@@ -45,14 +47,9 @@ export default defineComponent({
       if (profile !== undefined) editor.open(profile)
     }
 
-    // Salir revoca la renovacion en el API; borrar solo la copia local la
-    // dejaba viva en el servidor.
-    const { signOut } = useSignOut({
-      closeSession,
-      goToLogin: async (): Promise<void> => {
-        await navigateTo(LOGIN_PATH)
-      }
-    })
+    // Cancelar se confirma en el dialogo compartido con Horarios; el tablero
+    // solo elige cual y se relee al terminar.
+    const cancelDialog = useCancelPrompt()
 
     onMounted(() => {
       void tablero.refresh()
@@ -63,7 +60,8 @@ export default defineComponent({
       editor,
       greeting,
       openEditor,
-      signOut,
+      cancelDialog,
+      askCancel: cancelDialog.ask,
       siteUrl: (config.public.SITE_BASE_URL as string | undefined) ?? ''
     }
   }

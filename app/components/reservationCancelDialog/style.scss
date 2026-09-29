@@ -1,0 +1,36 @@
+// Confirmacion de cancelar: que se cancela, cuando, y que el lugar se va.
+.reservation-cancel-dialog {
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  &__question {
+    margin: 0;
+    color: var(--color-fg);
+  }
+
+  &__session {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+  }
+
+  &__label {
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__when {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__warning {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+}

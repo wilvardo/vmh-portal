@@ -13,4 +13,9 @@ export interface MyUpcomingReservation {
   startsAt: string
   /** Servicio de la sesion; nulo en la evaluacion y en la parrilla general. */
   serviceName: string | null
+  /**
+   * Si todavia se cancela desde el portal. Lo decide el API (ventana de
+   * cancelacion); el portal solo muestra o esconde la accion.
+   */
+  isCancellable: boolean
 }

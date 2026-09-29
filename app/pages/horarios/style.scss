@@ -1,0 +1,161 @@
+// Semana del atleta. Una columna a cualquier ancho: se abre desde el telefono,
+// de pie, y a 360 px nada obliga a desplazarse de lado.
+.schedule {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  &__heading {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__heading-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    color: var(--color-fg);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__week-nav {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  // Se parte en dos lineas antes que cortarse: es lo que dice que semana se ve.
+  &__range {
+    flex: 1;
+    min-inline-size: 0;
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+    text-align: center;
+  }
+
+  // Objetivo tactil de 44 px en los pasos de semana.
+  &__week-step {
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
+  }
+
+  &__week-icon {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-8) var(--space-4);
+    text-align: center;
+  }
+
+  &__empty-icon {
+    inline-size: 2rem;
+    block-size: 2rem;
+    color: var(--color-fg-secondary);
+  }
+
+  &__empty-title {
+    margin: 0;
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__empty-detail {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__evaluation {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-info-bg);
+    border: 1px solid var(--color-info-border);
+    border-radius: var(--radius-lg);
+  }
+
+  &__section-title {
+    margin: 0;
+    font-size: var(--fs-body-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__section-detail {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__day {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  &__day-title {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    margin: 0;
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__day-empty {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  &__dialog-label {
+    margin: 0;
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__dialog-when {
+    margin: 0;
+    color: var(--color-fg);
+  }
+
+  &__dialog-note {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+}

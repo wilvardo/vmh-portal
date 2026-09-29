@@ -18,18 +18,20 @@ const parseReservation = (value: unknown): MyUpcomingReservation | null => {
   if (typeof value !== 'object' || value === null) return null
 
   const candidate = value as Record<string, unknown>
-  const { id, reservationType, startsAt, serviceName } = candidate
+  const { id, reservationType, startsAt, serviceName, isCancellable } = candidate
 
   if (typeof id !== 'number') return null
   if (typeof reservationType !== 'string' || !KNOWN_TYPES.includes(reservationType)) return null
   if (typeof startsAt !== 'string' || Number.isNaN(Date.parse(startsAt))) return null
   if (serviceName !== null && typeof serviceName !== 'string') return null
+  if (typeof isCancellable !== 'boolean') return null
 
   return {
     id,
     reservationType: reservationType as MyUpcomingReservation['reservationType'],
     startsAt,
-    serviceName
+    serviceName,
+    isCancellable
   }
 }
 

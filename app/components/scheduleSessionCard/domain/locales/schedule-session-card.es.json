@@ -1,0 +1,14 @@
+{
+  "session_card_training": "Entrenamiento",
+  "session_card_evaluation": "Evaluación inicial",
+  "session_card_duration": "{minutes} min",
+  "session_card_spots": "Quedan {remaining} de {capacity} lugares",
+  "session_card_state_full": "Llena",
+  "session_card_state_unavailable": "No disponible",
+  "session_card_state_past": "Pasada",
+  "session_card_state_mine": "Tienes reserva",
+  "session_card_book": "Reservar",
+  "session_card_book_evaluation": "Reservar evaluación",
+  "session_card_cancel": "Cancelar",
+  "session_card_cancel_closed": "Inicia pronto: para cancelarla, contacta a recepción."
+}

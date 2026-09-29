@@ -13,14 +13,14 @@ interface UseSignOutReturn {
 }
 
 /**
- * Caso de uso de "Salir" del tablero.
+ * Caso de uso de "Salir" del encabezado del portal.
  *
  * Salir cierra la sesion en el servidor, no solo en el navegador: borrar el par
  * local dejaba viva la renovacion en el API, y quien la hubiera copiado podia
  * seguir entrando. Por eso recibe `closeSession` y no `endSession`.
  *
  * Se navega aunque el API no confirme la revocacion: `closeSession` ya borro la
- * sesion local y absorbe el fallo, y dejar a la persona en el tablero seria
+ * sesion local y absorbe el fallo, y dejar a la persona dentro del portal seria
  * dejarla atrapada.
  *
  * @param params Cierre de sesion y navegacion, inyectados.

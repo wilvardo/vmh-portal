@@ -1,0 +1,12 @@
+{
+  "reservation_cancel_title": "Cancelar reserva",
+  "reservation_cancel_question": "¿Cancelas tu lugar en esta sesión?",
+  "reservation_cancel_warning": "Tu lugar se libera en este momento y alguien más puede tomarlo.",
+  "reservation_cancel_keep": "Conservar",
+  "reservation_cancel_confirm": "Cancelar reserva",
+  "reservation_cancel_pending": "Cancelando…",
+  "reservation_cancel_success": "Reserva cancelada",
+  "reservation_cancel_success_detail": "Tu lugar quedó libre.",
+  "reservation_cancel_error_title": "No se pudo cancelar",
+  "reservation_cancel_error_detail": "Revisa tu conexión y vuelve a intentarlo."
+}

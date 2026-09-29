@@ -1,0 +1,97 @@
+// Encabezado del portal. Movil primero: arriba quien esta dentro y la salida,
+// abajo los dos destinos como pestanas a todo lo ancho, faciles de tocar con el
+// pulgar. Desde `md` todo cabe en una linea.
+.portal-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-header);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border);
+
+  @media (--bp-md) {
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--space-5);
+  }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-inline-size: 0;
+    padding: var(--space-2) var(--space-4);
+
+    @media (--bp-md) {
+      padding-inline: 0;
+    }
+  }
+
+  &__account {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-inline-size: 0;
+  }
+
+  &__initials {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    color: var(--color-surface);
+    background: var(--color-primary);
+    border-radius: var(--radius-pill);
+  }
+
+  &__name {
+    overflow: hidden;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__sign-out {
+    flex-shrink: 0;
+
+    svg {
+      inline-size: var(--icon-sm);
+      block-size: var(--icon-sm);
+    }
+  }
+
+  &__nav {
+    display: flex;
+  }
+
+  &__link {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--touch-target);
+    padding-inline: var(--space-4);
+    font-size: var(--fs-body-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg-secondary);
+    text-decoration: none;
+    border-block-end: 2px solid transparent;
+
+    @media (--bp-md) {
+      flex: 0 0 auto;
+    }
+
+    &--active {
+      color: var(--color-primary);
+      border-block-end-color: var(--color-primary);
+    }
+  }
+}

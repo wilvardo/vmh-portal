@@ -1,5 +1,7 @@
 <template>
   <div class="portal-shell">
+    <portalHeader />
+
     <main class="portal-shell__content">
       <slot />
     </main>
@@ -9,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-// Forma de las pantallas con sesion del portal. Movil primero: una sola columna
-// centrada, sin barra lateral. El encabezado con la identidad y la salida llega
-// con el caso de uso de sesion.
+// Forma de las pantallas con sesion del portal. Movil primero: el encabezado
+// con quien esta dentro, la navegacion y la salida, y debajo una sola columna
+// centrada, sin barra lateral.
 </script>
 
 <style lang="scss" scoped>

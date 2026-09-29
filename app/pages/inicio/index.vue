@@ -1,18 +1,8 @@
 <template>
   <section class="home">
     <header class="home__heading">
-      <div>
-        <h1 class="home__title">{{ greeting }}</h1>
-        <p class="home__subtitle">{{ $t('home_subtitle') }}</p>
-      </div>
-
-      <Button
-        class="home__sign-out"
-        severity="secondary"
-        text
-        :label="$t('home_sign_out')"
-        @click="signOut"
-      />
+      <h1 class="home__title">{{ greeting }}</h1>
+      <p class="home__subtitle">{{ $t('home_subtitle') }}</p>
     </header>
 
     <ProgressSpinner v-if="tablero.isLoading.value && !tablero.view.value" />
@@ -25,9 +15,17 @@
     </Message>
 
     <template v-else-if="tablero.view.value">
+      <evaluationNotice
+        :evaluation-completed-at="tablero.view.value.initialEvaluationCompletedAt"
+        :reservations="tablero.view.value.upcomingReservations"
+      />
+
       <membershipCard :membership="tablero.view.value.membership" :site-url="siteUrl" />
 
-      <upcomingSessions :reservations="tablero.view.value.upcomingReservations" />
+      <upcomingSessions
+        :reservations="tablero.view.value.upcomingReservations"
+        @cancel="askCancel"
+      />
 
       <Button
         class="home__edit"
@@ -37,6 +35,14 @@
         @click="openEditor"
       />
     </template>
+
+    <!-- Se monta siempre y se controla con v-model:visible: tras cancelar, o si
+         la reserva ya habia cambiado en otra pestana, el tablero se relee. -->
+    <reservationCancelDialog
+      v-model:visible="cancelDialog.isOpen.value"
+      :reservation="cancelDialog.reservation.value"
+      @settled="tablero.refresh()"
+    />
 
     <Drawer
       v-model:visible="editor.isOpen.value"

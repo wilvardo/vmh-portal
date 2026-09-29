@@ -10,7 +10,8 @@ const evaluation = {
   id: 1,
   reservationType: 'evaluation',
   startsAt: '2026-09-30T18:00:00.000Z',
-  serviceName: null
+  serviceName: null,
+  isCancellable: true
 }
 
 describe('parseUpcomingReservations', () => {
@@ -24,6 +25,7 @@ describe('parseUpcomingReservations', () => {
       reservationType: 'training',
       startsAt: '2026-10-02T13:00:00.000Z',
       serviceName: 'Fuerza',
+      isCancellable: false,
       localStartsAt: '2026-10-02T07:00'
     }
 
@@ -35,7 +37,8 @@ describe('parseUpcomingReservations', () => {
         id: 2,
         reservationType: 'training',
         startsAt: '2026-10-02T13:00:00.000Z',
-        serviceName: 'Fuerza'
+        serviceName: 'Fuerza',
+        isCancellable: false
       }
     ])
   })
@@ -44,6 +47,8 @@ describe('parseUpcomingReservations', () => {
     expect(parseUpcomingReservations([evaluation, { ...evaluation, id: 'dos' }])).toBeNull()
     expect(parseUpcomingReservations([{ ...evaluation, reservationType: 'clase' }])).toBeNull()
     expect(parseUpcomingReservations([{ ...evaluation, startsAt: 'manana' }])).toBeNull()
+    const { isCancellable: _omitted, ...withoutFlag } = evaluation
+    expect(parseUpcomingReservations([withoutFlag])).toBeNull()
   })
 
   it('descarta lo que no es una lista', () => {

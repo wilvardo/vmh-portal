@@ -13,6 +13,7 @@ const view = {
     phone: '5512000010'
   },
   membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null },
+  initialEvaluationCompletedAt: null,
   upcomingReservations: []
 }
 
@@ -47,6 +48,7 @@ describe('repositorio del perfil propio', () => {
             reservationType: 'evaluation',
             startsAt: '2026-09-30T18:00:00.000Z',
             serviceName: null,
+            isCancellable: true,
             createdVia: 'website'
           }
         ]
@@ -60,7 +62,8 @@ describe('repositorio del perfil propio', () => {
         id: 7,
         reservationType: 'evaluation',
         startsAt: '2026-09-30T18:00:00.000Z',
-        serviceName: null
+        serviceName: null,
+        isCancellable: true
       }
     ])
   })

@@ -26,15 +26,38 @@ const buildView = (): unknown => ({
       id: 1,
       reservationType: 'evaluation',
       startsAt: '2026-09-30T18:00:00.000Z',
-      serviceName: null
+      serviceName: null,
+      isCancellable: true
     }
-  ]
+  ],
+  initialEvaluationCompletedAt: null
 })
 
 /** Perfil valido, para armar respuestas con una membresia a la medida. */
 const validProfile = (): unknown => (buildView() as { profile: unknown }).profile
 
 describe('parseProfileView', () => {
+  it('lee la evaluacion inicial asentada', () => {
+    const view = parseProfileView({
+      ...(buildView() as object),
+      initialEvaluationCompletedAt: '2026-09-20T15:00:00.000Z'
+    })
+
+    expect(view?.initialEvaluationCompletedAt).toBe('2026-09-20T15:00:00.000Z')
+  })
+
+  it('trata como roto un perfil sin la marca de evaluacion o con una fecha ilegible', () => {
+    const { initialEvaluationCompletedAt: _omitted, ...withoutMark } = buildView() as Record<
+      string,
+      unknown
+    >
+
+    expect(parseProfileView(withoutMark)).toBeNull()
+    expect(
+      parseProfileView({ ...(buildView() as object), initialEvaluationCompletedAt: 'ayer' })
+    ).toBeNull()
+  })
+
   it('devuelve el perfil cuando la respuesta cumple el contrato', () => {
     const view = parseProfileView(buildView())
 
@@ -46,6 +69,7 @@ describe('parseProfileView', () => {
     const view = parseProfileView({
       profile: validProfile(),
       membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null },
+      initialEvaluationCompletedAt: null,
       upcomingReservations: []
     })
 
@@ -62,6 +86,7 @@ describe('parseProfileView', () => {
         nextPayment: null,
         amountDueOnArrival: 9000
       },
+      initialEvaluationCompletedAt: null,
       upcomingReservations: []
     })
 
@@ -80,6 +105,7 @@ describe('parseProfileView', () => {
     const view = parseProfileView({
       profile: validProfile(),
       membership: { displayStatus: 'en-tramite' },
+      initialEvaluationCompletedAt: null,
       upcomingReservations: []
     })
 

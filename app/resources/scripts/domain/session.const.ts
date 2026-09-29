@@ -44,6 +44,14 @@ export const SET_PASSWORD_PATH = '/establecer-contrasena'
 export const POST_LOGIN_REDIRECT_PATH = '/inicio'
 
 /**
+ * Semana de sesiones del atleta: ver horarios, reservar y cancelar.
+ *
+ * Privada: la cubre el guardia global como cualquier ruta que no este en
+ * `PUBLIC_PATHS`.
+ */
+export const SCHEDULE_PATH = '/horarios'
+
+/**
  * Rutas exactas que no requieren sesion.
  *
  * Son el acceso, el primer acceso y la recuperacion, y ninguna mas. El alta ya

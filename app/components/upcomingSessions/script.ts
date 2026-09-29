@@ -1,4 +1,5 @@
 import type { PropType } from 'vue'
+import { SCHEDULE_PATH } from '~/resources/scripts/domain/session.const'
 import {
   formatSessionDay,
   formatSessionTime
@@ -6,21 +7,31 @@ import {
 import type { MyUpcomingReservation } from '~/pages/inicio/domain/upcoming-reservation.interface'
 
 /** Renglon de la lista, ya escrito para pintarse. */
-interface SessionRow {
+export interface SessionRow {
+  /** Reserva. */
   id: number
+  /** Que es: "Evaluacion inicial" o el nombre del entrenamiento. */
   name: string
+  /** Dia en la zona del estudio. */
   day: string
+  /** Hora en la zona del estudio. */
   time: string
+  /** Si todavia se cancela desde el portal, segun el API. */
+  isCancellable: boolean
 }
 
 /**
  * Proximas sesiones del atleta en su tablero.
  *
- * Es de presentacion pura: recibe las reservas ya resueltas por el API, en el
- * orden en que llegan, y solo decide como se nombran. La evaluacion se llama
- * "Evaluacion inicial" porque es lo que la persona agendo en el sitio; un
- * entrenamiento lleva el nombre de su servicio cuando lo tiene. Dia y hora se
- * escriben en la zona del estudio, que es donde hay que presentarse.
+ * Es de presentacion: recibe las reservas ya resueltas por el API, en el orden
+ * en que llegan, y solo decide como se nombran. La evaluacion se llama
+ * "Evaluacion inicial" porque es lo que la persona agendo; un entrenamiento
+ * lleva el nombre de su servicio cuando lo tiene. Dia y hora se escriben en la
+ * zona del estudio, que es donde hay que presentarse.
+ *
+ * Cancelar no ocurre aqui: el componente avisa al tablero con el renglon y el
+ * tablero abre la confirmacion. Si el API dice que ya no se cancela desde el
+ * portal (ventana cerrada), en lugar del boton va la salida a recepcion.
  */
 export default defineComponent({
   name: 'upcomingSessions',
@@ -30,6 +41,10 @@ export default defineComponent({
       type: Array as PropType<MyUpcomingReservation[]>,
       required: true
     }
+  },
+  emits: {
+    /** Pide cancelar la reserva del renglon. */
+    cancel: (row: SessionRow): boolean => typeof row.id === 'number'
   },
   setup(props) {
     const i18n = useI18n()
@@ -44,10 +59,11 @@ export default defineComponent({
         id: reservation.id,
         name: nameOf(reservation),
         day: formatSessionDay(reservation.startsAt),
-        time: formatSessionTime(reservation.startsAt)
+        time: formatSessionTime(reservation.startsAt),
+        isCancellable: reservation.isCancellable
       }))
     )
 
-    return { items }
+    return { items, schedulePath: SCHEDULE_PATH }
   }
 })

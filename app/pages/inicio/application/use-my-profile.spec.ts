@@ -3,7 +3,13 @@ import { useMyProfile } from './use-my-profile'
 import type { MyProfileView } from '../domain/membership.interface'
 
 const view = {
-  profile: { id: 12, firstName: 'Ana', lastName: 'Lopez', email: 'ana@correo.mx', phone: '5512000010' },
+  profile: {
+    id: 12,
+    firstName: 'Ana',
+    lastName: 'Lopez',
+    email: 'ana@correo.mx',
+    phone: '5512000010'
+  },
   membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null }
 } as unknown as MyProfileView
 
