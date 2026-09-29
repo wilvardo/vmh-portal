@@ -1,0 +1,33 @@
+# Servidor de archivos de la SPA dentro de su propia imagen.
+#
+# No termina TLS ni conoce el dominio: eso es del proxy de `vmh-infra`, que le
+# pasa el trafico ya descifrado. Aqui solo se sirven los archivos generados.
+{
+	admin off
+	auto_https off
+}
+
+:8080 {
+	root * /srv
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	# Los archivos de `_nuxt/` llevan huella en el nombre: un despliegue nuevo
+	# cambia el nombre, asi que se pueden guardar para siempre. Todo lo demas se
+	# revalida, para que el navegador no se quede con un `index.html` viejo que
+	# apunta a archivos que ya no existen.
+	@hashed path /_nuxt/*
+	header @hashed Cache-Control "public, max-age=31536000, immutable"
+	@mutable not path /_nuxt/*
+	header @mutable Cache-Control "no-cache"
+
+	# Regreso de SPA: cualquier ruta que no sea un archivo la resuelve el router.
+	try_files {path} /index.html
+	file_server
+}

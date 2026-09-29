@@ -1,0 +1,29 @@
+# Contexto de la imagen: solo el codigo que se compila.
+# Los secretos NUNCA entran a una imagen; las URLs publicas llegan como build args.
+.env
+.env.*
+
+# Dependencias y salidas locales: la imagen instala y compila las suyas.
+node_modules
+.output
+.nuxt
+.nitro
+.data
+.cache
+dist
+coverage
+logs
+*.log
+
+# Control de versiones, editores, herramientas locales, prototipos y lo retirado
+.git
+.github
+.husky
+.claude
+.gsti-kg
+.fleet
+.idea
+.vscode
+.DS_Store
+prototipo
+**/__DELETED__*
