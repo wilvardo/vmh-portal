@@ -2,6 +2,7 @@ import { LOGIN_PATH } from '~/resources/scripts/domain/session.const'
 import { fetchMyProfile, updateMyProfile } from './infrastructure/my-profile.repository'
 import { useMyProfile } from './application/use-my-profile'
 import { useProfileEditor } from './application/use-profile-editor'
+import { useSignOut } from './application/use-sign-out'
 import inicioEs from './domain/locales/inicio.es.json'
 
 /**
@@ -18,7 +19,7 @@ export default defineComponent({
 
     const config = useRuntimeConfig()
     const apiFetch = useApi()
-    const { user, endSession } = useSession()
+    const { user, closeSession } = useSession()
 
     const tablero = useMyProfile({
       load: () => fetchMyProfile({ apiFetch }),
@@ -44,10 +45,14 @@ export default defineComponent({
       if (profile !== undefined) editor.open(profile)
     }
 
-    const signOut = async (): Promise<void> => {
-      await endSession()
-      await navigateTo(LOGIN_PATH)
-    }
+    // Salir revoca la renovacion en el API; borrar solo la copia local la
+    // dejaba viva en el servidor.
+    const { signOut } = useSignOut({
+      closeSession,
+      goToLogin: async (): Promise<void> => {
+        await navigateTo(LOGIN_PATH)
+      }
+    })
 
     onMounted(() => {
       void tablero.refresh()
