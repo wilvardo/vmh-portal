@@ -38,6 +38,25 @@ describe('repositorio de reservas del atleta', () => {
     expect(fetchMock).toHaveBeenCalledWith('/users/me/reservations/7/cancel', { method: 'PATCH' })
   })
 
+  it('manda el motivo recortado cuando la persona lo escribio', async () => {
+    fetchMock.mockResolvedValue({ data: { ...result, status: 'cancelled' } })
+
+    await cancelMyReservation({ apiFetch, reservationId: 7, reason: '  Viaje de trabajo  ' })
+
+    expect(fetchMock).toHaveBeenCalledWith('/users/me/reservations/7/cancel', {
+      method: 'PATCH',
+      body: { reason: 'Viaje de trabajo' }
+    })
+  })
+
+  it('un motivo en blanco no viaja', async () => {
+    fetchMock.mockResolvedValue({ data: { ...result, status: 'cancelled' } })
+
+    await cancelMyReservation({ apiFetch, reservationId: 7, reason: '   ' })
+
+    expect(fetchMock).toHaveBeenCalledWith('/users/me/reservations/7/cancel', { method: 'PATCH' })
+  })
+
   it('falla ruidoso si la respuesta no cumple el contrato', async () => {
     fetchMock.mockResolvedValue({ data: { ok: true } })
 

@@ -1,6 +1,7 @@
 import type { PropType } from 'vue'
 import { cancelMyReservation } from '~/resources/scripts/infrastructure/my-reservations.repository'
 import { useReservationCancel } from './application/use-reservation-cancel'
+import { CANCEL_REASON_MAX_LENGTH } from './domain/reservation-cancel-dialog.const'
 import type { CancellableReservation } from './domain/reservation-cancel-dialog.interface'
 import cancelEs from './domain/locales/reservation-cancel-dialog.es.json'
 
@@ -35,7 +36,7 @@ export default defineComponent({
     const apiFetch = useApi()
 
     const flow = useReservationCancel({
-      cancel: (reservationId) => cancelMyReservation({ apiFetch, reservationId }),
+      cancel: (reservationId, reason) => cancelMyReservation({ apiFetch, reservationId, reason }),
       notify: (notice) => toast.add({ ...notice, life: 5000 }),
       onSettled: () => emit('settled'),
       messages: {
@@ -46,14 +47,31 @@ export default defineComponent({
       }
     })
 
+    /** Motivo opcional que la persona quiera dejarle al estudio. */
+    const reason = ref('')
+
+    // Cada apertura empieza en blanco: el motivo de una reserva no arrastra a otra.
+    watch(
+      (): boolean => props.visible,
+      (isVisible) => {
+        if (isVisible) reason.value = ''
+      }
+    )
+
     const close = (): void => emit('update:visible', false)
 
     const confirm = async (): Promise<void> => {
       if (props.reservation === null) return
-      const shouldClose = await flow.confirm(props.reservation.reservationId)
+      const shouldClose = await flow.confirm(props.reservation.reservationId, reason.value)
       if (shouldClose) close()
     }
 
-    return { isCancelling: flow.isCancelling, close, confirm }
+    return {
+      isCancelling: flow.isCancelling,
+      reason,
+      reasonMaxLength: CANCEL_REASON_MAX_LENGTH,
+      close,
+      confirm
+    }
   }
 })

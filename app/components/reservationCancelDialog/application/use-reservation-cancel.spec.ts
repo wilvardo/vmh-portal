@@ -37,13 +37,22 @@ describe('useReservationCancel', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
   })
 
+  it('manda el motivo que escribio la persona', async () => {
+    const cancel = vi.fn().mockResolvedValue(cancelled)
+    const flow = useReservationCancel({ cancel, notify, onSettled, messages })
+
+    await flow.confirm(7, 'Viaje de trabajo')
+
+    expect(cancel).toHaveBeenCalledWith(7, 'Viaje de trabajo')
+  })
+
   it('cancela, avisa, refresca y cierra', async () => {
     const cancel = vi.fn().mockResolvedValue(cancelled)
     const flow = useReservationCancel({ cancel, notify, onSettled, messages })
 
     const shouldClose = await flow.confirm(7)
 
-    expect(cancel).toHaveBeenCalledWith(7)
+    expect(cancel).toHaveBeenCalledWith(7, '')
     expect(notify).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }))
     expect(onSettled).toHaveBeenCalledTimes(1)
     expect(shouldClose).toBe(true)

@@ -22,7 +22,7 @@ interface CancelMessages {
 
 interface UseReservationCancelParams {
   /** Peticion al API, ya cableada. */
-  cancel: (reservationId: number) => Promise<MyReservationResult>
+  cancel: (reservationId: number, reason: string) => Promise<MyReservationResult>
   /** Muestra un aviso. */
   notify: (notice: CancelNotice) => void
   /** Tras cancelar, o cuando el estado ya habia cambiado: refrescar. */
@@ -40,7 +40,7 @@ interface UseReservationCancelReturn {
    * Se cierra en exito y cuando el estado ya habia cambiado (no hay nada mas
    * que hacer ahi); se queda abierto en un rechazo que la persona debe leer.
    */
-  confirm: (reservationId: number) => Promise<boolean>
+  confirm: (reservationId: number, reason?: string) => Promise<boolean>
 }
 
 /**
@@ -59,13 +59,13 @@ export const useReservationCancel = (
 ): UseReservationCancelReturn => {
   const isCancelling = ref(false)
 
-  const confirm = async (reservationId: number): Promise<boolean> => {
+  const confirm = async (reservationId: number, reason = ''): Promise<boolean> => {
     if (isCancelling.value) return false
 
     isCancelling.value = true
 
     try {
-      await params.cancel(reservationId)
+      await params.cancel(reservationId, reason)
       params.notify({
         severity: 'success',
         summary: params.messages.successTitle,

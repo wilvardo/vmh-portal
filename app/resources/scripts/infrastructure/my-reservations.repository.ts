@@ -18,6 +18,8 @@ interface CancelParams {
   apiFetch: ApiFetch
   /** Reserva propia a cancelar. */
   reservationId: number
+  /** Motivo opcional; en blanco no viaja. */
+  reason?: string
 }
 
 /**
@@ -44,15 +46,19 @@ export const bookMySpot = async (params: BookParams): Promise<MyReservationResul
 /**
  * Cancela una reserva propia.
  *
- * @param params Cliente firmado y reserva.
+ * El motivo es opcional: si la persona escribio algo, viaja y queda guardado
+ * con la cancelacion; si no, no se manda cuerpo.
+ *
+ * @param params Cliente firmado, reserva y motivo opcional.
  * @returns La reserva ya cancelada.
  * @throws Con el contrato de error del API: ventana cerrada, ya cancelada o
  *   inexistente.
  */
 export const cancelMyReservation = async (params: CancelParams): Promise<MyReservationResult> => {
+  const reason = params.reason?.trim() ?? ''
   const response = await params.apiFetch<{ data: unknown }>(
     cancelReservationEndpoint(params.reservationId),
-    { method: 'PATCH' }
+    reason === '' ? { method: 'PATCH' } : { method: 'PATCH', body: { reason } }
   )
 
   const result = parseMyReservationResult(response?.data)
