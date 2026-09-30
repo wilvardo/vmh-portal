@@ -72,4 +72,75 @@ describe('useWeekSchedule', () => {
     expect(load).toHaveBeenLastCalledWith('2026-10-12')
     expect(week.schedule.value?.weekStart).toBe('2026-10-12')
   })
+
+  it('en vivo trae la semana que se ve sin esqueleto de carga', async () => {
+    const load = vi
+      .fn()
+      .mockResolvedValueOnce(weekOf('2026-10-12'))
+      .mockResolvedValueOnce({ ...weekOf('2026-10-12'), evaluationPending: true })
+    const week = useWeekSchedule({ load, loadErrorTitle: 'No se pudo cargar' })
+    await week.current()
+
+    const pending = week.sync()
+    expect(week.isLoading.value).toBe(false)
+    await pending
+
+    expect(load).toHaveBeenLastCalledWith('2026-10-12')
+    expect(week.schedule.value?.evaluationPending).toBe(true)
+  })
+
+  it('en vivo, si falla, se queda con la semana que ya estaba', async () => {
+    const load = vi
+      .fn()
+      .mockResolvedValueOnce(weekOf('2026-10-12'))
+      .mockRejectedValueOnce(new Error('red'))
+    const week = useWeekSchedule({ load, loadErrorTitle: 'No se pudo cargar' })
+    await week.current()
+
+    await week.sync()
+
+    expect(week.schedule.value?.weekStart).toBe('2026-10-12')
+    expect(week.errorTitle.value).toBe('')
+  })
+
+  it('en vivo descarta la respuesta si mientras tanto se cambio de semana', async () => {
+    let resolveLate: (value: WeekSchedule) => void = () => undefined
+    const load = vi
+      .fn()
+      .mockResolvedValueOnce(weekOf('2026-10-12'))
+      .mockImplementationOnce(() => new Promise<WeekSchedule>((resolve) => (resolveLate = resolve)))
+      .mockResolvedValueOnce(weekOf('2026-10-19'))
+    const week = useWeekSchedule({ load, loadErrorTitle: 'No se pudo cargar' })
+    await week.current()
+
+    const pending = week.sync()
+    await week.next()
+    resolveLate(weekOf('2026-10-12'))
+    await pending
+
+    expect(week.schedule.value?.weekStart).toBe('2026-10-19')
+  })
+
+  it('en vivo, con la pantalla en error, reintenta la carga normal', async () => {
+    const load = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('red'))
+      .mockResolvedValueOnce(weekOf('2026-10-12'))
+    const week = useWeekSchedule({ load, loadErrorTitle: 'No se pudo cargar' })
+    await week.current()
+
+    await week.sync()
+
+    expect(week.schedule.value?.weekStart).toBe('2026-10-12')
+    expect(week.errorTitle.value).toBe('')
+  })
+
+  it('en vivo no pide nada si la semana nunca se cargo', async () => {
+    const load = vi.fn()
+    const week = useWeekSchedule({ load, loadErrorTitle: 'No se pudo cargar' })
+
+    await week.sync()
+
+    expect(load).not.toHaveBeenCalled()
+  })
 })

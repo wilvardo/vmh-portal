@@ -17,6 +17,8 @@ interface UseMyProfileReturn {
   errorTitle: Ref<string>
   /** Lee el perfil. */
   refresh: () => Promise<void>
+  /** Vuelve a leer el perfil sin parpadeo, tras un aviso en vivo. */
+  sync: () => Promise<void>
   /** Reemplaza el perfil con uno recien guardado, sin releerlo. */
   replace: (next: MyProfileView) => void
 }
@@ -51,9 +53,34 @@ export const useMyProfile = (params: UseMyProfileParams): UseMyProfileReturn => 
     }
   }
 
+  /**
+   * Vuelve a leer el tablero tras un aviso del canal en vivo: una cancelacion
+   * del estudio, una reserva movida desde el mostrador.
+   *
+   * Sin esqueleto de carga y sin borrar lo que hay si falla. Si todavia no hay
+   * tablero -la primera lectura fallo o sigue en curso-, usa la lectura normal.
+   *
+   * @returns Promesa que resuelve cuando termino, con exito o sin el.
+   */
+  const sync = async (): Promise<void> => {
+    if (isLoading.value) return
+    if (view.value === null) {
+      await refresh()
+
+      return
+    }
+
+    try {
+      const next = await params.load()
+      if (!isLoading.value) view.value = next
+    } catch (error: unknown) {
+      console.error('useMyProfile: no se pudo refrescar el perfil en vivo', error)
+    }
+  }
+
   const replace = (next: MyProfileView): void => {
     view.value = next
   }
 
-  return { view, isLoading, errorTitle, refresh, replace }
+  return { view, isLoading, errorTitle, refresh, sync, replace }
 }

@@ -17,6 +17,8 @@ interface UseWeekScheduleReturn {
   errorTitle: Ref<string>
   /** Vuelve a pedir la semana que se esta viendo. */
   refresh: () => Promise<void>
+  /** Vuelve a pedir la semana sin parpadeo, tras un aviso en vivo. */
+  sync: () => Promise<void>
   /** Semana siguiente. */
   next: () => Promise<void>
   /** Semana anterior. */
@@ -60,6 +62,34 @@ export const useWeekSchedule = (params: UseWeekScheduleParams): UseWeekScheduleR
     }
   }
 
+  /**
+   * Vuelve a pedir la semana tras un aviso del canal en vivo.
+   *
+   * Sin esqueleto de carga y sin borrar la semana si falla: el atleta puede
+   * estar a punto de tocar "Reservar" y un parpadeo le moveria el boton. Si la
+   * pantalla esta en error, intenta la carga normal, que es la que sabe salir
+   * de ahi. Descarta la respuesta si mientras tanto se cambio de semana.
+   *
+   * @returns Promesa que resuelve cuando termino, con exito o sin el.
+   */
+  const sync = async (): Promise<void> => {
+    if (isLoading.value) return
+
+    const shown = schedule.value
+    if (shown === null) {
+      if (errorTitle.value !== '') await loadWeek(requested)
+
+      return
+    }
+
+    try {
+      const next = await params.load(shown.weekStart)
+      if (schedule.value?.weekStart === shown.weekStart && !isLoading.value) schedule.value = next
+    } catch (error: unknown) {
+      console.error('useWeekSchedule: no se pudo refrescar la semana en vivo', error)
+    }
+  }
+
   const move = async (weeks: number): Promise<void> => {
     const from = schedule.value?.weekStart ?? requested
     await loadWeek(from === undefined ? undefined : shiftWeek(from, weeks))
@@ -70,6 +100,7 @@ export const useWeekSchedule = (params: UseWeekScheduleParams): UseWeekScheduleR
     isLoading,
     errorTitle,
     refresh: () => loadWeek(schedule.value?.weekStart ?? requested),
+    sync,
     next: () => move(1),
     previous: () => move(-1),
     current: () => loadWeek()

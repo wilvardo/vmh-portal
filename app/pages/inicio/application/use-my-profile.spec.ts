@@ -60,4 +60,38 @@ describe('useMyProfile', () => {
 
     expect(load).toHaveBeenCalledOnce()
   })
+
+  it('en vivo relee el tablero sin esqueleto de carga', async () => {
+    const next = { ...view, membership: { id: 3, displayStatus: 'activa', nextPayment: null } }
+    const load = vi.fn().mockResolvedValueOnce(view).mockResolvedValueOnce(next)
+    const tablero = useMyProfile({ load, unexpectedTitle: 'No se pudo cargar' })
+    await tablero.refresh()
+
+    const pending = tablero.sync()
+    expect(tablero.isLoading.value).toBe(false)
+    await pending
+
+    expect(tablero.view.value).toEqual(next)
+  })
+
+  it('en vivo, si falla, se queda con el tablero que ya estaba', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const load = vi.fn().mockResolvedValueOnce(view).mockRejectedValueOnce(new Error('red'))
+    const tablero = useMyProfile({ load, unexpectedTitle: 'No se pudo cargar' })
+    await tablero.refresh()
+
+    await tablero.sync()
+
+    expect(tablero.view.value).toEqual(view)
+    expect(tablero.errorTitle.value).toBe('')
+  })
+
+  it('en vivo, sin tablero todavia, hace la lectura normal', async () => {
+    const load = vi.fn().mockResolvedValue(view)
+    const tablero = useMyProfile({ load, unexpectedTitle: 'No se pudo cargar' })
+
+    await tablero.sync()
+
+    expect(tablero.view.value).toEqual(view)
+  })
 })

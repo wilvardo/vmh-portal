@@ -12,6 +12,7 @@ import type {
 } from './domain/schedule.interface'
 import type { SessionSummary } from './domain/week-view.interface'
 import horariosEs from './domain/locales/horarios.es.json'
+import { SCHEDULE_AVAILABILITY_CHANNEL } from '~/resources/scripts/domain/realtime.const'
 
 /**
  * Semana del atleta: ver, reservar y cancelar (HU 32, 34, 35 y 36).
@@ -106,6 +107,13 @@ export default defineComponent({
     const selectedSummary = computed<SessionSummary | null>(() =>
       booking.selected.value === null ? null : summarize(booking.selected.value)
     )
+
+    // Horarios en vivo (C-24): un lugar que se libera o se ocupa se ve sin
+    // recargar. El aviso no trae datos; se vuelve a preguntar al API.
+    useRealtime({
+      channels: [SCHEDULE_AVAILABILITY_CHANNEL],
+      onChange: () => void week.sync()
+    })
 
     onMounted(() => {
       void week.current()

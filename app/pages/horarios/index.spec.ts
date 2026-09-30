@@ -3,10 +3,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import schedulePage from './index.vue'
 
-const { apiFetchMock } = vi.hoisted(() => ({ apiFetchMock: vi.fn() }))
+const { apiFetchMock, useRealtimeMock } = vi.hoisted(() => ({
+  apiFetchMock: vi.fn(),
+  useRealtimeMock: vi.fn()
+}))
 
 mockNuxtImport('useApi', () => () => apiFetchMock)
 mockNuxtImport('useToast', () => () => ({ add: vi.fn() }))
+mockNuxtImport('useRealtime', () => useRealtimeMock)
 
 /**
  * Sesion cruda con la forma que manda el API.
@@ -89,5 +93,25 @@ describe('schedulePage', () => {
 
     expect(wrapper.find('.schedule__professionals').exists()).toBe(false)
     expect(wrapper.find('.schedule-session-card__with').text()).toBe('con Ana Pérez')
+  })
+
+  it('escucha la agenda en vivo y un aviso vuelve a pedir la semana que se ve', async () => {
+    apiFetchMock.mockResolvedValue(
+      weekWith([rawSession({ professionalId: 1, professionalName: 'Ana Pérez' })])
+    )
+    const wrapper = await mountSuspended(schedulePage)
+    await flush()
+    const [request] = useRealtimeMock.mock.calls[0] as [
+      { channels: string[]; onChange: () => void }
+    ]
+    expect(request.channels).toEqual(['schedule/availability/_private'])
+    apiFetchMock.mockResolvedValue(
+      weekWith([rawSession({ professionalId: 1, professionalName: 'Luz Ortiz' })])
+    )
+
+    request.onChange()
+    await flush()
+
+    expect(wrapper.find('.schedule-session-card__with').text()).toBe('con Luz Ortiz')
   })
 })

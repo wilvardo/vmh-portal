@@ -5,6 +5,7 @@ import { useCancelPrompt } from './application/use-cancel-prompt'
 import { buildLegalLinks } from './domain/legal-link.helpers'
 import type { LegalLinks } from './domain/legal-link.interface'
 import inicioEs from './domain/locales/inicio.es.json'
+import { SCHEDULE_AVAILABILITY_CHANNEL } from '~/resources/scripts/domain/realtime.const'
 
 /**
  * Tablero del atleta. Primera pantalla tras entrar.
@@ -61,6 +62,13 @@ export default defineComponent({
     // Cancelar se confirma en el dialogo compartido con Horarios; el tablero
     // solo elige cual y se relee al terminar.
     const cancelDialog = useCancelPrompt()
+
+    // Tablero en vivo (C-24): si el estudio cancela o mueve una reserva, se ve
+    // sin recargar. El aviso no trae datos; se vuelve a preguntar al API.
+    useRealtime({
+      channels: [SCHEDULE_AVAILABILITY_CHANNEL],
+      onChange: () => void tablero.sync()
+    })
 
     onMounted(() => {
       void tablero.refresh()
