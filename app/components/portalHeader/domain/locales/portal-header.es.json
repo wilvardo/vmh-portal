@@ -2,6 +2,7 @@
   "portal_header_nav_label": "Navegación del portal",
   "portal_header_nav_home": "Inicio",
   "portal_header_nav_schedule": "Horarios",
+  "portal_header_nav_payments": "Mis pagos",
   "portal_header_sign_out": "Salir",
   "portal_header_signing_out": "Saliendo…"
 }

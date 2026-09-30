@@ -46,12 +46,12 @@ describe('portalHeader', () => {
     expect(wrapper.find('.portal-header__initials').text()).toBe('AT')
   })
 
-  it('ofrece Inicio y Horarios y marca la pantalla actual', async () => {
+  it('ofrece Inicio, Horarios y Mis pagos y marca la pantalla actual', async () => {
     currentPath.value = '/horarios'
     const wrapper = await mountSuspended(portalHeader)
 
     const links = wrapper.findAll('.portal-header__link')
-    expect(links.map((link) => link.text())).toEqual(['Inicio', 'Horarios'])
+    expect(links.map((link) => link.text())).toEqual(['Inicio', 'Horarios', 'Mis pagos'])
     expect(links[0]?.attributes('aria-current')).toBeUndefined()
     expect(links[1]?.attributes('aria-current')).toBe('page')
   })

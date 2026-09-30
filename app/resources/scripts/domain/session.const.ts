@@ -52,6 +52,14 @@ export const POST_LOGIN_REDIRECT_PATH = '/inicio'
 export const SCHEDULE_PATH = '/horarios'
 
 /**
+ * Pagos propios del atleta: folio, fecha, forma de pago y monto.
+ *
+ * Privada: la cubre el guardia global como cualquier ruta que no este en
+ * `PUBLIC_PATHS`.
+ */
+export const PAYMENTS_PATH = '/pagos'
+
+/**
  * Rutas exactas que no requieren sesion.
  *
  * Son el acceso, el primer acceso y la recuperacion, y ninguna mas. El alta ya

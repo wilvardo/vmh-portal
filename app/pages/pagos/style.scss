@@ -1,0 +1,138 @@
+// Mis pagos. Una columna a cualquier ancho: se consulta desde el telefono y a
+// 360 px nada obliga a desplazarse de lado.
+.my-payments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    color: var(--color-fg);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-8) var(--space-4);
+    text-align: center;
+  }
+
+  &__empty-icon {
+    inline-size: 2rem;
+    block-size: 2rem;
+    color: var(--color-fg-secondary);
+  }
+
+  &__empty-title {
+    margin: 0;
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__empty-detail {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  // Un pago anulado cambia de superficie y lo dice con palabras.
+  &__item--voided {
+    background: var(--color-surface-sunken);
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+
+  &__plan {
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+    overflow-wrap: anywhere;
+  }
+
+  &__when,
+  &__detail {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__voided {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg);
+  }
+
+  &__amount {
+    flex: 0 0 auto;
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__amount--struck {
+    text-decoration: line-through;
+    color: var(--color-fg-secondary);
+  }
+
+  &__count {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
+  &__more {
+    align-self: center;
+  }
+
+  &__more-failed {
+    margin: 0;
+    font-size: var(--fs-body-sm);
+    color: var(--color-danger-fg);
+    text-align: center;
+  }
+}
