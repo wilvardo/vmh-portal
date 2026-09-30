@@ -19,7 +19,7 @@ export interface ScheduleSession {
   serviceName: string | null
   /** Profesional con quien es la sesion (D8); `null` si es del estudio. */
   professionalId: number | null
-  /** Nombre de pila y apellido de la profesional; `null` si es del estudio. */
+  /** Nombre de pila e inicial del apellido de la profesional; `null` si es del estudio. */
   professionalName: string | null
   /** Inicio en hora del estudio, `YYYY-MM-DDTHH:mm`. */
   startsAtLocal: string
@@ -59,7 +59,7 @@ export interface WeekSchedule {
 export interface ScheduleProfessional {
   /** Identificador de la profesional. */
   id: number
-  /** Nombre de pila y apellido. */
+  /** Nombre de pila e inicial del apellido. */
   name: string
 }
 
