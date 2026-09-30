@@ -7,7 +7,12 @@ export const MY_PAYMENT_METHOD = {
   CASH: 'cash',
   TERMINAL: 'terminal',
   TRANSFER: 'transfer',
-  STRIPE: 'stripe'
+  STRIPE: 'stripe',
+  /**
+   * Una forma que el portal todavia no conoce. No viene del API: es como se
+   * lee un valor nuevo para no nombrarlo con otra que no es.
+   */
+  OTHER: 'other'
 } as const
 
 /** Forma de pago de un cobro. */

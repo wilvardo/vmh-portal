@@ -44,7 +44,8 @@ const readText = (source: unknown, key: string): string => {
  * Interpreta la forma de pago admitiendo solo las conocidas.
  *
  * @param source Pago crudo.
- * @returns La forma de pago; efectivo si no se reconoce.
+ * @returns La forma de pago; `other` si no se reconoce. Leerla como efectivo
+ *   le diria a la persona que pago de una forma en que no pago.
  */
 const readMethod = (source: unknown): MyPaymentMethod => {
   const value = readField(source, 'method')
@@ -52,7 +53,7 @@ const readMethod = (source: unknown): MyPaymentMethod => {
 
   return typeof value === 'string' && known.includes(value)
     ? (value as MyPaymentMethod)
-    : MY_PAYMENT_METHOD.CASH
+    : MY_PAYMENT_METHOD.OTHER
 }
 
 /**

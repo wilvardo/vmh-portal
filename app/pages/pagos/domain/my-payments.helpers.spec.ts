@@ -29,9 +29,10 @@ describe('parseMyPayment', () => {
     })
   })
 
-  it('un pago sin folio no se pinta y una forma desconocida se lee como efectivo', () => {
+  it('un pago sin folio no se pinta y una forma desconocida se lee como otra', () => {
     expect(parseMyPayment({ amount: 1 })).toBeNull()
-    expect(parseMyPayment({ paymentId: 1, method: 'cripto' })?.method).toBe('cash')
+    expect(parseMyPayment({ paymentId: 1, method: 'cripto' })?.method).toBe('other')
+    expect(parseMyPayment({ paymentId: 1 })?.method).toBe('other')
   })
 })
 

@@ -88,4 +88,18 @@ describe('myPaymentsPage', () => {
     expect(wrapper.text()).toContain('No pudimos cargar tus pagos')
     expect(wrapper.text()).toContain('Reintentar')
   })
+
+  it('una forma de pago que el portal no conoce se nombra Otro, no Efectivo', async () => {
+    apiFetchMock.mockResolvedValue({
+      data: [{ paymentId: 9, amount: 100, method: 'cripto', paidAtLocal: '2026-09-21T13:35' }],
+      meta: { pagination: { page: 1, perPage: 10, total: 1, lastPage: 1 } }
+    })
+
+    const wrapper = await mountSuspended(myPaymentsPage)
+    await flush()
+
+    const item = wrapper.find('.my-payments__item').text()
+    expect(item).toContain('Otro')
+    expect(item).not.toContain('Efectivo')
+  })
 })

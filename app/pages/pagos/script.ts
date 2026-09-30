@@ -38,8 +38,9 @@ export default defineComponent({
       if (method === MY_PAYMENT_METHOD.TERMINAL) return i18n.t('my_payments_method_terminal')
       if (method === MY_PAYMENT_METHOD.TRANSFER) return i18n.t('my_payments_method_transfer')
       if (method === MY_PAYMENT_METHOD.STRIPE) return i18n.t('my_payments_method_online')
+      if (method === MY_PAYMENT_METHOD.CASH) return i18n.t('my_payments_method_cash')
 
-      return i18n.t('my_payments_method_cash')
+      return i18n.t('my_payments_method_other')
     }
 
     const countLabel = computed<string>(() =>

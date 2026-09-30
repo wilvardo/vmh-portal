@@ -11,6 +11,7 @@
   "my_payments_method_terminal": "Tarjeta en terminal",
   "my_payments_method_transfer": "Transferencia",
   "my_payments_method_online": "Pago en línea",
+  "my_payments_method_other": "Otro",
   "my_payments_voided": "Anulado por el estudio. Si tienes dudas, pregunta en recepción.",
   "my_payments_more": "Ver pagos anteriores",
   "my_payments_more_pending": "Cargando…",
