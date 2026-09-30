@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { LOGIN_REASON } from '~/resources/scripts/domain/session.const'
+import { PASSWORD_MIN_LENGTH } from './login.const'
 import { LOGIN_ERROR_ACTION } from './login.enum'
 import {
   resolveLoginErrorAction,
@@ -35,6 +36,14 @@ describe('validateLoginForm', () => {
 
   it('rechaza una contrasena mas corta que el minimo', () => {
     expect(validateLoginForm('admin@vmh.mx', 'corta').messageKey).toBe('login_error_password_short')
+  })
+
+  it('el minimo es doce, igual que en el API y el resto del portal', () => {
+    expect(PASSWORD_MIN_LENGTH).toBe(12)
+    expect(validateLoginForm('admin@vmh.mx', 'a'.repeat(11)).messageKey).toBe(
+      'login_error_password_short'
+    )
+    expect(validateLoginForm('admin@vmh.mx', 'a'.repeat(12)).isValid).toBe(true)
   })
 })
 

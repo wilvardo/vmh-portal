@@ -1,8 +1,9 @@
 {
-  "error_not_found_title": "Esta sección no existe",
-  "error_not_found_message": "Revisa la dirección o vuelve al menú del panel.",
-  "error_generic_title": "Algo salió mal",
-  "error_generic_message": "Vuelve a intentarlo. Si el problema sigue, avisa a soporte.",
+  "error_not_found_title": "No encontramos esta página",
+  "error_not_found_message": "La dirección que abriste no existe o cambió de lugar.",
+  "error_generic_title": "Algo no salió bien",
+  "error_generic_message": "Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio.",
+  "error_back_home": "Volver al inicio",
   "api_error_title": "No se pudo completar la operación",
   "api_error_network": "No hay conexión con el servidor. Revisa tu red y vuelve a intentarlo.",
   "api_error_server": "El servidor tuvo un problema. Vuelve a intentarlo en un momento."

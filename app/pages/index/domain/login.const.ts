@@ -5,8 +5,12 @@
  */
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-/** Largo minimo de contrasena que el formulario exige antes de enviar. */
-export const PASSWORD_MIN_LENGTH = 8
+/**
+ * Largo minimo de contrasena que el formulario exige antes de enviar. Es el
+ * mismo que exige el API y el resto del portal (doce): con ocho aqui, el acceso
+ * dejaba pasar lo que ninguna contrasena valida puede ser.
+ */
+export { PASSWORD_MIN_LENGTH } from '~/resources/scripts/domain/password.const'
 
 /**
  * Pagina de agenda del sitio publico. Quien todavia no tiene cuenta la obtiene

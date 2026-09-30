@@ -1,6 +1,12 @@
 import type { PropType } from 'vue'
 import { MEMBERSHIP_SEVERITY } from '~/pages/inicio/domain/membership.const'
-import { formatAmount, formatDayMonth, needsAction } from '~/pages/inicio/domain/membership.helpers'
+import {
+  formatAmount,
+  formatDayMonth,
+  needsAction,
+  paymentModeLabelKey,
+  studioContactUrl
+} from '~/pages/inicio/domain/membership.helpers'
 import type { MyMembership } from '~/pages/inicio/domain/membership.interface'
 
 /**
@@ -69,8 +75,18 @@ export default defineComponent({
         : ''
     )
 
+    /** Clave de la modalidad de pago; vacia si no hay o el portal no la conoce. */
+    const paymentModeKey = computed<string>(() => paymentModeLabelKey(props.membership.paymentMode))
+
+    /** Salida de la membresia en pausa: el contacto del estudio, si hay sitio. */
+    const contactUrl = computed<string>(() =>
+      props.membership.displayStatus === 'suspendida' ? studioContactUrl(props.siteUrl) : ''
+    )
+
     return {
       severity,
+      paymentModeKey,
+      contactUrl,
       isPendingPayment,
       formattedEndsAt,
       formattedStartsAt,

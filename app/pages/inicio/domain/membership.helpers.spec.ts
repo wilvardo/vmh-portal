@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { formatAmount, formatDayMonth, needsAction, parseProfileView } from './membership.helpers'
+import {
+  formatAmount,
+  formatDayMonth,
+  needsAction,
+  parseProfileView,
+  paymentModeLabelKey,
+  studioContactUrl
+} from './membership.helpers'
 
 /** Respuesta completa del API, para alterar una pieza por prueba. */
 const buildView = (): unknown => ({
@@ -156,6 +163,10 @@ describe('needsAction', () => {
     expect(needsAction('vencida')).toBe(true)
   })
 
+  it('la suspendida tambien: sin llamado no sabria a quien acudir', () => {
+    expect(needsAction('suspendida')).toBe(true)
+  })
+
   it('no pide nada cuando la membresia esta al corriente', () => {
     expect(needsAction('activa')).toBe(false)
     expect(needsAction('sin-membresia')).toBe(false)
@@ -163,6 +174,30 @@ describe('needsAction', () => {
 
   it('no alarma a quien solo tiene pendiente su primer pago', () => {
     expect(needsAction('pendiente-de-pago')).toBe(false)
+  })
+})
+
+describe('paymentModeLabelKey', () => {
+  it('nombra las dos modalidades que el API maneja', () => {
+    expect(paymentModeLabelKey('monthly')).toBe('membership_payment_mode_monthly')
+    expect(paymentModeLabelKey('upfront')).toBe('membership_payment_mode_upfront')
+  })
+
+  it('sin modalidad o con una que no conoce, no nombra nada', () => {
+    expect(paymentModeLabelKey(null)).toBe('')
+    expect(paymentModeLabelKey('stripe_subscription')).toBe('')
+  })
+})
+
+describe('studioContactUrl', () => {
+  it('lleva al contacto del inicio del sitio', () => {
+    expect(studioContactUrl('https://vmh.test')).toBe('https://vmh.test/#contacto')
+    expect(studioContactUrl('https://vmh.test/')).toBe('https://vmh.test/#contacto')
+  })
+
+  it('sin sitio configurado no arma un enlace a ningun lado', () => {
+    expect(studioContactUrl('')).toBe('')
+    expect(studioContactUrl('   ')).toBe('')
   })
 })
 

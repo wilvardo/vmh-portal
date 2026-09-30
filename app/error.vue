@@ -3,7 +3,7 @@
     <h1 class="app-error__title">{{ title }}</h1>
     <p class="app-error__detail">{{ detail }}</p>
     <button type="button" class="app-error__action" @click="clearError({ redirect: '/' })">
-      Volver al inicio
+      {{ backHome }}
     </button>
   </div>
 </template>
@@ -17,8 +17,9 @@ import type { NuxtError } from '#app'
  * linea: Nuxt exige el archivo en `app/error.vue` y no admite la carpeta de
  * slice del resto de las vistas.
  *
- * Deliberadamente sin dependencias: esta pantalla tiene que poder renderizarse
- * cuando lo demas fallo.
+ * Sus textos salen del locale global (`i18n/locales/es.json`), que esta
+ * reservado justo para lo que no pertenece a ningun slice. No depende de nada
+ * mas: esta pantalla tiene que poder renderizarse cuando lo demas fallo.
  */
 export default defineComponent({
   name: 'AppError',
@@ -30,17 +31,20 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const i18n = useI18n()
+    const isNotFound = computed(() => props.error.statusCode === 404)
+
     const title = computed(() =>
-      props.error.statusCode === 404 ? 'No encontramos esta pagina' : 'Algo no salio bien'
+      i18n.t(isNotFound.value ? 'error_not_found_title' : 'error_generic_title')
     )
 
     const detail = computed(() =>
-      props.error.statusCode === 404
-        ? 'La direccion que abriste no existe o cambio de lugar.'
-        : 'Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio.'
+      i18n.t(isNotFound.value ? 'error_not_found_message' : 'error_generic_message')
     )
 
-    return { title, detail, clearError }
+    const backHome = computed(() => i18n.t('error_back_home'))
+
+    return { title, detail, backHome, clearError }
   }
 })
 </script>

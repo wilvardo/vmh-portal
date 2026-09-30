@@ -27,6 +27,11 @@
           <dd class="membership-card__fact-value">{{ formattedStartsAt }}</dd>
         </div>
 
+        <div v-if="paymentModeKey" class="membership-card__fact">
+          <dt class="membership-card__fact-label">{{ $t('membership_payment_mode') }}</dt>
+          <dd class="membership-card__fact-value">{{ $t(paymentModeKey) }}</dd>
+        </div>
+
         <div v-if="formattedAmountDue" class="membership-card__fact">
           <dt class="membership-card__fact-label">{{ $t('membership_pay_on_arrival') }}</dt>
           <dd class="membership-card__fact-value">{{ formattedAmountDue }}</dd>
@@ -39,6 +44,11 @@
           <dd class="membership-card__fact-value">{{ formattedEndsAt }}</dd>
         </div>
 
+        <div v-if="paymentModeKey" class="membership-card__fact">
+          <dt class="membership-card__fact-label">{{ $t('membership_payment_mode') }}</dt>
+          <dd class="membership-card__fact-value">{{ $t(paymentModeKey) }}</dd>
+        </div>
+
         <div v-if="membership.nextPayment" class="membership-card__fact">
           <dt class="membership-card__fact-label">{{ $t('membership_next_payment') }}</dt>
           <dd class="membership-card__fact-value">{{ formattedNextPayment }}</dd>
@@ -46,6 +56,12 @@
       </dl>
 
       <p v-if="actionMessage" class="membership-card__call">{{ actionMessage }}</p>
+
+      <!-- En pausa la decision no es de la persona: la salida es hablar con el
+           estudio, no un boton que no puede resolverlo. -->
+      <a v-if="contactUrl" class="membership-card__action" :href="contactUrl">
+        {{ $t('membership_suspended_contact') }}
+      </a>
     </template>
   </article>
 </template>

@@ -1,5 +1,5 @@
 import type { MembershipDisplayStatus, MyMembership, MyProfileView } from './membership.interface'
-import { DATE_LOCALE } from './membership.const'
+import { DATE_LOCALE, PAYMENT_MODE_LABEL_KEY, SITE_CONTACT_ANCHOR } from './membership.const'
 import { parseUpcomingReservations } from './upcoming-reservation.helpers'
 
 /** Estados que el API puede devolver, para validar lo que llega por la red. */
@@ -102,13 +102,35 @@ export const parseProfileView = (value: unknown): MyProfileView | null => {
  * Indica si un estado exige una accion de la persona.
  *
  * Es lo que decide si la tarjeta lleva un llamado o solo informa: una
- * membresia morosa o por vencer pide algo; una activa no.
+ * membresia morosa, por vencer, vencida o suspendida pide algo; una activa no.
+ * La suspendida tambien: sin llamado, la persona solo ve que no puede reservar
+ * y no sabe a quien acudir.
  *
  * @param status Estado presentable.
  * @returns `true` si hay algo que hacer al respecto.
  */
 export const needsAction = (status: MembershipDisplayStatus): boolean =>
-  status === 'morosa' || status === 'por-vencer' || status === 'vencida'
+  status === 'morosa' || status === 'por-vencer' || status === 'vencida' || status === 'suspendida'
+
+/**
+ * Clave de texto de la modalidad de pago de una membresia.
+ *
+ * @param mode Modalidad tal como la manda el API (`monthly`, `upfront`).
+ * @returns La clave a traducir, o cadena vacia si no hay modalidad o el portal
+ *   no la conoce (la fila no se pinta antes que nombrarla mal).
+ */
+export const paymentModeLabelKey = (mode: string | null): string =>
+  mode === null ? '' : (PAYMENT_MODE_LABEL_KEY[mode] ?? '')
+
+/**
+ * Enlace al contacto del estudio en el sitio publico.
+ *
+ * @param siteUrl Direccion base del sitio; puede faltar en el entorno.
+ * @returns El enlace al formulario de contacto del inicio, o cadena vacia sin
+ *   sitio configurado (no se pinta un enlace que no lleva a ningun lado).
+ */
+export const studioContactUrl = (siteUrl: string): string =>
+  siteUrl.trim() === '' ? '' : `${siteUrl.trim().replace(/\/+$/, '')}/${SITE_CONTACT_ANCHOR}`
 
 /**
  * Escribe un dia del calendario con dia y mes.

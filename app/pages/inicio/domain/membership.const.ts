@@ -24,3 +24,19 @@ export const MEMBERSHIP_SEVERITY: Record<MembershipDisplayStatus, string> = {
   vencida: 'secondary',
   'sin-membresia': 'secondary'
 }
+
+/**
+ * Ancla del contacto del estudio en el inicio del sitio publico. Es la salida
+ * que el portal ofrece cuando la decision no es de la persona (una membresia en
+ * pausa): el formulario de contacto cae en la bandeja de recepcion.
+ */
+export const SITE_CONTACT_ANCHOR = '#contacto'
+
+/**
+ * Clave de texto de cada modalidad de pago que el portal sabe nombrar. Una
+ * modalidad que el API agregue despues no se inventa: la fila no se pinta.
+ */
+export const PAYMENT_MODE_LABEL_KEY: Readonly<Record<string, string>> = {
+  monthly: 'membership_payment_mode_monthly',
+  upfront: 'membership_payment_mode_upfront'
+}

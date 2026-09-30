@@ -1,37 +1,9 @@
-// Armazon de las dos formas que tiene el panel: la de trabajo (barra lateral +
-// encabezado + contenido) y la de acceso (una sola tarjeta centrada).
+// Armazon global de las pantallas de acceso del portal (primer acceso,
+// recuperacion y el propio acceso). El de las pantallas con sesion vive en
+// `app/layouts/default.vue`: una columna con encabezado, sin barra lateral.
 //
 // Vive aqui y no en un `<style>` de layout para que Stylelint lo revise igual
 // que cualquier otro SCSS del proyecto.
-
-.panel-shell {
-  display: flex;
-  min-block-size: 100vh;
-  background: var(--color-bg);
-
-  &__main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    // Sin esto, una tabla ancha empuja el ancho del contenedor flex y aparece
-    // scroll horizontal en toda la pagina en lugar de dentro de la tabla.
-    min-inline-size: 0;
-  }
-
-  &__content {
-    flex: 1;
-    // El lienzo ocupa todo el ancho disponible. La herramienta se usa en
-    // monitores grandes y en sesiones largas: dejar franjas vacias a los lados
-    // obliga a mirar al centro de una pantalla que ya se pago entera.
-    inline-size: 100%;
-    padding: var(--space-8) var(--space-6);
-    min-inline-size: 0;
-
-    @media (--bp-lg-down) {
-      padding: var(--space-6) var(--space-4);
-    }
-  }
-}
 
 // El acceso ya no es una tarjeta centrada sobre un fondo: es una pantalla
 // partida, con la marca a un lado y el formulario al otro. El armazon solo

@@ -46,6 +46,56 @@ describe('membershipCard', () => {
     expect(wrapper.text()).not.toContain('Pagas al llegar')
   })
 
+  it('dice la forma de pago del contrato', async () => {
+    const upfront = await mountSuspended(membershipCard, { props: { membership: pending } })
+    const monthly = await mountSuspended(membershipCard, {
+      props: {
+        membership: {
+          ...pending,
+          displayStatus: 'activa',
+          paymentMode: 'monthly',
+          amountDueOnArrival: null
+        }
+      }
+    })
+
+    expect(upfront.text()).toContain('Forma de pago')
+    expect(upfront.text()).toContain('De contado')
+    expect(monthly.text()).toContain('Forma de pago')
+    expect(monthly.text()).toContain('Mensual')
+  })
+
+  it('una modalidad que el portal no conoce no se nombra', async () => {
+    const wrapper = await mountSuspended(membershipCard, {
+      props: { membership: { ...pending, paymentMode: 'stripe_subscription' } }
+    })
+
+    expect(wrapper.text()).not.toContain('Forma de pago')
+  })
+
+  it('suspendida dice que hacer y ofrece escribir al estudio', async () => {
+    const wrapper = await mountSuspended(membershipCard, {
+      props: {
+        membership: { ...pending, displayStatus: 'suspendida', amountDueOnArrival: null },
+        siteUrl: 'https://vmh.test'
+      }
+    })
+
+    expect(wrapper.find('.membership-card__call').text()).toContain('Habla con recepción')
+    const contact = wrapper.find('a.membership-card__action')
+    expect(contact.text()).toBe('Escribir al estudio')
+    expect(contact.attributes('href')).toBe('https://vmh.test/#contacto')
+  })
+
+  it('suspendida sin sitio configurado conserva el llamado pero no pinta un enlace roto', async () => {
+    const wrapper = await mountSuspended(membershipCard, {
+      props: { membership: { ...pending, displayStatus: 'suspendida', amountDueOnArrival: null } }
+    })
+
+    expect(wrapper.find('.membership-card__call').exists()).toBe(true)
+    expect(wrapper.find('a.membership-card__action').exists()).toBe(false)
+  })
+
   it('una suspension real sigue diciendo suspendida', async () => {
     const wrapper = await mountSuspended(membershipCard, {
       props: { membership: { ...pending, displayStatus: 'suspendida', amountDueOnArrival: null } }
