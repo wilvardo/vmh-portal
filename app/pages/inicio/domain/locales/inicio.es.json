@@ -1,7 +1,6 @@
 {
   "home_greeting": "Hola, {name}",
   "home_subtitle": "Este es tu espacio en el estudio.",
-  "home_edit_profile": "Mis datos",
   "home_load_error": "No se pudo cargar tu información",
   "home_retry": "Volver a intentar",
   "home_sessions_title": "Tus próximas sesiones",
@@ -36,6 +35,12 @@
   "profile_editor_error_phone": "El teléfono va a 10 dígitos, sin espacios.",
   "profile_editor_error_name": "Escribe tu nombre y tus apellidos.",
   "profile_editor_error_unexpected": "No se pudieron guardar tus datos",
+  "profile_editor_emergency_title": "Contacto de emergencia",
+  "profile_editor_emergency_note": "Es a quien avisamos si algo pasa en una sesión.",
+  "profile_editor_emergency_name": "Nombre de tu contacto",
+  "profile_editor_emergency_phone": "Su teléfono a 10 dígitos",
+  "profile_editor_error_emergency_name": "Escribe el nombre de a quién avisamos.",
+  "profile_editor_error_emergency_phone": "Su teléfono va a 10 dígitos, sin espacios.",
   "home_sessions_empty_action": "Ver horarios",
   "home_session_cancel": "Cancelar",
   "home_session_cancel_closed": "Para cancelarla, contacta a recepción."

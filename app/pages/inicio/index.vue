@@ -27,12 +27,10 @@
         @cancel="askCancel"
       />
 
-      <Button
-        class="home__edit"
-        severity="secondary"
-        outlined
-        :label="$t('home_edit_profile')"
-        @click="openEditor"
+      <profileCard
+        :profile="tablero.view.value.profile"
+        :legal-links="legalLinks"
+        @edit="openEditor"
       />
     </template>
 
@@ -97,6 +95,42 @@
         </div>
 
         <p class="home__note">{{ $t('profile_editor_email_note') }}</p>
+
+        <fieldset class="home__group">
+          <legend class="home__group-title">{{ $t('profile_editor_emergency_title') }}</legend>
+          <p class="home__note">{{ $t('profile_editor_emergency_note') }}</p>
+
+          <div class="input-box">
+            <label for="profile-emergency-name">{{ $t('profile_editor_emergency_name') }}</label>
+            <InputText
+              id="profile-emergency-name"
+              v-model="editor.values.emergencyContactName"
+              autocomplete="off"
+              fluid
+              :invalid="Boolean(editor.fieldErrors.value.emergencyContactName)"
+              :disabled="editor.isSaving.value"
+            />
+            <small v-if="editor.fieldErrors.value.emergencyContactName" class="home__field-error">
+              {{ editor.fieldErrors.value.emergencyContactName }}
+            </small>
+          </div>
+
+          <div class="input-box">
+            <label for="profile-emergency-phone">{{ $t('profile_editor_emergency_phone') }}</label>
+            <InputText
+              id="profile-emergency-phone"
+              v-model="editor.values.emergencyContactPhone"
+              autocomplete="off"
+              inputmode="numeric"
+              fluid
+              :invalid="Boolean(editor.fieldErrors.value.emergencyContactPhone)"
+              :disabled="editor.isSaving.value"
+            />
+            <small v-if="editor.fieldErrors.value.emergencyContactPhone" class="home__field-error">
+              {{ editor.fieldErrors.value.emergencyContactPhone }}
+            </small>
+          </div>
+        </fieldset>
 
         <div class="home__form-actions">
           <Button

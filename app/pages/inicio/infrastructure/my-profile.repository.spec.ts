@@ -10,7 +10,9 @@ const view = {
     firstName: 'Ana',
     lastName: 'Lopez',
     email: 'ana@correo.mx',
-    phone: '5512000010'
+    phone: '5512000010',
+    emergencyContactName: 'Luis Lopez',
+    emergencyContactPhone: '5519000001'
   },
   membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null },
   initialEvaluationCompletedAt: null,
@@ -81,13 +83,25 @@ describe('repositorio del perfil propio', () => {
       apiFetch,
       firstName: 'Ana',
       lastName: 'Lopez Ruiz',
-      phone: '5512000011'
+      phone: '5512000011',
+      emergencyContactName: 'Luis Lopez',
+      emergencyContactPhone: '5519000001'
     })
 
     expect(apiFetch).toHaveBeenNthCalledWith(
       1,
       MY_PROFILE_ENDPOINT,
       expect.objectContaining({ method: 'PUT' })
+    )
+    expect(apiFetch).toHaveBeenNthCalledWith(
+      1,
+      MY_PROFILE_ENDPOINT,
+      expect.objectContaining({
+        body: expect.objectContaining({
+          emergencyContactName: 'Luis Lopez',
+          emergencyContactPhone: '5519000001'
+        })
+      })
     )
     expect(apiFetch).toHaveBeenNthCalledWith(2, MY_PROFILE_ENDPOINT)
     expect(result.membership.displayStatus).toBe('sin-membresia')
@@ -96,7 +110,14 @@ describe('repositorio del perfil propio', () => {
   it('no manda el cliente HTTP dentro del cuerpo', async () => {
     apiFetch.mockResolvedValueOnce({ data: view.profile }).mockResolvedValueOnce({ data: view })
 
-    await updateMyProfile({ apiFetch, firstName: 'Ana', lastName: 'Lopez', phone: '5512000011' })
+    await updateMyProfile({
+      apiFetch,
+      firstName: 'Ana',
+      lastName: 'Lopez',
+      phone: '5512000011',
+      emergencyContactName: 'Luis Lopez',
+      emergencyContactPhone: '5519000001'
+    })
 
     const [, options] = apiFetch.mock.calls[0] as [string, { body: Record<string, unknown> }]
     expect(options.body).not.toHaveProperty('apiFetch')

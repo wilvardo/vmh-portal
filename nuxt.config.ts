@@ -121,8 +121,9 @@ export default defineNuxtConfig({
       // el navegador. Nunca secretos.
       BASE_API_PATH: process.env.BASE_API_PATH,
       // URL del sitio publico. El portal la usa para mandar a contratar a quien
-      // todavia no tiene membresia. Sin ella esa tarjeta pierde su boton, pero
-      // el resto del portal no se entera.
+      // todavia no tiene membresia y para enlazar el aviso de privacidad y los
+      // terminos. Sin ella esa tarjeta pierde su boton y los enlaces legales no
+      // se pintan, pero el resto del portal no se entera.
       SITE_BASE_URL: process.env.SITE_BASE_URL,
       appVersion: process.env.npm_package_version || ''
     }

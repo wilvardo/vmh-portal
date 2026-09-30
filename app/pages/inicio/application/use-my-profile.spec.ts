@@ -8,7 +8,9 @@ const view = {
     firstName: 'Ana',
     lastName: 'Lopez',
     email: 'ana@correo.mx',
-    phone: '5512000010'
+    phone: '5512000010',
+    emergencyContactName: 'Luis Lopez',
+    emergencyContactPhone: '5519000001'
   },
   membership: { id: null, displayStatus: 'sin-membresia', nextPayment: null }
 } as unknown as MyProfileView

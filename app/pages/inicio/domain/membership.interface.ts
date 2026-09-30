@@ -46,6 +46,10 @@ export interface MyProfile {
   lastName: string
   email: string
   phone: string
+  /** A quien avisar en una urgencia; `null` si todavia no se captura. */
+  emergencyContactName: string | null
+  /** Telefono de esa persona a diez digitos; `null` si todavia no se captura. */
+  emergencyContactPhone: string | null
 }
 
 /** Respuesta completa del perfil propio. */

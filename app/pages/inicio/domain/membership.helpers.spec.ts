@@ -8,7 +8,9 @@ const buildView = (): unknown => ({
     firstName: 'Ana',
     lastName: 'Lopez',
     email: 'ana@correo.mx',
-    phone: '5512000010'
+    phone: '5512000010',
+    emergencyContactName: 'Luis Lopez',
+    emergencyContactPhone: '5519000001'
   },
   membership: {
     id: 3,
@@ -37,6 +39,25 @@ const buildView = (): unknown => ({
 const validProfile = (): unknown => (buildView() as { profile: unknown }).profile
 
 describe('parseProfileView', () => {
+  it('lee el contacto de emergencia del perfil', () => {
+    const view = parseProfileView(buildView())
+
+    expect(view?.profile.emergencyContactName).toBe('Luis Lopez')
+    expect(view?.profile.emergencyContactPhone).toBe('5519000001')
+  })
+
+  it('un contacto ausente o vacio se lee como sin capturar, sin tirar el perfil', () => {
+    const base = buildView() as { profile: Record<string, unknown> }
+    const view = parseProfileView({
+      ...base,
+      profile: { ...base.profile, emergencyContactName: '', emergencyContactPhone: undefined }
+    })
+
+    expect(view).not.toBeNull()
+    expect(view?.profile.emergencyContactName).toBeNull()
+    expect(view?.profile.emergencyContactPhone).toBeNull()
+  })
+
   it('lee la evaluacion inicial asentada', () => {
     const view = parseProfileView({
       ...(buildView() as object),

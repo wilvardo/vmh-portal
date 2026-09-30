@@ -2,6 +2,8 @@ import { fetchMyProfile, updateMyProfile } from './infrastructure/my-profile.rep
 import { useMyProfile } from './application/use-my-profile'
 import { useProfileEditor } from './application/use-profile-editor'
 import { useCancelPrompt } from './application/use-cancel-prompt'
+import { buildLegalLinks } from './domain/legal-link.helpers'
+import type { LegalLinks } from './domain/legal-link.interface'
 import inicioEs from './domain/locales/inicio.es.json'
 
 /**
@@ -32,6 +34,8 @@ export default defineComponent({
       messages: {
         invalidPhone: i18n.t('profile_editor_error_phone'),
         missingName: i18n.t('profile_editor_error_name'),
+        missingEmergencyName: i18n.t('profile_editor_error_emergency_name'),
+        invalidEmergencyPhone: i18n.t('profile_editor_error_emergency_phone'),
         unexpectedTitle: i18n.t('profile_editor_error_unexpected')
       }
     })
@@ -42,6 +46,13 @@ export default defineComponent({
       })
     )
 
+    const siteUrl = (config.public.SITE_BASE_URL as string | undefined) ?? ''
+
+    // Sin la direccion del sitio no hay a donde enlazar los documentos legales:
+    // la tarjeta los oculta en lugar de apuntar a una pagina que no existe aqui.
+    const legalLinks: LegalLinks | null = buildLegalLinks(siteUrl)
+
+    /** Abre el editor con los datos que el tablero ya tiene. */
     const openEditor = (): void => {
       const profile = tablero.view.value?.profile
       if (profile !== undefined) editor.open(profile)
@@ -62,7 +73,8 @@ export default defineComponent({
       openEditor,
       cancelDialog,
       askCancel: cancelDialog.ask,
-      siteUrl: (config.public.SITE_BASE_URL as string | undefined) ?? ''
+      siteUrl,
+      legalLinks
     }
   }
 })

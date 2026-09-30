@@ -35,6 +35,12 @@ export const API_ERROR_CODE = {
   PROFILE_PHONE_TAKEN: 'VMH.USR.PHONE_TAKEN',
 
   /**
+   * El atleta guardo sus datos sin su contacto de emergencia completo. El
+   * portal lo dice junto a ese campo, que es el que hay que llenar.
+   */
+  EMERGENCY_CONTACT_REQUIRED: 'VMH.USR.EMERGENCY_CONTACT_REQUIRED',
+
+  /**
    * Rechazos de reservar y cancelar desde el portal (VMH-28). El portal decide
    * con ellos la SALIDA -refrescar la semana, llevar a agendar la evaluacion-;
    * el texto que ve la persona es siempre el `title` y el `detail` del API.

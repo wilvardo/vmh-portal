@@ -27,6 +27,15 @@ const parseInstantOrNull = (value: unknown): string | null | undefined => {
 }
 
 /**
+ * Lee un texto que el API puede mandar nulo.
+ *
+ * @param value Valor crudo.
+ * @returns El texto, o `null` si no es texto o viene vacio.
+ */
+const readNullableText = (value: unknown): string | null =>
+  typeof value === 'string' && value.trim() !== '' ? value : null
+
+/**
  * Valida que un valor tenga la forma del perfil del contrato del API.
  *
  * Se usa sobre datos que vienen de la red, donde nada garantiza la forma. Un
@@ -75,7 +84,11 @@ export const parseProfileView = (value: unknown): MyProfileView | null => {
       firstName: profile.firstName as string,
       lastName: profile.lastName as string,
       email: profile.email as string,
-      phone: profile.phone as string
+      phone: profile.phone as string,
+      // Un contacto ausente o con otra forma se lee como "sin capturar": el
+      // tablero pide completarlo en vez de descartar todo el perfil.
+      emergencyContactName: readNullableText(profile.emergencyContactName),
+      emergencyContactPhone: readNullableText(profile.emergencyContactPhone)
     },
     // El API ya valida la forma del contrato; aqui solo se verifico el estado,
     // que es lo unico que decide como se pinta la tarjeta.

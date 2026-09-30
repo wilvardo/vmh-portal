@@ -1,0 +1,13 @@
+{
+  "profile_card_label": "Mis datos",
+  "profile_card_name": "Nombre",
+  "profile_card_email": "Correo",
+  "profile_card_phone": "Teléfono",
+  "profile_card_emergency": "Contacto de emergencia",
+  "profile_card_emergency_missing": "Falta tu contacto de emergencia",
+  "profile_card_emergency_missing_detail": "Es a quien avisamos si algo pasa en una sesión. Agrégalo en tus datos.",
+  "profile_card_edit": "Editar mis datos",
+  "profile_card_legal_label": "Documentos del estudio",
+  "profile_card_privacy": "Aviso de privacidad",
+  "profile_card_terms": "Términos y condiciones"
+}

@@ -15,6 +15,10 @@ interface UpdateProfileParams extends ClientParams {
   firstName: string
   lastName: string
   phone: string
+  /** A quien avisar en una urgencia. El API lo exige al atleta. */
+  emergencyContactName: string
+  /** Telefono de esa persona a diez digitos. El API lo exige al atleta. */
+  emergencyContactPhone: string
 }
 
 /**
@@ -41,7 +45,7 @@ export const fetchMyProfile = async (params: ClientParams): Promise<MyProfileVie
  *
  * @param params Cliente HTTP firmado y datos corregidos.
  * @returns El perfil con su membresia, ya actualizado.
- * @throws Si el telefono ya pertenece a otra cuenta.
+ * @throws Si el telefono ya pertenece a otra cuenta o falta el contacto de emergencia.
  */
 export const updateMyProfile = async (params: UpdateProfileParams): Promise<MyProfileView> => {
   const { apiFetch, ...body } = params
