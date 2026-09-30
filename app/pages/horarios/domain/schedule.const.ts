@@ -18,3 +18,6 @@ export const SESSION_STATUSES: readonly string[] = [
 
 /** Tipos de sesion que el API puede mandar. */
 export const SESSION_TYPES: readonly string[] = ['evaluation', 'training']
+
+/** Valor del selector de profesional que no acota: con quien tenga lugar (D8). */
+export const ANY_PROFESSIONAL = 'all' as const

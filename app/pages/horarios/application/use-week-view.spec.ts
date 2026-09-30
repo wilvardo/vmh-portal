@@ -8,6 +8,8 @@ const training: ScheduleSession = {
   sessionSlotId: 1,
   sessionType: 'training',
   serviceName: null,
+  professionalId: null,
+  professionalName: null,
   startsAtLocal: '2026-10-07T07:00',
   durationMinutes: 60,
   capacity: 6,

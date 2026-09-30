@@ -3,7 +3,13 @@ import { fetchMySchedule } from './infrastructure/schedule.repository'
 import { useSessionBooking } from './application/use-session-booking'
 import { useWeekSchedule } from './application/use-week-schedule'
 import { useWeekView } from './application/use-week-view'
-import type { ScheduleSession } from './domain/schedule.interface'
+import { ANY_PROFESSIONAL } from './domain/schedule.const'
+import { collectWeekProfessionals, filterWeekByProfessional } from './domain/schedule.helpers'
+import type {
+  ScheduleProfessional,
+  ScheduleSession,
+  WeekSchedule
+} from './domain/schedule.interface'
 import type { SessionSummary } from './domain/week-view.interface'
 import horariosEs from './domain/locales/horarios.es.json'
 
@@ -29,8 +35,42 @@ export default defineComponent({
       loadErrorTitle: i18n.t('schedule_load_error')
     })
 
+    // Con quien (D8): se ofrece elegir solo si la semana tiene mas de una
+    // profesional. Es un recorte de pantalla; el API ya decide que sesiones son
+    // del atleta.
+    const selectedProfessional = ref<number | typeof ANY_PROFESSIONAL>(ANY_PROFESSIONAL)
+
+    const professionals = computed<ScheduleProfessional[]>(() =>
+      week.schedule.value === null ? [] : collectWeekProfessionals(week.schedule.value)
+    )
+
+    const professionalOptions = computed(() => [
+      { value: ANY_PROFESSIONAL, label: i18n.t('schedule_professional_any') },
+      ...professionals.value.map((professional) => ({
+        value: professional.id,
+        label: professional.name
+      }))
+    ])
+
+    // Si la semana nueva ya no tiene a la elegida, se vuelve a "cualquiera".
+    watch(professionals, (list) => {
+      const chosen = selectedProfessional.value
+      if (chosen !== ANY_PROFESSIONAL && !list.some((item) => item.id === chosen)) {
+        selectedProfessional.value = ANY_PROFESSIONAL
+      }
+    })
+
+    const visibleSchedule = computed<WeekSchedule | null>(() => {
+      const schedule = week.schedule.value
+      if (schedule === null) return null
+
+      const chosen = selectedProfessional.value
+
+      return filterWeekByProfessional(schedule, chosen === ANY_PROFESSIONAL ? null : chosen)
+    })
+
     const { view, summarize } = useWeekView({
-      schedule: week.schedule,
+      schedule: visibleSchedule,
       now: () => new Date(),
       labels: {
         evaluation: i18n.t('schedule_label_evaluation'),
@@ -76,6 +116,9 @@ export default defineComponent({
       view,
       booking,
       selectedSummary,
+      professionals,
+      professionalOptions,
+      selectedProfessional,
       cancelTarget,
       isCancelOpen,
       openCancel

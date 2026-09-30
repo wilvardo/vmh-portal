@@ -16,6 +16,8 @@ export interface SessionRow {
   day: string
   /** Hora en la zona del estudio. */
   time: string
+  /** "con {nombre}" (D8); vacio si la sesion es del estudio. */
+  withLabel: string
   /** Si todavia se cancela desde el portal, segun el API. */
   isCancellable: boolean
 }
@@ -60,6 +62,10 @@ export default defineComponent({
         name: nameOf(reservation),
         day: formatSessionDay(reservation.startsAt),
         time: formatSessionTime(reservation.startsAt),
+        withLabel:
+          reservation.professionalName === null
+            ? ''
+            : i18n.t('home_session_with', { name: reservation.professionalName }),
         isCancellable: reservation.isCancellable
       }))
     )

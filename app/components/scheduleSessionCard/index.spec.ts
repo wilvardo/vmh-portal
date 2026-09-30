@@ -8,6 +8,8 @@ const session = (overrides: Partial<ScheduleSession> = {}): ScheduleSession => (
   sessionSlotId: 41,
   sessionType: 'training',
   serviceName: null,
+  professionalId: null,
+  professionalName: null,
   startsAtLocal: '2026-10-05T07:00',
   durationMinutes: 60,
   capacity: 6,
@@ -70,5 +72,15 @@ describe('scheduleSessionCard', () => {
 
     expect(wrapper.text()).toContain('Evaluación inicial')
     expect(wrapper.text()).toContain('Reservar evaluación')
+  })
+
+  it('dice con quien es la sesion, y nada si es del estudio', async () => {
+    const withAna = await mountSuspended(scheduleSessionCard, {
+      props: { session: session({ professionalId: 1, professionalName: 'Ana Pérez' }) }
+    })
+    const studio = await mountSuspended(scheduleSessionCard, { props: { session: session() } })
+
+    expect(withAna.find('.schedule-session-card__with').text()).toBe('con Ana Pérez')
+    expect(studio.find('.schedule-session-card__with').exists()).toBe(false)
   })
 })

@@ -43,5 +43,6 @@
   "profile_editor_error_emergency_phone": "Su teléfono va a 10 dígitos, sin espacios.",
   "home_sessions_empty_action": "Ver horarios",
   "home_session_cancel": "Cancelar",
-  "home_session_cancel_closed": "Para cancelarla, contacta a recepción."
+  "home_session_cancel_closed": "Para cancelarla, contacta a recepción.",
+  "home_session_with": "con {name}"
 }

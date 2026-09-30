@@ -70,6 +70,14 @@
     white-space: nowrap;
   }
 
+  &__with {
+    overflow: hidden;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__when {
     display: flex;
     flex-wrap: wrap;

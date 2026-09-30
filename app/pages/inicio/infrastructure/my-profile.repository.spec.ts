@@ -65,6 +65,7 @@ describe('repositorio del perfil propio', () => {
         reservationType: 'evaluation',
         startsAt: '2026-09-30T18:00:00.000Z',
         serviceName: null,
+        professionalName: null,
         isCancellable: true
       }
     ])

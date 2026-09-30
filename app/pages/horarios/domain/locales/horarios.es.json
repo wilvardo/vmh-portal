@@ -24,5 +24,8 @@
   "schedule_book_success": "Reserva lista",
   "schedule_book_success_detail": "Tu lugar quedó apartado. Te esperamos.",
   "schedule_book_error_title": "No se pudo reservar",
-  "schedule_book_error_detail": "Revisa tu conexión y vuelve a intentarlo."
+  "schedule_book_error_detail": "Revisa tu conexión y vuelve a intentarlo.",
+  "schedule_professional_label": "Con quién",
+  "schedule_professional_any": "Cualquiera",
+  "schedule_book_with": "Con {name}."
 }

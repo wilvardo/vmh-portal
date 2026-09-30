@@ -8,6 +8,7 @@ import {
 import type {
   MySessionReservation,
   ScheduleDay,
+  ScheduleProfessional,
   ScheduleSession,
   SessionCardState,
   WeekSchedule
@@ -33,6 +34,27 @@ const parseMyReservation = (value: unknown): MySessionReservation | null | undef
   if (typeof reservationId !== 'number' || typeof isCancellable !== 'boolean') return undefined
 
   return { reservationId, isCancellable }
+}
+
+/**
+ * Lee con quien es la sesion (D8).
+ *
+ * Es opcional en el contrato: una respuesta sin estos campos -o con uno solo-
+ * se lee como sesion del estudio en lugar de invalidar la semana.
+ *
+ * @param raw Sesion cruda.
+ * @returns El identificador y el nombre, o los dos en nulo.
+ */
+const readProfessional = (
+  raw: Record<string, unknown>
+): { professionalId: number | null; professionalName: string | null } => {
+  const name = typeof raw.professionalName === 'string' ? raw.professionalName.trim() : ''
+
+  if (typeof raw.professionalId !== 'number' || name === '') {
+    return { professionalId: null, professionalName: null }
+  }
+
+  return { professionalId: raw.professionalId, professionalName: name }
 }
 
 /**
@@ -67,6 +89,7 @@ const parseSession = (value: unknown): ScheduleSession | null => {
     sessionSlotId: raw.sessionSlotId as number,
     sessionType: raw.sessionType as ScheduleSession['sessionType'],
     serviceName: raw.serviceName as string | null,
+    ...readProfessional(raw),
     startsAtLocal: raw.startsAtLocal as string,
     durationMinutes: raw.durationMinutes as number,
     capacity: raw.capacity as number,
@@ -297,3 +320,54 @@ export const formatSessionTime = (startsAtLocal: string): string => startsAtLoca
  */
 export const formatSessionWhen = (startsAtLocal: string): string =>
   `${formatDayHeading(startsAtLocal.slice(0, 10))}, ${formatSessionTime(startsAtLocal)}`
+
+/**
+ * Profesionales distintas de la semana, por nombre (D8).
+ *
+ * La pantalla solo ofrece elegir si hay mas de una.
+ *
+ * @param schedule Semana cargada.
+ * @returns Las profesionales sin repetir.
+ */
+export const collectWeekProfessionals = (schedule: WeekSchedule): ScheduleProfessional[] => {
+  const byId = new Map<number, string>()
+
+  for (const day of schedule.days) {
+    for (const session of day.sessions) {
+      if (session.professionalId !== null && session.professionalName !== null) {
+        byId.set(session.professionalId, session.professionalName)
+      }
+    }
+  }
+
+  return [...byId.entries()]
+    .map(([id, name]) => ({ id, name }))
+    .sort((first, second) => first.name.localeCompare(second.name, DATE_LOCALE))
+}
+
+/**
+ * Deja la semana con las sesiones de la profesional elegida.
+ *
+ * Mis reservas se quedan siempre, sean con quien sean: esconder una cita propia
+ * por un filtro es peor que mostrar una de mas.
+ *
+ * @param schedule Semana cargada.
+ * @param professionalId Profesional elegida; `null` es cualquiera.
+ * @returns La semana acotada, con sus siete dias.
+ */
+export const filterWeekByProfessional = (
+  schedule: WeekSchedule,
+  professionalId: number | null
+): WeekSchedule => {
+  if (professionalId === null) return schedule
+
+  return {
+    ...schedule,
+    days: schedule.days.map((day) => ({
+      date: day.date,
+      sessions: day.sessions.filter(
+        (session) => session.professionalId === professionalId || session.myReservation !== null
+      )
+    }))
+  }
+}

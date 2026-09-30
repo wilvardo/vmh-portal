@@ -7,6 +7,7 @@ const training: MyUpcomingReservation = {
   reservationType: 'training',
   startsAt: '2026-10-01T13:00:00.000Z',
   serviceName: null,
+  professionalName: null,
   isCancellable: true
 }
 
@@ -15,6 +16,7 @@ const evaluation: MyUpcomingReservation = {
   reservationType: 'evaluation',
   startsAt: '2026-10-02T13:00:00.000Z',
   serviceName: null,
+  professionalName: null,
   isCancellable: true
 }
 

@@ -42,6 +42,15 @@
     color: var(--color-fg);
   }
 
+  &__with {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__meta {
     display: flex;
     flex-wrap: wrap;

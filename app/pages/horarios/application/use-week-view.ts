@@ -67,7 +67,8 @@ export const useWeekView = (params: UseWeekViewParams): UseWeekViewReturn => {
       session.sessionType === 'evaluation'
         ? params.labels.evaluation
         : (session.serviceName ?? params.labels.training),
-    when: formatSessionWhen(session.startsAtLocal)
+    when: formatSessionWhen(session.startsAtLocal),
+    professionalName: session.professionalName
   })
 
   return { view, summarize }

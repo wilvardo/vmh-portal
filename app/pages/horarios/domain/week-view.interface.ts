@@ -40,4 +40,6 @@ export interface SessionSummary {
   label: string
   /** Dia y hora del estudio. */
   when: string
+  /** Con quien es (D8); `null` si es del estudio. */
+  professionalName: string | null
 }

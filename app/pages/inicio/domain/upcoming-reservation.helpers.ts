@@ -31,6 +31,11 @@ const parseReservation = (value: unknown): MyUpcomingReservation | null => {
     reservationType: reservationType as MyUpcomingReservation['reservationType'],
     startsAt,
     serviceName,
+    // Opcional en el contrato: sin el campo, la sesion se lee como del estudio.
+    professionalName:
+      typeof candidate.professionalName === 'string' && candidate.professionalName.trim() !== ''
+        ? candidate.professionalName.trim()
+        : null,
     isCancellable
   }
 }

@@ -13,6 +13,7 @@
       <li v-for="item in items" :key="item.id" class="upcoming-sessions__item">
         <div class="upcoming-sessions__info">
           <span class="upcoming-sessions__name">{{ item.name }}</span>
+          <span v-if="item.withLabel" class="upcoming-sessions__with">{{ item.withLabel }}</span>
           <span class="upcoming-sessions__when">
             <span class="upcoming-sessions__day">{{ item.day }}</span>
             <span class="upcoming-sessions__time">{{ item.time }}</span>

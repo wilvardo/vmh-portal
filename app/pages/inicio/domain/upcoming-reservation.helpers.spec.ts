@@ -32,15 +32,25 @@ describe('parseUpcomingReservations', () => {
     const result = parseUpcomingReservations([evaluation, training])
 
     expect(result).toEqual([
-      evaluation,
+      { ...evaluation, professionalName: null },
       {
         id: 2,
         reservationType: 'training',
         startsAt: '2026-10-02T13:00:00.000Z',
         serviceName: 'Fuerza',
+        professionalName: null,
         isCancellable: false
       }
     ])
+  })
+
+  it('lee con quien es la sesion y deja del estudio la que no lo dice', () => {
+    const result = parseUpcomingReservations([
+      { ...evaluation, professionalName: ' Ana Pérez ' },
+      { ...evaluation, id: 2, professionalName: '' }
+    ])
+
+    expect(result?.map((item) => item.professionalName)).toEqual(['Ana Pérez', null])
   })
 
   it('descarta la lista entera si una reserva no cumple el contrato', () => {

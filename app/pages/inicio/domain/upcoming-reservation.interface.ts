@@ -13,6 +13,8 @@ export interface MyUpcomingReservation {
   startsAt: string
   /** Servicio de la sesion; nulo en la evaluacion y en la parrilla general. */
   serviceName: string | null
+  /** Con quien es la sesion (D8); nulo si es del estudio. */
+  professionalName: string | null
   /**
    * Si todavia se cancela desde el portal. Lo decide el API (ventana de
    * cancelacion); el portal solo muestra o esconde la accion.

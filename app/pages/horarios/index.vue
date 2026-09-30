@@ -67,6 +67,20 @@
       </Button>
     </nav>
 
+    <div v-if="professionals.length > 1" class="schedule__professionals">
+      <span id="schedule-professional-label" class="schedule__professionals-label">
+        {{ $t('schedule_professional_label') }}
+      </span>
+      <SelectButton
+        v-model="selectedProfessional"
+        :options="professionalOptions"
+        option-label="label"
+        option-value="value"
+        :allow-empty="false"
+        aria-labelledby="schedule-professional-label"
+      />
+    </div>
+
     <div v-if="week.isLoading.value && !view" class="schedule__loading" aria-busy="true">
       <Skeleton v-for="index in 3" :key="index" height="7rem" border-radius="1rem" />
     </div>
@@ -163,6 +177,9 @@
       <div v-if="selectedSummary && booking.selected.value" class="schedule__dialog-body">
         <p class="schedule__dialog-label">{{ selectedSummary.label }}</p>
         <p class="schedule__dialog-when">{{ selectedSummary.when }}</p>
+        <p v-if="selectedSummary.professionalName" class="schedule__dialog-note">
+          {{ $t('schedule_book_with', { name: selectedSummary.professionalName }) }}
+        </p>
         <p class="schedule__dialog-note">
           {{ $t('schedule_book_spots', { remaining: booking.selected.value.remaining }) }}
         </p>

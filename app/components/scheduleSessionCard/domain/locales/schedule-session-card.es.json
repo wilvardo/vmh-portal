@@ -10,5 +10,6 @@
   "session_card_book": "Reservar",
   "session_card_book_evaluation": "Reservar evaluación",
   "session_card_cancel": "Cancelar",
-  "session_card_cancel_closed": "Inicia pronto: para cancelarla, contacta a recepción."
+  "session_card_cancel_closed": "Inicia pronto: para cancelarla, contacta a recepción.",
+  "session_card_with": "con {name}"
 }

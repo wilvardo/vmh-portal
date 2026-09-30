@@ -6,6 +6,9 @@
     </header>
 
     <p class="schedule-session-card__title">{{ title }}</p>
+    <p v-if="session.professionalName" class="schedule-session-card__with">
+      {{ $t('session_card_with', { name: session.professionalName }) }}
+    </p>
 
     <p class="schedule-session-card__meta">
       <span>{{ $t('session_card_duration', { minutes: session.durationMinutes }) }}</span>

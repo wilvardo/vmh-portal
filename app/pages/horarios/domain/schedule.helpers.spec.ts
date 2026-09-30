@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type { ScheduleDay, ScheduleSession, WeekSchedule } from './schedule.interface'
 import {
   canOfferBooking,
+  collectWeekProfessionals,
+  filterWeekByProfessional,
   formatDayHeading,
   formatSessionTime,
   formatWeekRange,
@@ -18,6 +20,8 @@ const session = (overrides: Partial<ScheduleSession> = {}): ScheduleSession => (
   sessionSlotId: 1,
   sessionType: 'training',
   serviceName: null,
+  professionalId: null,
+  professionalName: null,
   startsAtLocal: '2026-10-05T07:00',
   durationMinutes: 60,
   capacity: 6,
@@ -187,5 +191,56 @@ describe('formatos', () => {
 
   it('toma la hora de pared del estudio tal como llega', () => {
     expect(formatSessionTime('2026-10-05T07:00')).toBe('07:00')
+  })
+})
+
+describe('agenda por profesional', () => {
+  const ana = session({ sessionSlotId: 1, professionalId: 1, professionalName: 'Ana Pérez' })
+  const bea = session({ sessionSlotId: 2, professionalId: 2, professionalName: 'Bea Ruiz' })
+  const mineWithBea = session({
+    sessionSlotId: 3,
+    professionalId: 2,
+    professionalName: 'Bea Ruiz',
+    myReservation: { reservationId: 9, isCancellable: true }
+  })
+
+  it('lee con quien es la sesion y deja del estudio la que no lo dice completo', () => {
+    const raw = rawWeek()
+    const days = raw.days as { sessions: Record<string, unknown>[] }[]
+    const first = days[0]?.sessions[0] ?? {}
+    days[0] = {
+      ...days[0],
+      sessions: [
+        { ...first, professionalId: 1, professionalName: 'Ana Pérez' },
+        { ...first, sessionSlotId: 2, professionalId: 2 }
+      ]
+    }
+
+    const parsed = parseWeekSchedule(raw)
+
+    expect(parsed?.days[0]?.sessions.map((item) => item.professionalName)).toEqual([
+      'Ana Pérez',
+      null
+    ])
+  })
+
+  it('junta a las profesionales de la semana sin repetir', () => {
+    expect(collectWeekProfessionals(week(sevenDays([bea, ana, mineWithBea])))).toEqual([
+      { id: 1, name: 'Ana Pérez' },
+      { id: 2, name: 'Bea Ruiz' }
+    ])
+  })
+
+  it('acota a la elegida sin esconder mis reservas', () => {
+    const filtered = filterWeekByProfessional(week(sevenDays([ana, bea, mineWithBea])), 1)
+
+    expect(filtered.days[0]?.sessions.map((item) => item.sessionSlotId)).toEqual([1, 3])
+    expect(filtered.days).toHaveLength(7)
+  })
+
+  it('sin eleccion deja la semana como vino', () => {
+    const original = week(sevenDays([ana, bea]))
+
+    expect(filterWeekByProfessional(original, null)).toBe(original)
   })
 })

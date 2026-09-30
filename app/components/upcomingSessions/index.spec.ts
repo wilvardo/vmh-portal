@@ -11,6 +11,7 @@ const evaluation: MyUpcomingReservation = {
   reservationType: 'evaluation',
   startsAt: '2026-09-30T18:00:00.000Z',
   serviceName: null,
+  professionalName: null,
   isCancellable: true
 }
 
@@ -41,6 +42,7 @@ describe('upcomingSessions', () => {
             reservationType: 'training',
             startsAt: '2026-10-02T13:00:00.000Z',
             serviceName: 'Fuerza',
+            professionalName: null,
             isCancellable: true
           }
         ]
@@ -80,5 +82,13 @@ describe('upcomingSessions', () => {
     const emitted = wrapper.emitted('cancel')
     expect(emitted).toHaveLength(1)
     expect(emitted?.[0]?.[0]).toMatchObject({ id: 1, name: 'Evaluación inicial', time: '12:00' })
+  })
+
+  it('dice con quien es la proxima sesion', async () => {
+    const wrapper = await mountSuspended(upcomingSessions, {
+      props: { reservations: [{ ...evaluation, professionalName: 'Ana Pérez' }] }
+    })
+
+    expect(wrapper.find('.upcoming-sessions__with').text()).toBe('con Ana Pérez')
   })
 })

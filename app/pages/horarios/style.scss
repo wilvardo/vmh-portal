@@ -38,6 +38,20 @@
     align-items: center;
   }
 
+  // Con quien (D8): solo aparece si la semana tiene mas de una profesional.
+  &__professionals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  &__professionals-label {
+    font-size: var(--fs-body-sm);
+    color: var(--color-fg-secondary);
+  }
+
   // Se parte en dos lineas antes que cortarse: es lo que dice que semana se ve.
   &__range {
     flex: 1;
