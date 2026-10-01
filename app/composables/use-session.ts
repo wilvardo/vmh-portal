@@ -1,4 +1,5 @@
 import {
+  fetchCurrentUser,
   logout as logoutRequest,
   refreshSession as refreshSessionRequest
 } from '~/resources/scripts/infrastructure/auth.repository'
@@ -9,6 +10,8 @@ import {
   writeStoredSession
 } from '~/resources/scripts/infrastructure/session-storage.repository'
 import { runWithSessionLock } from '~/resources/scripts/infrastructure/session-lock.repository'
+import { extractStatus } from '~/resources/scripts/domain/api-error.helpers'
+import { SESSION_CHECK, type SessionCheck } from '~/resources/scripts/domain/session-check.enum'
 import { canAccessPortal } from '~/resources/scripts/domain/session.helpers'
 import { SESSION_STORAGE_KEY } from '~/resources/scripts/domain/session.const'
 import type { AuthSession, AuthUser } from '~/resources/scripts/domain/session.interface'
@@ -62,6 +65,8 @@ interface UseSessionReturn {
    * la persona pueda hacer al respecto.
    */
   revokeSession: (params: StartSessionParams) => Promise<void>
+  /** Confirma contra el API la sesion restaurada: vigencia y rol. */
+  verifySession: () => Promise<SessionCheck>
   /** Mantiene la sesion sincronizada con las demas pestañas abiertas. */
   syncAcrossTabs: (params?: SyncAcrossTabsParams) => () => void
 }
@@ -183,6 +188,62 @@ export const useSession = (): UseSessionReturn => {
     await revokeSession({ session: current })
   }
 
+  /**
+   * Adopta lo que el API dice hoy de la persona (nombre, rol) si la sesion en
+   * memoria sigue siendo la que se pregunto y algo cambio.
+   *
+   * @param asked Sesion con la que se pregunto.
+   * @param user Persona que respondio el API.
+   * @returns El resultado de la verificacion.
+   */
+  const adoptVerifiedUser = (asked: AuthSession, user: AuthUser): SessionCheck => {
+    if (!canAccessPortal(user.role)) {
+      void closeSession()
+      return SESSION_CHECK.FORBIDDEN
+    }
+
+    const latest = session.value
+    const isSameSession = latest !== null && latest.accessToken === asked.accessToken
+    if (isSameSession && JSON.stringify(latest.user) !== JSON.stringify(user)) {
+      startSession({ session: { ...latest, user } })
+    }
+
+    return SESSION_CHECK.VALID
+  }
+
+  const verifySession = async (): Promise<SessionCheck> => {
+    const current = session.value
+    if (current === null) return SESSION_CHECK.EXPIRED
+
+    try {
+      return adoptVerifiedUser(
+        current,
+        await fetchCurrentUser({ baseUrl, accessToken: current.accessToken })
+      )
+    } catch (error: unknown) {
+      // Sin red o con el servidor caido no se sabe nada nuevo: la sesion
+      // guardada se queda y la app sigue abriendo sin conexion.
+      if (extractStatus(error) !== 401) {
+        console.error('useSession: no se pudo confirmar la sesion guardada', error)
+        return SESSION_CHECK.UNVERIFIED
+      }
+    }
+
+    // Pase vencido: se renueva una vez (bajo el candado) y se vuelve a preguntar.
+    const renewed = await renewSession()
+    if (renewed === null) return SESSION_CHECK.EXPIRED
+
+    try {
+      return adoptVerifiedUser(
+        renewed,
+        await fetchCurrentUser({ baseUrl, accessToken: renewed.accessToken })
+      )
+    } catch (error: unknown) {
+      console.error('useSession: no se pudo confirmar la sesion renovada', error)
+      return SESSION_CHECK.UNVERIFIED
+    }
+  }
+
   const syncAcrossTabs = (params: SyncAcrossTabsParams = {}): (() => void) =>
     watchStoredSession({
       onChange: (incoming, hadSession) => {
@@ -202,6 +263,7 @@ export const useSession = (): UseSessionReturn => {
     renewSession,
     closeSession,
     revokeSession,
+    verifySession,
     syncAcrossTabs
   }
 }

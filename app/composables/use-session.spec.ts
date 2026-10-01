@@ -6,10 +6,12 @@ import { useSession } from './use-session'
 
 const refreshSessionRequest = vi.fn()
 const logoutRequest = vi.fn()
+const fetchCurrentUserRequest = vi.fn()
 
 vi.mock('~/resources/scripts/infrastructure/auth.repository', () => ({
   refreshSession: (...args: unknown[]) => refreshSessionRequest(...args),
-  logout: (...args: unknown[]) => logoutRequest(...args)
+  logout: (...args: unknown[]) => logoutRequest(...args),
+  fetchCurrentUser: (...args: unknown[]) => fetchCurrentUserRequest(...args)
 }))
 
 const buildSession = (overrides: Partial<AuthSession> = {}): AuthSession => ({
@@ -30,6 +32,7 @@ describe('useSession', () => {
     window.localStorage.clear()
     refreshSessionRequest.mockReset()
     logoutRequest.mockReset()
+    fetchCurrentUserRequest.mockReset()
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     useSession().endSession()
   })
@@ -260,5 +263,74 @@ describe('useSession', () => {
 
     expect(session.value).toEqual(buildSession())
     stop()
+  })
+
+  describe('verifySession', () => {
+    it('confirma la sesion y adopta lo que el API dice hoy de la persona', async () => {
+      const { startSession, verifySession, session } = useSession()
+      startSession({ session: buildSession() })
+      fetchCurrentUserRequest.mockResolvedValue({ ...buildSession().user, firstName: 'Vicky' })
+
+      expect(await verifySession()).toBe('valid')
+      expect(fetchCurrentUserRequest).toHaveBeenCalledWith(
+        expect.objectContaining({ accessToken: 'access-token' })
+      )
+      expect(session.value?.user.firstName).toBe('Vicky')
+    })
+
+    it('si la cuenta ya no es de atleta, la revoca y la descarta', async () => {
+      logoutRequest.mockResolvedValue(undefined)
+      const { startSession, verifySession, session } = useSession()
+      startSession({ session: buildSession() })
+      fetchCurrentUserRequest.mockResolvedValue({
+        ...buildSession().user,
+        role: AUTH_ROLE.RECEPTIONIST
+      })
+
+      expect(await verifySession()).toBe('forbidden')
+      expect(session.value).toBeNull()
+      expect(logoutRequest).toHaveBeenCalledTimes(1)
+    })
+
+    it('con el pase vencido renueva una vez y vuelve a preguntar', async () => {
+      const renewed = buildSession({ accessToken: 'access-2', refreshToken: 'refresh-2' })
+      refreshSessionRequest.mockResolvedValue(renewed)
+      fetchCurrentUserRequest
+        .mockRejectedValueOnce({ response: { status: 401 } })
+        .mockResolvedValueOnce(renewed.user)
+      const { startSession, verifySession, session } = useSession()
+      startSession({ session: buildSession() })
+
+      expect(await verifySession()).toBe('valid')
+      expect(fetchCurrentUserRequest).toHaveBeenLastCalledWith(
+        expect.objectContaining({ accessToken: 'access-2' })
+      )
+      expect(session.value).toEqual(renewed)
+    })
+
+    it('si la sesion murio en el servidor y no se renueva, la descarta', async () => {
+      refreshSessionRequest.mockRejectedValue({ response: { status: 401 } })
+      fetchCurrentUserRequest.mockRejectedValue({ response: { status: 401 } })
+      const { startSession, verifySession, session } = useSession()
+      startSession({ session: buildSession() })
+
+      expect(await verifySession()).toBe('expired')
+      expect(session.value).toBeNull()
+    })
+
+    it('sin red conserva la sesion guardada: la app abre sin conexion', async () => {
+      fetchCurrentUserRequest.mockRejectedValue(new TypeError('Failed to fetch'))
+      const { startSession, verifySession, session } = useSession()
+      startSession({ session: buildSession() })
+
+      expect(await verifySession()).toBe('unverified')
+      expect(session.value).toEqual(buildSession())
+      expect(refreshSessionRequest).not.toHaveBeenCalled()
+    })
+
+    it('sin sesion no pregunta nada', async () => {
+      expect(await useSession().verifySession()).toBe('expired')
+      expect(fetchCurrentUserRequest).not.toHaveBeenCalled()
+    })
   })
 })
