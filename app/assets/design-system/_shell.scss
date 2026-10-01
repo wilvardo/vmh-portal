@@ -23,6 +23,10 @@
     grid-template-columns: var(--app-sidebar-w) minmax(0, 1fr);
   }
 
+  &__offline {
+    margin-block-end: var(--app-gap);
+  }
+
   &__content {
     grid-area: content;
     min-inline-size: 0;

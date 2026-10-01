@@ -119,7 +119,10 @@ export default defineComponent({
       void week.current()
     })
 
+    const { isOnline } = useNetworkStatus()
+
     return {
+      isOnline,
       week,
       view,
       booking,

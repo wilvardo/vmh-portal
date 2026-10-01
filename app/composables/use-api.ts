@@ -91,7 +91,11 @@ export const useApi = (): ApiFetch => {
         return apiFetch<T>(url, options, true)
       }
 
-      if (isGlobalFailure(status)) {
+      // Sin red el aviso global calla: la franja de "sin conexion" del layout y
+      // la pantalla de la vista ya lo dicen, y un toast por cada peticion seria
+      // repetir lo mismo tres veces.
+      const isDeviceOffline = typeof navigator !== 'undefined' && !navigator.onLine
+      if (isGlobalFailure(status) && !(status === null && isDeviceOffline)) {
         notifyGlobalFailure(error, status)
       }
 

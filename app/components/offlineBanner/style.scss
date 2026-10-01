@@ -1,0 +1,25 @@
+// Aviso de red caida: navy de la marca, la misma tinta del aviso de evaluacion.
+// Es informativo, no un error: nada se perdio.
+.offline-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3) var(--app-block-pad);
+  background: var(--color-bg-dark);
+  border-radius: var(--radius-md);
+  font-size: var(--app-fs-table);
+  color: var(--color-fg-on-dark-muted);
+
+  &__icon {
+    flex-shrink: 0;
+    inline-size: var(--icon-md);
+    block-size: var(--icon-md);
+    color: var(--color-accent);
+  }
+
+  &__title {
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg-inverse);
+  }
+}

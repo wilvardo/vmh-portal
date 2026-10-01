@@ -15,15 +15,21 @@
       <Skeleton v-for="index in 3" :key="index" height="3rem" border-radius="0.5rem" />
     </div>
 
-    <Message v-else-if="list.errorTitle.value" severity="error" :closable="false" role="alert">
-      <span>{{ list.errorTitle.value }}</span>
-      <Button
-        variant="text"
-        severity="secondary"
-        :label="$t('my_payments_retry')"
-        @click="list.refresh()"
-      />
-    </Message>
+    <!-- Sin red se dice eso, porque la salida es otra que ante un error. -->
+    <stateOffline
+      v-else-if="list.errorTitle.value && !isOnline"
+      :busy="list.isLoading.value"
+      @retry="list.refresh()"
+    />
+
+    <stateError
+      v-else-if="list.errorTitle.value"
+      :title="list.errorTitle.value"
+      :detail="$t('my_payments_load_error_detail')"
+      :retry-label="$t('my_payments_retry')"
+      :busy="list.isLoading.value"
+      @retry="list.refresh()"
+    />
 
     <div v-else-if="list.isEmpty.value" class="my-payments__empty">
       <svg

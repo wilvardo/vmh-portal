@@ -1,0 +1,9 @@
+{
+  "app_install_title": "Lleva el portal en tu teléfono",
+  "app_install_prompt_detail": "Instálalo como app: se abre desde tu pantalla de inicio, sin buscar la página.",
+  "app_install_action": "Instalar",
+  "app_install_action_busy": "Instalando…",
+  "app_install_ios_detail": "En Safari toca Compartir y luego «Agregar a pantalla de inicio».",
+  "app_install_dismiss": "Ahora no",
+  "app_install_ios_dismiss": "Entendido"
+}

@@ -1,6 +1,9 @@
 <template>
   <div class="guest-shell">
     <div class="guest-shell__content">
+      <!-- Entrar o recuperar la contrasena necesitan red: se avisa antes de
+           que la persona escriba nada. -->
+      <offlineBanner class="guest-shell__offline" />
       <slot />
     </div>
 
@@ -26,6 +29,10 @@
   &__content {
     inline-size: 100%;
     max-inline-size: 26rem;
+  }
+
+  &__offline {
+    margin-block-end: var(--space-4);
   }
 }
 </style>

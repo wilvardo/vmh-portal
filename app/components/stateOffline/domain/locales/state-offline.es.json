@@ -1,0 +1,6 @@
+{
+  "state_offline_title": "Estás sin conexión",
+  "state_offline_detail": "Para ver tu información necesitas internet. Revisa tu wifi o tus datos y vuelve a intentarlo.",
+  "state_offline_retry": "Reintentar",
+  "state_offline_retrying": "Reintentando…"
+}

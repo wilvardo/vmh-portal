@@ -28,5 +28,6 @@
   "schedule_book_error_detail": "Revisa tu conexión y vuelve a intentarlo.",
   "schedule_professional_label": "Con quién",
   "schedule_professional_any": "Cualquiera",
-  "schedule_book_with": "Con {name}."
+  "schedule_book_with": "Con {name}.",
+  "schedule_load_error_detail": "Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio."
 }

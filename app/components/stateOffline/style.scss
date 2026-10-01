@@ -1,0 +1,36 @@
+// Bloque de la vista sin red: misma forma que el estado vacio, con el icono en
+// el acento porque no es una falla del sistema.
+.state-offline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-10) var(--space-5);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  &__icon {
+    inline-size: var(--icon-xl);
+    block-size: var(--icon-xl);
+    color: var(--color-primary);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--app-fs-section);
+    color: var(--color-fg);
+  }
+
+  &__detail {
+    margin: 0;
+    max-inline-size: 40ch;
+    font-size: var(--app-fs-table);
+    color: var(--color-fg-secondary);
+  }
+
+  &__retry {
+    margin-block-start: var(--space-2);
+  }
+}

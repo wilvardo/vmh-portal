@@ -50,5 +50,7 @@
   "home_sessions_empty_action": "Ver horarios",
   "home_session_cancel": "Cancelar",
   "home_session_cancel_closed": "Para cancelarla, contacta a recepción.",
-  "home_session_with": "con {name}"
+  "home_session_with": "con {name}",
+  "home_loading": "Cargando tu tablero",
+  "home_load_error_detail": "Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio."
 }

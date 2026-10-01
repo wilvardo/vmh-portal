@@ -51,7 +51,10 @@ export default defineComponent({
       void list.refresh()
     })
 
+    const { isOnline } = useNetworkStatus()
+
     return {
+      isOnline,
       list,
       countLabel,
       methodLabel,

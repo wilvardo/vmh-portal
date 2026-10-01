@@ -103,6 +103,15 @@ describe('useApi', () => {
     )
   })
 
+  it('sin red en el dispositivo no repite el aviso: ya lo dicen la franja y la vista', async () => {
+    const onLine = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    fetchMock.mockRejectedValue(new Error('Failed to fetch'))
+
+    await expect(useApi()('/catalog/plans')).rejects.toBeDefined()
+    expect(toastAdd).not.toHaveBeenCalled()
+    onLine.mockRestore()
+  })
+
   it('muestra el titulo y detalle del API cuando el servidor falla con contrato', async () => {
     fetchMock.mockRejectedValue(
       buildHttpError(500, {

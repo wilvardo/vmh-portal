@@ -2,14 +2,41 @@
   <section class="home">
     <pageHeader :eyebrow="$t('home_eyebrow')" :title="greeting" :support="$t('home_subtitle')" />
 
-    <ProgressSpinner v-if="tablero.isLoading.value && !tablero.view.value" />
+    <!-- Carga con la forma del tablero: aviso y sesiones a la izquierda,
+         membresia y datos a la derecha. Nunca un spinner de pagina completa. -->
+    <div
+      v-if="tablero.isLoading.value && !tablero.view.value"
+      class="home__grid"
+      aria-busy="true"
+      :aria-label="$t('home_loading')"
+    >
+      <div class="home__main">
+        <Skeleton height="5rem" border-radius="0.5rem" />
+        <Skeleton height="9rem" border-radius="0.5rem" />
+      </div>
+      <div class="home__aside">
+        <Skeleton height="11rem" border-radius="0.5rem" />
+        <Skeleton height="13rem" border-radius="0.5rem" />
+      </div>
+    </div>
 
     <!-- Un tablero vacio y un tablero que fallo se ven igual, y quien ve el
-         primero cree que perdio su membresia: el error se dice. -->
-    <Message v-else-if="tablero.errorTitle.value" severity="error" :closable="false" role="alert">
-      <span>{{ tablero.errorTitle.value }}</span>
-      <Button text size="small" :label="$t('home_retry')" @click="tablero.refresh()" />
-    </Message>
+         primero cree que perdio su membresia: el error se dice. Sin red se
+         dice eso, porque la salida es otra. -->
+    <stateOffline
+      v-else-if="tablero.errorTitle.value && !isOnline"
+      :busy="tablero.isLoading.value"
+      @retry="tablero.refresh()"
+    />
+
+    <stateError
+      v-else-if="tablero.errorTitle.value"
+      :title="tablero.errorTitle.value"
+      :detail="$t('home_load_error_detail')"
+      :retry-label="$t('home_retry')"
+      :busy="tablero.isLoading.value"
+      @retry="tablero.refresh()"
+    />
 
     <!-- Dos columnas en escritorio: lo que hay que hacer (aviso y sesiones) a
          la izquierda, lo que se consulta (membresia y datos) a la derecha. En
@@ -28,6 +55,9 @@
       </div>
 
       <div class="home__aside">
+        <!-- Solo aparece donde se puede instalar y mientras no se descarte. -->
+        <appInstallCard />
+
         <membershipCard :membership="tablero.view.value.membership" :site-url="siteUrl" />
 
         <profileCard

@@ -74,7 +74,10 @@ export default defineComponent({
       void tablero.refresh()
     })
 
+    const { isOnline } = useNetworkStatus()
+
     return {
+      isOnline,
       tablero,
       editor,
       greeting,

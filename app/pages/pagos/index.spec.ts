@@ -15,6 +15,7 @@ const flush = async (): Promise<void> => {
 describe('myPaymentsPage', () => {
   afterEach(() => {
     vi.clearAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('pinta cada pago con folio, fecha, forma de pago y monto', async () => {
@@ -101,5 +102,33 @@ describe('myPaymentsPage', () => {
     const item = wrapper.find('.my-payments__item').text()
     expect(item).toContain('Otro')
     expect(item).not.toContain('Efectivo')
+  })
+
+  it('si la carga falla sin red, dice que no hay conexion y deja reintentar', async () => {
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    apiFetchMock.mockRejectedValue(new Error('Failed to fetch'))
+
+    const wrapper = await mountSuspended(myPaymentsPage)
+    await flush()
+
+    expect(wrapper.find('.state-offline').exists()).toBe(true)
+    expect(wrapper.find('.state-error').exists()).toBe(false)
+
+    apiFetchMock.mockResolvedValue({ data: [], meta: { pagination: { total: 0, lastPage: 1 } } })
+    await wrapper.find('.state-offline__retry').trigger('click')
+    await flush()
+
+    expect(apiFetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('si la carga falla con red, muestra el error con su reintento', async () => {
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+    apiFetchMock.mockRejectedValue(new Error('500'))
+
+    const wrapper = await mountSuspended(myPaymentsPage)
+    await flush()
+
+    expect(wrapper.find('.state-error').exists()).toBe(true)
+    expect(wrapper.find('.state-offline').exists()).toBe(false)
   })
 })

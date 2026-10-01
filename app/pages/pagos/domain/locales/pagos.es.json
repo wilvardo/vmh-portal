@@ -21,5 +21,6 @@
   "my_payments_more": "Ver pagos anteriores",
   "my_payments_more_pending": "Cargando…",
   "my_payments_more_error": "No pudimos traer los pagos anteriores. Vuelve a intentarlo.",
-  "my_payments_count": "{shown} de {total} pagos"
+  "my_payments_count": "{shown} de {total} pagos",
+  "my_payments_load_error_detail": "Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio."
 }

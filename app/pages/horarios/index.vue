@@ -89,16 +89,22 @@
       <Skeleton v-for="index in 3" :key="index" height="9rem" border-radius="0.5rem" />
     </div>
 
-    <!-- Un fallo no deja pintada la semana anterior: se dice y se reintenta. -->
-    <Message v-else-if="week.errorTitle.value" severity="error" :closable="false" role="alert">
-      <span>{{ week.errorTitle.value }}</span>
-      <Button
-        variant="text"
-        severity="secondary"
-        :label="$t('schedule_retry')"
-        @click="week.refresh()"
-      />
-    </Message>
+    <!-- Un fallo no deja pintada la semana anterior: se dice y se reintenta.
+         Sin red se dice eso, porque la salida es otra. -->
+    <stateOffline
+      v-else-if="week.errorTitle.value && !isOnline"
+      :busy="week.isLoading.value"
+      @retry="week.refresh()"
+    />
+
+    <stateError
+      v-else-if="week.errorTitle.value"
+      :title="week.errorTitle.value"
+      :detail="$t('schedule_load_error_detail')"
+      :retry-label="$t('schedule_retry')"
+      :busy="week.isLoading.value"
+      @retry="week.refresh()"
+    />
 
     <div v-else-if="view && view.isEmpty" class="schedule__empty">
       <svg

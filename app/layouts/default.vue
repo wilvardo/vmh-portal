@@ -3,6 +3,8 @@
     <portalHeader />
 
     <main class="portal-shell__content">
+      <!-- Sin red, lo ya cargado se sigue viendo con esta franja encima. -->
+      <offlineBanner class="portal-shell__offline" />
       <slot />
     </main>
 
