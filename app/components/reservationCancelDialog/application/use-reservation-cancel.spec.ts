@@ -113,6 +113,17 @@ describe('useReservationCancel', () => {
     expect(shouldClose).toBe(true)
   })
 
+  it('un fallo de red o del servidor no se avisa dos veces y deja el dialogo abierto', async () => {
+    const cancel = vi.fn().mockRejectedValue({ name: 'FetchError', response: { status: 502 } })
+    const flow = useReservationCancel({ cancel, notify, onSettled, messages })
+
+    const shouldClose = await flow.confirm(7)
+
+    expect(notify).not.toHaveBeenCalled()
+    expect(onSettled).not.toHaveBeenCalled()
+    expect(shouldClose).toBe(false)
+  })
+
   it('sin contrato de error cae al texto propio', async () => {
     const cancel = vi.fn().mockRejectedValue(new Error('la red se cayo'))
     const flow = useReservationCancel({ cancel, notify, onSettled, messages })

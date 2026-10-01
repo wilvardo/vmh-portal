@@ -113,7 +113,22 @@ describe('useSessionBooking', () => {
     expect(refresh).toHaveBeenCalledTimes(1)
   })
 
-  it('un fallo de red deja la confirmacion abierta para reintentar', async () => {
+  it.each([
+    ['de red', { name: 'FetchError' }],
+    ['del servidor', { name: 'FetchError', response: { status: 500 } }]
+  ])('un fallo %s no se avisa dos veces y deja la confirmacion abierta', async (_, error) => {
+    const book = vi.fn().mockRejectedValue(error)
+    const flow = useSessionBooking({ book, notify, refresh, messages })
+
+    flow.open(session)
+    await flow.confirm()
+
+    expect(notify).not.toHaveBeenCalled()
+    expect(flow.isOpen.value).toBe(true)
+    expect(flow.isBooking.value).toBe(false)
+  })
+
+  it('una respuesta sin contrato deja la confirmacion abierta para reintentar', async () => {
     const book = vi.fn().mockRejectedValue(new Error('la red se cayo'))
     const flow = useSessionBooking({ book, notify, refresh, messages })
 

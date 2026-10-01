@@ -8,7 +8,7 @@
   "reservation_cancel_success": "Reserva cancelada",
   "reservation_cancel_success_detail": "Tu lugar quedó libre.",
   "reservation_cancel_error_title": "No se pudo cancelar",
-  "reservation_cancel_error_detail": "Revisa tu conexión y vuelve a intentarlo.",
+  "reservation_cancel_error_detail": "Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio.",
   "reservation_cancel_reason_label": "Motivo · opcional",
   "reservation_cancel_reason_placeholder": "Por ejemplo: tengo un viaje de trabajo",
   "reservation_cancel_reason_help": "Si nos cuentas por qué, el estudio lo ve junto a tu cancelación."

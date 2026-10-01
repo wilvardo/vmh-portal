@@ -1,5 +1,8 @@
 import type { ApiError } from './api-error.interface'
 
+/** Nombre con el que el cliente HTTP (`ofetch`) marca sus errores. */
+const FETCH_ERROR_NAME = 'FetchError'
+
 /**
  * Extrae el codigo de estado HTTP de un error de `ofetch`/`$fetch`.
  *
@@ -51,3 +54,20 @@ export const extractApiError = (error: unknown): ApiError | null => {
  * @returns `true` si corresponde avisar de forma global.
  */
 export const isGlobalFailure = (status: number | null): boolean => status === null || status >= 500
+
+/**
+ * Indica si un error ya se le dijo a la persona fuera de la pantalla que hizo
+ * la llamada: un fallo de red o del servidor que salio del cliente HTTP.
+ * `useApi` lo avisa con su toast global, o calla porque el dispositivo esta sin
+ * red y la franja de "sin conexion" ya lo dice. Quien llamo no debe avisar otra
+ * vez; solo decide que hacer (dejar el dialogo abierto para reintentar).
+ *
+ * Un error que no salio del cliente HTTP (una respuesta que no cumple el
+ * contrato) no lo aviso nadie: le toca a quien llamo.
+ *
+ * @param error Error capturado.
+ * @returns `true` si ya hubo aviso global.
+ */
+export const isAnnouncedGlobally = (error: unknown): boolean =>
+  (error as { name?: unknown } | null)?.name === FETCH_ERROR_NAME &&
+  isGlobalFailure(extractStatus(error))

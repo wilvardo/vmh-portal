@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { extractApiError, extractStatus, isGlobalFailure } from './api-error.helpers'
+import {
+  extractApiError,
+  extractStatus,
+  isAnnouncedGlobally,
+  isGlobalFailure
+} from './api-error.helpers'
 
 const buildApiError = (): Record<string, string> => ({
   title: 'Credenciales invalidas',
@@ -50,5 +55,24 @@ describe('isGlobalFailure', () => {
   it('deja los 4xx a quien hizo la llamada', () => {
     expect(isGlobalFailure(401)).toBe(false)
     expect(isGlobalFailure(422)).toBe(false)
+  })
+})
+
+describe('isAnnouncedGlobally', () => {
+  it('un fallo de red del cliente HTTP ya se aviso', () => {
+    expect(isAnnouncedGlobally({ name: 'FetchError' })).toBe(true)
+  })
+
+  it('un error del servidor del cliente HTTP ya se aviso', () => {
+    expect(isAnnouncedGlobally({ name: 'FetchError', response: { status: 503 } })).toBe(true)
+  })
+
+  it('un rechazo 4xx no se aviso: lo traduce quien llamo', () => {
+    expect(isAnnouncedGlobally({ name: 'FetchError', response: { status: 409 } })).toBe(false)
+  })
+
+  it('una respuesta que no cumple el contrato no la aviso nadie', () => {
+    expect(isAnnouncedGlobally(new Error('contrato roto'))).toBe(false)
+    expect(isAnnouncedGlobally(null)).toBe(false)
   })
 })

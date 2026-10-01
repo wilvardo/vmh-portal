@@ -1,5 +1,5 @@
 import { API_ERROR_CODE } from '~/resources/scripts/domain/api-error.const'
-import { extractApiError } from '~/resources/scripts/domain/api-error.helpers'
+import { extractApiError, isAnnouncedGlobally } from '~/resources/scripts/domain/api-error.helpers'
 import type { MyReservationResult } from '~/resources/scripts/domain/my-reservation.interface'
 import type { BookingNotice } from '../domain/booking.interface'
 import type { ScheduleSession } from '../domain/schedule.interface'
@@ -68,8 +68,11 @@ interface UseSessionBookingReturn {
  *   cierra y se refresca, asi la tarjeta deja de ofrecer lo que ya no se puede.
  *   Las carreras (llena, ya reservada, ya empezo, cerrada) van en tono
  *   informativo; lo demas, como error.
- * - Fallo sin contrato (red): se explica y el dialogo queda abierto para
+ * - Fallo de red o del servidor: el cliente HTTP ya lo aviso (o la franja de
+ *   sin conexion lo dice); no se repite y el dialogo queda abierto para
  *   reintentar.
+ * - Respuesta sin contrato: se explica con el texto propio y el dialogo queda
+ *   abierto.
  *
  * @param params Peticion, avisos, refresco y textos.
  * @returns El estado del dialogo y sus acciones.
@@ -106,6 +109,8 @@ export const useSessionBooking = (params: UseSessionBookingParams): UseSessionBo
       await params.refresh()
     } catch (error: unknown) {
       console.error('useSessionBooking: no se pudo reservar', error)
+      if (isAnnouncedGlobally(error)) return
+
       const apiError = extractApiError(error)
 
       if (apiError === null) {

@@ -1,5 +1,5 @@
 import { API_ERROR_CODE } from '~/resources/scripts/domain/api-error.const'
-import { extractApiError } from '~/resources/scripts/domain/api-error.helpers'
+import { extractApiError, isAnnouncedGlobally } from '~/resources/scripts/domain/api-error.helpers'
 import type { MyReservationResult } from '~/resources/scripts/domain/my-reservation.interface'
 import type { CancelNotice } from '../domain/reservation-cancel-dialog.interface'
 
@@ -55,7 +55,8 @@ interface UseReservationCancelReturn {
  * El texto de cada rechazo es el del API, tal cual: la ventana cerrada ya dice
  * "contacta a recepcion". Lo unico que el portal decide es la salida: si la
  * reserva ya estaba cancelada, no existe o ya entro a la ventana, lo que se ve
- * esta viejo y lo que corresponde es refrescar, no insistir.
+ * esta viejo y lo que corresponde es refrescar, no insistir. Un fallo de red o
+ * del servidor ya lo avisa el cliente HTTP: aqui no se repite.
  *
  * @param params Peticion, avisos, refresco y textos.
  * @returns El estado de la accion y la confirmacion.
@@ -81,6 +82,9 @@ export const useReservationCancel = (
       return true
     } catch (error: unknown) {
       console.error('useReservationCancel: no se pudo cancelar la reserva', error)
+      // Red o servidor: el cliente HTTP ya aviso. Queda abierto para reintentar.
+      if (isAnnouncedGlobally(error)) return false
+
       const apiError = extractApiError(error)
 
       if (apiError !== null && STALE_CODES.includes(apiError.code)) {
