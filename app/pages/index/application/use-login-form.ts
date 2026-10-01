@@ -22,6 +22,8 @@ interface UseLoginFormParams {
   signIn: (params: { email: string; password: string }) => Promise<AuthSession>
   /** Que hacer con la sesion emitida (guardarla y entrar al panel). */
   onAuthenticated: (session: AuthSession) => Promise<void>
+  /** Revoca en el servidor una sesion que no se va a guardar. No falla. */
+  revoke: (session: AuthSession) => Promise<void>
   /** Textos ya traducidos. El caso de uso no invoca i18n. */
   messages: LoginFormMessages
 }
@@ -55,8 +57,9 @@ interface UseLoginFormReturn {
  *
  * Dos reglas que sostiene y que no deben relajarse:
  * 1. Una cuenta valida sin rol de portal NO abre sesion: el par de credenciales
- *    se descarta y se explica por que. Guardarla "para luego" dejaria una
- *    sesion sin acceso viva en el navegador.
+ *    se revoca en el servidor, se descarta y se explica por que. Guardarla
+ *    "para luego" dejaria una sesion sin acceso viva en el navegador, y solo
+ *    descartarla la dejaria viva en el servidor.
  * 2. El error de credenciales se muestra tal como lo manda el API, sin
  *    reinterpretarlo: el servidor responde igual exista o no el correo, y
  *    cualquier matiz que agregue la interfaz rompe esa defensa. La sugerencia
@@ -101,6 +104,8 @@ export const useLoginForm = (params: UseLoginFormParams): UseLoginFormReturn => 
       })
 
       if (!canAccessPortal(session.user.role)) {
+        // Sin esperar: el aviso no depende de que el servidor conteste.
+        void params.revoke(session)
         errorTitle.value = params.messages.forbiddenTitle
         errorDetail.value = params.messages.forbiddenDetail
         return

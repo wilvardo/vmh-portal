@@ -1,4 +1,7 @@
-import { PORTAL_BRAND_DESCRIPTOR, PORTAL_BRAND_NAME } from '~/resources/scripts/constants/portal.const'
+import {
+  PORTAL_BRAND_DESCRIPTOR,
+  PORTAL_BRAND_NAME
+} from '~/resources/scripts/constants/portal.const'
 import { login as loginRequest } from '~/resources/scripts/infrastructure/auth.repository'
 import {
   FIRST_ACCESS_EMAIL_QUERY,
@@ -31,7 +34,7 @@ export default defineComponent({
 
     const config = useRuntimeConfig()
     const route = useRoute()
-    const { startSession } = useSession()
+    const { startSession, revokeSession } = useSession()
 
     const baseUrl = config.public.BASE_API_PATH as string
     const siteUrl = (config.public.SITE_BASE_URL as string | undefined) ?? ''
@@ -42,6 +45,7 @@ export default defineComponent({
         startSession({ session })
         await navigateTo(POST_LOGIN_REDIRECT_PATH)
       },
+      revoke: (session) => revokeSession({ session }),
       messages: {
         validation: {
           login_error_required: i18n.t('login_error_required'),

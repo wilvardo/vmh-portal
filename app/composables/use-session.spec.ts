@@ -188,6 +188,26 @@ describe('useSession', () => {
     expect(session.value).toBeNull()
   })
 
+  it('revoca en el servidor una sesion que nunca se guardo, sin tocar la local', async () => {
+    logoutRequest.mockResolvedValue(undefined)
+    const { startSession, revokeSession, session } = useSession()
+    startSession({ session: buildSession() })
+    const rejected = buildSession({ accessToken: 'access-staff', refreshToken: 'refresh-staff' })
+
+    await revokeSession({ session: rejected })
+
+    expect(logoutRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ accessToken: 'access-staff', refreshToken: 'refresh-staff' })
+    )
+    expect(session.value).toEqual(buildSession())
+  })
+
+  it('revocar no falla aunque el servidor no responda', async () => {
+    logoutRequest.mockRejectedValue(new Error('sin red'))
+
+    await expect(useSession().revokeSession({ session: buildSession() })).resolves.toBeUndefined()
+  })
+
   it('cierra la sesion local aunque el servidor falle', async () => {
     logoutRequest.mockRejectedValue(new Error('sin red'))
     const { startSession, closeSession, session } = useSession()

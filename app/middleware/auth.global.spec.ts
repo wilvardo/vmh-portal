@@ -16,7 +16,7 @@ import type { AuthSession } from '~/resources/scripts/domain/session.interface'
 import authMiddleware from './auth.global'
 
 const navigate = vi.fn()
-const endSession = vi.fn()
+const closeSession = vi.fn()
 const session = ref<AuthSession | null>(null)
 
 mockNuxtImport(
@@ -25,7 +25,7 @@ mockNuxtImport(
     (...args: unknown[]) =>
       navigate(...args)
 )
-mockNuxtImport('useSession', () => () => ({ session, endSession }))
+mockNuxtImport('useSession', () => () => ({ session, closeSession }))
 
 /**
  * Sesion inventada con el rol pedido.
@@ -66,7 +66,7 @@ const guard = (path: string): unknown => {
 describe('guardia global de sesion', () => {
   beforeEach(() => {
     navigate.mockReset()
-    endSession.mockReset()
+    closeSession.mockReset().mockResolvedValue(undefined)
     session.value = null
   })
 
@@ -98,12 +98,12 @@ describe('guardia global de sesion', () => {
     expect(navigate).toHaveBeenCalledWith(POST_LOGIN_REDIRECT_PATH)
   })
 
-  it('una cuenta del estudio se cierra y va al acceso con el motivo', () => {
+  it('una cuenta del estudio se revoca en el servidor y va al acceso con el motivo', () => {
     session.value = sessionAs(AUTH_ROLE.RECEPTIONIST)
 
     guard(POST_LOGIN_REDIRECT_PATH)
 
-    expect(endSession).toHaveBeenCalledOnce()
+    expect(closeSession).toHaveBeenCalledOnce()
     expect(navigate).toHaveBeenCalledWith({
       path: LOGIN_PATH,
       query: { [LOGIN_REASON_QUERY]: LOGIN_REASON.FORBIDDEN }
@@ -114,7 +114,7 @@ describe('guardia global de sesion', () => {
     session.value = sessionAs(AUTH_ROLE.COACH)
 
     expect(guard(LOGIN_PATH)).toBeUndefined()
-    expect(endSession).toHaveBeenCalledOnce()
+    expect(closeSession).toHaveBeenCalledOnce()
     expect(navigate).not.toHaveBeenCalled()
   })
 })

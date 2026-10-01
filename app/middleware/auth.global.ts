@@ -12,8 +12,9 @@ import { canAccessPortal, isPublicPath } from '~/resources/scripts/domain/sessio
  *
  * Tres decisiones que sostiene:
  * 1. Una cuenta valida pero sin rol de portal (quien trabaja en el estudio) NO
- *    entra: se cierra su sesion local y se le explica por que, en vez de dejarla
- *    en una pantalla en blanco. Es la imagen espejo de la regla del panel, que
+ *    entra: se revoca su sesion en el servidor -sin esperar la respuesta: la
+ *    sesion local se borra en el acto- y se le explica por que, en vez de
+ *    dejarla en una pantalla en blanco. Es la imagen espejo de la regla del panel, que
  *    rechaza al atleta.
  * 2. Quien ya tiene sesion no vuelve a ver las pantallas publicas: se le manda
  *    a su tablero antes de renderizar, sin el parpadeo del formulario. Incluye
@@ -26,12 +27,12 @@ import { canAccessPortal, isPublicPath } from '~/resources/scripts/domain/sessio
  * de un script importado.
  */
 export default defineNuxtRouteMiddleware((to) => {
-  const { session, endSession } = useSession()
+  const { session, closeSession } = useSession()
   const current = session.value
 
   // Cuenta viva cuyo rol no entra al portal: se corta aqui, no en cada pantalla.
   if (current !== null && !canAccessPortal(current.user.role)) {
-    endSession()
+    void closeSession()
     if (to.path === LOGIN_PATH) return
     return navigateTo({
       path: LOGIN_PATH,

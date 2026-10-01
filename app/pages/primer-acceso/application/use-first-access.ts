@@ -46,6 +46,8 @@ interface UseFirstAccessParams {
   complete: (params: CompleteParams) => Promise<AuthSession>
   /** Que hacer con la sesion emitida (guardarla y entrar al tablero). */
   onAuthenticated: (session: AuthSession) => Promise<void>
+  /** Revoca en el servidor una sesion que no se va a guardar. No falla. */
+  revoke: (session: AuthSession) => Promise<void>
   /** Textos ya traducidos. El caso de uso no invoca i18n. */
   messages: FirstAccessMessages
 }
@@ -248,6 +250,9 @@ export const useFirstAccess = (params: UseFirstAccessParams): UseFirstAccessRetu
       })
 
       if (!canAccessPortal(session.user.role)) {
+        // Sin guardarla y sin esperar: la cuenta del estudio no queda con una
+        // sesion viva en el servidor, y el aviso no depende de su respuesta.
+        void params.revoke(session)
         errorTitle.value = params.messages.forbiddenTitle
         errorDetail.value = params.messages.forbiddenDetail
         return

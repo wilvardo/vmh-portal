@@ -56,6 +56,12 @@ interface UseSessionReturn {
   renewSession: () => Promise<AuthSession | null>
   /** Cierra sesion en el servidor y localmente. */
   closeSession: () => Promise<void>
+  /**
+   * Revoca en el servidor una sesion que nunca se guardo (la de una cuenta que
+   * no entra al portal). No falla: si el servidor no responde, no hay nada que
+   * la persona pueda hacer al respecto.
+   */
+  revokeSession: (params: StartSessionParams) => Promise<void>
   /** Mantiene la sesion sincronizada con las demas pestañas abiertas. */
   syncAcrossTabs: (params?: SyncAcrossTabsParams) => () => void
 }
@@ -155,22 +161,26 @@ export const useSession = (): UseSessionReturn => {
     return refreshInFlight
   }
 
+  const revokeSession = async (params: StartSessionParams): Promise<void> => {
+    try {
+      await logoutRequest({
+        baseUrl,
+        accessToken: params.session.accessToken,
+        refreshToken: params.session.refreshToken
+      })
+    } catch (error: unknown) {
+      // La sesion local ya se borro (o nunca se guardo): que el servidor no
+      // confirme la revocacion no debe dejar a la persona atrapada.
+      console.error('useSession: error al cerrar la sesion en el servidor', error)
+    }
+  }
+
   const closeSession = async (): Promise<void> => {
     const current = session.value
     endSession()
     if (current === null) return
 
-    try {
-      await logoutRequest({
-        baseUrl,
-        accessToken: current.accessToken,
-        refreshToken: current.refreshToken
-      })
-    } catch (error: unknown) {
-      // La sesion local ya se borro: que el servidor no confirme la revocacion
-      // no debe dejar a la persona atrapada dentro del panel.
-      console.error('useSession: error al cerrar la sesion en el servidor', error)
-    }
+    await revokeSession({ session: current })
   }
 
   const syncAcrossTabs = (params: SyncAcrossTabsParams = {}): (() => void) =>
@@ -191,6 +201,7 @@ export const useSession = (): UseSessionReturn => {
     restoreSession,
     renewSession,
     closeSession,
+    revokeSession,
     syncAcrossTabs
   }
 }

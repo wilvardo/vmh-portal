@@ -36,10 +36,11 @@ describe('useFirstAccess', () => {
   const requestCode = vi.fn()
   const complete = vi.fn()
   const onAuthenticated = vi.fn()
+  const revoke = vi.fn()
 
   /** Arma el caso de uso con el correo inicial indicado. */
   const build = (initialEmail = '') =>
-    useFirstAccess({ initialEmail, requestCode, complete, onAuthenticated, messages })
+    useFirstAccess({ initialEmail, requestCode, complete, onAuthenticated, revoke, messages })
 
   /** Lleva el caso de uso hasta el paso de la contrasena. */
   const reachPasswordStep = async () => {
@@ -56,6 +57,7 @@ describe('useFirstAccess', () => {
     requestCode.mockReset()
     complete.mockReset()
     onAuthenticated.mockReset()
+    revoke.mockReset().mockResolvedValue(undefined)
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
   })
 
@@ -259,6 +261,7 @@ describe('useFirstAccess', () => {
       await flow.submitPassword()
 
       expect(onAuthenticated).not.toHaveBeenCalled()
+      expect(revoke).toHaveBeenCalledWith(buildSession(AUTH_ROLE.RECEPTIONIST))
       expect(flow.errorTitle.value).toBe(messages.forbiddenTitle)
     })
 

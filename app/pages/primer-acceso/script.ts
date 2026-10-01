@@ -33,7 +33,7 @@ export default defineComponent({
 
     const config = useRuntimeConfig()
     const route = useRoute()
-    const { startSession } = useSession()
+    const { startSession, revokeSession } = useSession()
 
     const baseUrl = config.public.BASE_API_PATH as string
     const rawEmail = route.query[FIRST_ACCESS_EMAIL_QUERY]
@@ -46,6 +46,7 @@ export default defineComponent({
         startSession({ session })
         await navigateTo(POST_LOGIN_REDIRECT_PATH)
       },
+      revoke: (session) => revokeSession({ session }),
       messages: {
         invalidEmail: i18n.t('first_access_error_email'),
         incompleteCode: i18n.t('first_access_error_code'),

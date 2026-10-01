@@ -37,10 +37,12 @@ const messages = {
 describe('useLoginForm', () => {
   const signIn = vi.fn()
   const onAuthenticated = vi.fn()
+  const revoke = vi.fn()
 
   beforeEach(() => {
     signIn.mockReset()
     onAuthenticated.mockReset()
+    revoke.mockReset().mockResolvedValue(undefined)
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
   })
 
@@ -49,7 +51,7 @@ describe('useLoginForm', () => {
   })
 
   it('no llama al API cuando faltan campos', async () => {
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
 
     await form.submit()
 
@@ -58,7 +60,7 @@ describe('useLoginForm', () => {
   })
 
   it('no llama al API cuando el correo no tiene forma de correo', async () => {
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = 'admin'
     form.password.value = 'contrasena-larga'
 
@@ -71,7 +73,7 @@ describe('useLoginForm', () => {
   it('entra al portal con credenciales validas de un atleta', async () => {
     signIn.mockResolvedValue(buildSession())
     onAuthenticated.mockResolvedValue(undefined)
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = '  atleta@correo.mx  '
     form.password.value = 'contrasena-larga'
 
@@ -84,15 +86,41 @@ describe('useLoginForm', () => {
 
   it('no abre sesion para una cuenta cuyo rol no entra al portal', async () => {
     signIn.mockResolvedValue(buildSession(AUTH_ROLE.RECEPTIONIST))
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = 'recepcion@vmh.mx'
     form.password.value = 'contrasena-larga'
 
     await form.submit()
 
     expect(onAuthenticated).not.toHaveBeenCalled()
+    expect(revoke).toHaveBeenCalledWith(buildSession(AUTH_ROLE.RECEPTIONIST))
     expect(form.errorTitle.value).toBe(messages.forbiddenTitle)
     expect(form.errorDetail.value).toBe(messages.forbiddenDetail)
+  })
+
+  it('el aviso de rol sin acceso no espera a que el servidor revoque', async () => {
+    signIn.mockResolvedValue(buildSession(AUTH_ROLE.COACH))
+    revoke.mockReturnValue(new Promise<void>(() => undefined))
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
+    form.email.value = 'coach@vmh.mx'
+    form.password.value = 'contrasena-larga'
+
+    await form.submit()
+
+    expect(form.isSubmitting.value).toBe(false)
+    expect(form.errorTitle.value).toBe(messages.forbiddenTitle)
+  })
+
+  it('a un atleta no le revoca nada', async () => {
+    signIn.mockResolvedValue(buildSession())
+    onAuthenticated.mockResolvedValue(undefined)
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
+    form.email.value = 'atleta@correo.mx'
+    form.password.value = 'contrasena-larga'
+
+    await form.submit()
+
+    expect(revoke).not.toHaveBeenCalled()
   })
 
   it('muestra el error del API tal como lo manda', async () => {
@@ -105,7 +133,7 @@ describe('useLoginForm', () => {
         code: 'VMH.AUTH.INVALID_CREDENTIALS'
       }
     })
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = 'atleta@correo.mx'
     form.password.value = 'contrasena-larga'
 
@@ -117,7 +145,7 @@ describe('useLoginForm', () => {
 
   it('cae a su propio mensaje cuando el fallo no trae contrato', async () => {
     signIn.mockRejectedValue(new Error('Failed to fetch'))
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = 'atleta@correo.mx'
     form.password.value = 'contrasena-larga'
 
@@ -129,7 +157,7 @@ describe('useLoginForm', () => {
 
   it('borra la contrasena capturada despues de cada intento', async () => {
     signIn.mockRejectedValue(new Error('sin red'))
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = 'atleta@correo.mx'
     form.password.value = 'contrasena-larga'
 
@@ -140,7 +168,7 @@ describe('useLoginForm', () => {
 
   it('apaga el estado de envio pase lo que pase', async () => {
     signIn.mockRejectedValue(new Error('sin red'))
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = 'atleta@correo.mx'
     form.password.value = 'contrasena-larga'
 
@@ -156,7 +184,7 @@ describe('useLoginForm', () => {
         resolveSignIn = resolve
       })
     )
-    const form = useLoginForm({ signIn, onAuthenticated, messages })
+    const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
     form.email.value = 'atleta@correo.mx'
     form.password.value = 'contrasena-larga'
 
@@ -172,7 +200,7 @@ describe('useLoginForm', () => {
     /** Arma el formulario con datos validos y lo envia contra el rechazo dado. */
     const submitAgainst = async (rejection: unknown) => {
       signIn.mockRejectedValue(rejection)
-      const form = useLoginForm({ signIn, onAuthenticated, messages })
+      const form = useLoginForm({ signIn, onAuthenticated, revoke, messages })
       form.email.value = 'atleta@correo.mx'
       form.password.value = 'contrasena-larga'
       await form.submit()
