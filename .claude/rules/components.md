@@ -1,7 +1,8 @@
 # Componentes
 
 > La marca VMH es **light-first** y **no tiene tema oscuro** (MASTER 4.3). El
-> panel usa **densidad alta** (MASTER 14): campo de 36px, fila de tabla de 44px,
+> panel usa **densidad alta** (VMH-31, `app/assets/design-system/_density.scss`):
+> control de 32px, fila de tabla de 42px,
 > padding de card 16-20px, cuerpo de 14px. La densidad es lo unico que cambia
 > entre las tres superficies de la plataforma; color, tipografia, radios, motion
 > e iconografia son identicos.
@@ -34,7 +35,7 @@ El boton de VMH tiene cuatro variantes (MASTER 12.1) y **una sola accion primari
 | Fantasma | `<Button variant="text" severity="secondary" />` | Accion terciaria, dentro de tablas y cards |
 | Destructivo | `<Button variant="outlined" severity="danger" />` | Eliminar, cancelar. Solido rojo **solo** dentro del modal de confirmacion |
 
-- La forma pill y la altura de 36px las da el preset. **No se declara `size`**: el preset ya esta calibrado a la densidad del panel. `size="small"` solo en filas densas de tabla, documentado con un comentario.
+- La forma pill, la geometrica de la marca, la caja alta del primario y la altura de 32px las dan el preset y `_primevue-overrides.scss`. **No se declara `size`**: el preset ya esta calibrado a la densidad del panel. `size="small"` solo en filas densas de tabla, documentado con un comentario.
 - Estado de carga: `:loading` + `:aria-busy` y el texto cambia a gerundio ("Guardando…"). El boton **conserva su texto**, no se sustituye por un spinner solo. Cargando no es deshabilitado.
 - `disabled`: un boton deshabilitado **siempre** explica por que en texto cercano o tooltip accesible.
 - Prohibido: gradientes, sombras de color, dos botones primarios juntos, y **botones de solo icono para acciones destructivas**.

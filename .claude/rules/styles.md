@@ -42,7 +42,7 @@ Todo color proviene de `design-system/tokens/tokens.css`. Los componentes consum
 | Estados | `--color-success-*` / `--color-warning-*` / `--color-danger-*` / `--color-info-*` (`-bg`, `-border`, `-fg`) |
 | Tipografia | `--font-display` (Jost) / `--font-body` (Inter) / `--fs-*` / `--fw-*` / `--tracking-*` |
 | Espaciado | `--space-1` … `--space-24` (grid de 4pt) |
-| Densidad del panel | `--field-height-sm` (36) / `--touch-target` (44) / `--header-height-scrolled` |
+| Densidad de app | `--app-control-h` (32) / `--app-row-h` (42) / `--app-fs-*` / `--app-topbar-h` / `--app-gap` / `--app-block-pad` (`_density.scss`) · `--touch-target` (44) en telefono |
 | Radios | `--radius-sm` (inputs, chips) / `--radius-md` / `--radius-lg` (cards) / `--radius-pill` (botones) |
 | Elevacion | `--elevation-1` … `--elevation-3` |
 | Motion | `--motion-instant|fast|base|slow` / `--ease-out` / `--ease-in-out` |
@@ -61,9 +61,9 @@ Todo color proviene de `design-system/tokens/tokens.css`. Los componentes consum
 
 | Elemento | Medida |
 |---|---|
-| Campo y boton | `--field-height-sm` (36px) |
-| Fila de tabla | 44px |
-| Padding de card | 16-20px (`--space-4`/`--space-5`) |
+| Campo y boton | `--app-control-h` (32px) |
+| Fila de tabla | `--app-row-h` (42px) |
+| Padding de card | `--app-block-pad` (16px); tarjetas de lista `is-flush` |
 | Cuerpo | `--fs-body-sm` (14px) |
 
 ## Truncado de texto con elipsis

@@ -45,7 +45,7 @@ Corre todo junto con **`pnpm validate`**. Lo que queda a review: el **idioma** (
 - [ ] BEM: bloque raiz unico kebab-case, `&__elemento`, `&--modifier`; sin selectores profundos.
 - [ ] Sin selectores de clases internas de PrimeVue en el slice (van al preset o a `_primevue-overrides.scss`).
 - [ ] `@media` con custom-media (`--bp-*`); sin px hardcoded en media queries.
-- [ ] Densidad de panel respetada (campo 36px, fila 44px, cuerpo 14px).
+- [ ] Densidad de app respetada (`_density.scss`: control 32px, fila 42px, celda 13px, cuerpo 14px).
 - [ ] Textos variables truncan con elipsis (`min-width: 0` en flex; `minmax(0, 1fr)` en grid).
 
 ### 4. i18n (`*.json`)
