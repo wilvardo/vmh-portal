@@ -1,97 +1,264 @@
-// Encabezado del portal. Movil primero: arriba quien esta dentro y la salida,
-// abajo los dos destinos como pestanas a todo lo ancho, faciles de tocar con el
-// pulgar. Desde `md` todo cabe en una linea.
+// Armazon de navegacion del portal (VMH-31). La raiz no ocupa caja: barra
+// lateral, barra superior y pestañas se acomodan en las areas de la reticula de
+// `_shell.scss` (`sidebar`, `bar`). Misma estructura que el panel, en claro: es
+// la herramienta del atleta, no la de operacion.
 .portal-header {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: var(--z-header);
-  display: flex;
-  flex-direction: column;
-  background: var(--color-surface);
-  border-block-end: 1px solid var(--color-border);
+  display: contents;
 
-  @media (--bp-md) {
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: space-between;
-    padding-inline: var(--space-5);
-  }
+  // ---------- Barra lateral (escritorio) ----------
 
-  &__bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    min-inline-size: 0;
-    padding: var(--space-2) var(--space-4);
+  &__sidebar {
+    grid-area: sidebar;
+    position: sticky;
+    inset-block-start: 0;
+    display: none;
+    flex-direction: column;
+    block-size: 100vh;
+    padding: 0 var(--space-3) var(--space-3);
+    background: var(--color-surface);
+    border-inline-end: 1px solid var(--color-border);
 
     @media (--bp-md) {
-      padding-inline: 0;
+      display: flex;
     }
+  }
+
+  // La marca mide lo mismo que la barra superior y la cierra la misma linea.
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    block-size: var(--app-topbar-h);
+    margin-inline: calc(var(--space-3) * -1);
+    padding-inline: var(--space-5) var(--space-4);
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  &__isotype {
+    flex-shrink: 0;
+    inline-size: var(--icon-md);
+    block-size: var(--icon-md);
+  }
+
+  &__brand-name {
+    font-family: var(--font-display);
+    font-size: var(--app-fs-table);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tracking-wordmark);
+    line-height: 1;
+    color: var(--color-fg);
+  }
+
+  &__brand-tag {
+    margin-inline-start: auto;
+    font-family: var(--font-display);
+    font-size: var(--app-fs-label);
+    letter-spacing: var(--tracking-label);
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--color-fg-muted);
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-block-start: var(--space-4);
+  }
+
+  &__nav-label {
+    margin: 0 0 var(--space-1);
+    padding-inline: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--app-fs-label);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tracking-caption);
+    text-transform: uppercase;
+    color: var(--color-fg-muted);
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    block-size: var(--app-nav-row-h);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    font-size: var(--app-fs-table);
+    color: var(--color-fg-secondary);
+    text-decoration: none;
+    transition:
+      background-color var(--motion-fast) var(--ease-out),
+      color var(--motion-fast) var(--ease-out);
+
+    @media (hover: hover) {
+      &:hover:not(.portal-header__link--active) {
+        background: var(--color-neutral-50);
+        color: var(--color-fg);
+      }
+    }
+
+    // Donde estoy: tinte suave del acento, sin rellenar de color el renglon.
+    &--active {
+      background: var(--color-primary-soft);
+      color: var(--color-primary);
+      font-weight: var(--fw-semibold);
+    }
+  }
+
+  &__link-icon {
+    inline-size: var(--icon-sm);
+    block-size: var(--icon-sm);
+  }
+
+  // ---------- Barra superior ----------
+
+  &__bar {
+    grid-area: bar;
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    block-size: var(--app-topbar-h);
+    padding-inline: var(--app-gutter);
+    // Translucida sobre el lienzo, como el encabezado del sitio publico.
+    background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  // En el telefono la marca sube a la barra: ahi no hay barra lateral.
+  &__mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    @media (--bp-md) {
+      display: none;
+    }
+  }
+
+  &__screen {
+    margin: 0;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: var(--app-fs-table);
+    font-weight: var(--fw-medium);
+    color: var(--color-fg);
+
+    @media (--bp-md-down) {
+      display: none;
+    }
+  }
+
+  &__session {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-inline-start: auto;
+    min-inline-size: 0;
   }
 
   &__account {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
     min-inline-size: 0;
   }
 
+  // Navy de la marca: la cuenta se firma en la tinta del estudio; el acento
+  // queda para lo accionable (MASTER 2.3).
   &__initials {
-    display: inline-flex;
+    display: grid;
+    place-items: center;
     flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    inline-size: 2rem;
-    block-size: 2rem;
-    font-size: var(--fs-caption);
-    font-weight: var(--fw-semibold);
-    color: var(--color-surface);
-    background: var(--color-primary);
+    inline-size: var(--space-8);
+    block-size: var(--space-8);
     border-radius: var(--radius-pill);
+    background: var(--color-bg-dark);
+    color: var(--color-fg-inverse);
+    font-family: var(--font-display);
+    font-size: var(--app-fs-label);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tracking-button);
+  }
+
+  &__identity {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    line-height: var(--lh-tight);
+
+    // En el telefono bastan las iniciales: el nombre se lee en el tablero.
+    @media (--bp-md-down) {
+      display: none;
+    }
   }
 
   &__name {
+    max-inline-size: 16rem;
     overflow: hidden;
-    font-size: var(--fs-body-sm);
-    color: var(--color-fg);
-    text-overflow: ellipsis;
     white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: var(--app-fs-table);
+    font-weight: var(--fw-medium);
+    color: var(--color-fg);
+  }
+
+  &__role {
+    font-family: var(--font-display);
+    font-size: var(--app-fs-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-fg-muted);
   }
 
   &__sign-out {
     flex-shrink: 0;
-
-    svg {
-      inline-size: var(--icon-sm);
-      block-size: var(--icon-sm);
-    }
   }
 
-  &__nav {
-    display: flex;
-  }
+  // ---------- Pestañas (telefono) ----------
 
-  &__link {
-    display: inline-flex;
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-    min-block-size: var(--touch-target);
-    padding-inline: var(--space-4);
-    font-size: var(--fs-body-sm);
-    font-weight: var(--fw-semibold);
-    color: var(--color-fg-secondary);
-    text-decoration: none;
-    border-block-end: 2px solid transparent;
+  &__tabbar {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--z-header);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-block-end: env(safe-area-inset-bottom);
+    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-block-start: 1px solid var(--color-border);
 
     @media (--bp-md) {
-      flex: 0 0 auto;
+      display: none;
     }
+  }
+
+  &__tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    min-block-size: 3.75rem;
+    font-size: var(--app-fs-label);
+    font-weight: var(--fw-medium);
+    color: var(--color-fg-muted);
+    text-decoration: none;
 
     &--active {
       color: var(--color-primary);
-      border-block-end-color: var(--color-primary);
     }
+  }
+
+  &__tab-icon {
+    inline-size: var(--icon-md);
+    block-size: var(--icon-md);
   }
 }

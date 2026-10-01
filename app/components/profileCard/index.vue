@@ -2,6 +2,13 @@
   <article class="profile-card">
     <header class="profile-card__header">
       <h2 class="profile-card__label">{{ $t('profile_card_label') }}</h2>
+      <Button
+        class="profile-card__edit"
+        severity="secondary"
+        outlined
+        :label="$t('profile_card_edit')"
+        @click="requestEdit"
+      />
     </header>
 
     <dl class="profile-card__facts">
@@ -37,14 +44,6 @@
         {{ $t('profile_card_emergency_missing_detail') }}
       </span>
     </Message>
-
-    <Button
-      class="profile-card__edit"
-      severity="secondary"
-      outlined
-      :label="$t('profile_card_edit')"
-      @click="requestEdit"
-    />
 
     <nav v-if="legalLinks" class="profile-card__legal" :aria-label="$t('profile_card_legal_label')">
       <a class="profile-card__link" :href="legalLinks.privacy" target="_blank" rel="noopener">

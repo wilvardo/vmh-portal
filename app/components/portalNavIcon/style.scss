@@ -1,0 +1,6 @@
+// El tamaño lo decide quien lo usa: la barra lateral y la de pestañas no miden
+// igual.
+.portal-nav-icon {
+  display: block;
+  flex-shrink: 0;
+}

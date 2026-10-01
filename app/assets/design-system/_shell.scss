@@ -1,9 +1,39 @@
-// Armazon global de las pantallas de acceso del portal (primer acceso,
-// recuperacion y el propio acceso). El de las pantallas con sesion vive en
-// `app/layouts/default.vue`: una columna con encabezado, sin barra lateral.
+// Armazon de las dos formas del portal: la de trabajo (barra lateral, barra
+// superior y lienzo) y la de acceso (pantalla partida).
 //
 // Vive aqui y no en un `<style>` de layout para que Stylelint lo revise igual
 // que cualquier otro SCSS del proyecto.
+
+// Las areas `sidebar` y `bar` las ocupan las piezas de `portalHeader`; el
+// lienzo usa todo el ancho que queda (VMH-31).
+.portal-shell {
+  display: grid;
+  grid-template-areas:
+    'bar'
+    'content';
+  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  min-block-size: 100vh;
+  background: var(--color-bg);
+
+  @media (--bp-md) {
+    grid-template-areas:
+      'sidebar bar'
+      'sidebar content';
+    grid-template-columns: var(--app-sidebar-w) minmax(0, 1fr);
+  }
+
+  &__content {
+    grid-area: content;
+    min-inline-size: 0;
+    padding: var(--space-6) var(--app-gutter) var(--space-12);
+
+    // En el telefono el lienzo deja libre la franja de las pestañas.
+    @media (--bp-md-down) {
+      padding: var(--space-5) var(--app-gutter) calc(var(--space-20) + env(safe-area-inset-bottom));
+    }
+  }
+}
 
 // El acceso ya no es una tarjeta centrada sobre un fondo: es una pantalla
 // partida, con la marca a un lado y el formulario al otro. El armazon solo

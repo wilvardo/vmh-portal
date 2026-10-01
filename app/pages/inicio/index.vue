@@ -1,9 +1,6 @@
 <template>
   <section class="home">
-    <header class="home__heading">
-      <h1 class="home__title">{{ greeting }}</h1>
-      <p class="home__subtitle">{{ $t('home_subtitle') }}</p>
-    </header>
+    <pageHeader :eyebrow="$t('home_eyebrow')" :title="greeting" :support="$t('home_subtitle')" />
 
     <ProgressSpinner v-if="tablero.isLoading.value && !tablero.view.value" />
 
@@ -14,25 +11,32 @@
       <Button text size="small" :label="$t('home_retry')" @click="tablero.refresh()" />
     </Message>
 
-    <template v-else-if="tablero.view.value">
-      <evaluationNotice
-        :evaluation-completed-at="tablero.view.value.initialEvaluationCompletedAt"
-        :reservations="tablero.view.value.upcomingReservations"
-      />
+    <!-- Dos columnas en escritorio: lo que hay que hacer (aviso y sesiones) a
+         la izquierda, lo que se consulta (membresia y datos) a la derecha. En
+         el telefono se apilan en ese mismo orden de importancia. -->
+    <div v-else-if="tablero.view.value" class="home__grid">
+      <div class="home__main">
+        <evaluationNotice
+          :evaluation-completed-at="tablero.view.value.initialEvaluationCompletedAt"
+          :reservations="tablero.view.value.upcomingReservations"
+        />
 
-      <membershipCard :membership="tablero.view.value.membership" :site-url="siteUrl" />
+        <upcomingSessions
+          :reservations="tablero.view.value.upcomingReservations"
+          @cancel="askCancel"
+        />
+      </div>
 
-      <upcomingSessions
-        :reservations="tablero.view.value.upcomingReservations"
-        @cancel="askCancel"
-      />
+      <div class="home__aside">
+        <membershipCard :membership="tablero.view.value.membership" :site-url="siteUrl" />
 
-      <profileCard
-        :profile="tablero.view.value.profile"
-        :legal-links="legalLinks"
-        @edit="openEditor"
-      />
-    </template>
+        <profileCard
+          :profile="tablero.view.value.profile"
+          :legal-links="legalLinks"
+          @edit="openEditor"
+        />
+      </div>
+    </div>
 
     <!-- Se monta siempre y se controla con v-model:visible: tras cancelar, o si
          la reserva ya habia cambiado en otra pestana, el tablero se relee. -->

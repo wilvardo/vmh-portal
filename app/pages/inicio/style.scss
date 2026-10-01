@@ -1,25 +1,27 @@
-/** Tablero del atleta. Una columna: se abre desde el telefono, de pie, entre
- * una sesion y otra. */
+/** Tablero del atleta (VMH-31): dos columnas en escritorio, una en el
+ * telefono, donde se abre de pie entre una sesion y otra. */
 .home {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--app-gap);
 
-  &__heading {
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--app-gap);
+    align-items: start;
+
+    @media (--bp-lg) {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    }
+  }
+
+  &__main,
+  &__aside {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  &__title {
-    font-family: var(--font-display);
-    font-size: var(--fs-h3);
-    color: var(--color-fg);
-  }
-
-  &__subtitle {
-    font-size: var(--fs-body-sm);
-    color: var(--color-fg-muted);
+    gap: var(--app-gap);
+    min-inline-size: 0;
   }
 
   &__group {

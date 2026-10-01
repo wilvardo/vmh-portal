@@ -1,0 +1,41 @@
+// Escala de densidad de las apps (panel y portal).
+//
+// Los tokens de `design-system/tokens/` son la escala editorial del sitio y
+// llegan como copia sincronizada: no se editan aqui. Esta capa es propia de las
+// apps y el sitio no la consume, asi que ajustarla nunca mueve un pixel del
+// sitio publico. Toda medida sale de un token del sistema o se declara aqui con
+// su equivalente en pixeles.
+//
+// Se calibra contra el rediseño VMH-31 (maquetas en
+// `00-brain/05-consultorias/03-vmh/31-maquetas-rediseno-apps/`): elementos mas
+// chicos, alineados a una sola reticula y con el ancho completo del lienzo.
+:root {
+  // Tipografia de interfaz.
+  --app-fs-section: 0.9375rem; // 15 titulo de bloque, cajon y dialogo
+  --app-fs-table: 0.8125rem; // 13 celda de tabla, control y menu
+  --app-fs-meta: 0.75rem; // 12 metadato, etiqueta de campo, boton
+  --app-fs-label: 0.6875rem; // 11 etiqueta en caja alta
+
+  // Controles y filas.
+  --app-control-h: 2rem; // 32 campo, boton y alternador de una misma fila
+  --app-row-h: 2.625rem; // 42 fila de tabla
+  --app-nav-row-h: 2rem; // 32 renglon del menu lateral
+
+  // Armazon.
+  --app-sidebar-w: 14.5rem; // 232
+  --app-topbar-h: 3.25rem; // 52, la marca de la barra lateral se alinea a esta linea
+  --app-gutter: var(--space-6); // 24 margen del lienzo
+  --app-gap: var(--space-3); // 12 entre bloques de una pantalla
+  --app-block-pad: var(--space-4); // 16 relleno de bloque
+}
+
+// Portal en el telefono: el atleta lo usa de pie y con una mano. Ahi todo lo
+// que se toca sube al minimo tactil (MASTER 2.7); el escritorio conserva la
+// densidad compacta del panel.
+@media (--bp-md-down) {
+  :root {
+    --app-control-h: var(--touch-target);
+    --app-row-h: 3.5rem; // 56, fila con dos lineas de texto y su accion
+    --app-gutter: var(--space-4);
+  }
+}

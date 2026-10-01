@@ -51,14 +51,15 @@ h1 {
   font-size: var(--fs-h3);
 }
 
-// Titulo de seccion, de cajon y de estado.
+// Titulo de seccion, de cajon y de estado. Un peldaño de app, no de lectura:
+// nombra un bloque dentro de una herramienta densa (VMH-31).
 h2 {
-  font-size: var(--fs-body-lg);
+  font-size: var(--app-fs-section);
 }
 
 // Titulo de bloque dentro de una seccion.
 h3 {
-  font-size: var(--fs-body);
+  font-size: var(--fs-body-sm);
 }
 
 // Cifras y fechas del panel siempre con numerales tabulares (MASTER 12.5): en
@@ -67,10 +68,13 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
-// Etiqueta corta en caja alta (encabezados de bloque y metadatos).
+// Etiqueta corta en caja alta (encabezados de bloque y metadatos). Es la
+// etiqueta del sitio publico -geometrica, muy espaciada- a escala de app.
 .eyebrow {
-  font-size: var(--fs-caption);
+  font-family: var(--font-display);
+  font-size: var(--app-fs-label);
+  font-weight: var(--fw-medium);
   letter-spacing: var(--tracking-caption);
   text-transform: uppercase;
-  color: var(--color-fg-secondary);
+  color: var(--color-fg-muted);
 }

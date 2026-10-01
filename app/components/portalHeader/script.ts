@@ -1,3 +1,9 @@
+import portalNavIcon from '~/components/portalNavIcon/index.vue'
+import type { PortalNavIconName } from '~/resources/scripts/domain/portal-nav-icon.type'
+import {
+  PORTAL_BRAND_DESCRIPTOR,
+  PORTAL_BRAND_NAME
+} from '~/resources/scripts/constants/portal.const'
 import { LOGIN_PATH } from '~/resources/scripts/domain/session.const'
 import { buildDisplayName, buildInitials } from '~/resources/scripts/domain/session.helpers'
 import { useSignOut } from './application/use-sign-out'
@@ -13,11 +19,15 @@ interface NavLink {
   label: string
   /** Si es la pantalla actual. */
   isActive: boolean
+  /** Icono del destino. */
+  icon: PortalNavIconName
 }
 
 /**
- * Encabezado de las pantallas con sesion: quien esta dentro, a donde puede ir
- * (Inicio y Horarios) y la salida.
+ * Armazon de navegacion de las pantallas con sesion: quien esta dentro, a donde
+ * puede ir (Inicio, Horarios y Mis pagos) y la salida. Se pinta como barra
+ * lateral y barra superior en escritorio, y como barra superior y pestañas
+ * inferiores en el telefono (VMH-31).
  *
  * Salir vive aqui y no en el tablero: tiene que estar a mano desde cualquier
  * pantalla, y revoca la sesion en el API (`closeSession`), no solo en el
@@ -25,6 +35,7 @@ interface NavLink {
  */
 export default defineComponent({
   name: 'portalHeader',
+  components: { portalNavIcon },
   setup() {
     const i18n = useI18n()
     i18n.mergeLocaleMessage('es', portalHeaderEs)
@@ -41,8 +52,15 @@ export default defineComponent({
       PORTAL_NAV_ITEMS.map((item) => ({
         path: item.path,
         label: i18n.t(item.labelKey),
-        isActive: isNavItemActive(route.path, item.path)
+        isActive: isNavItemActive(route.path, item.path),
+        icon: item.icon
       }))
+    )
+
+    // La barra superior repite donde se esta parado: en el telefono es el unico
+    // lugar donde se lee, porque las pestañas solo marcan.
+    const currentLabel = computed<string>(
+      () => links.value.find((link) => link.isActive)?.label ?? ''
     )
 
     const { isSigningOut, signOut } = useSignOut({
@@ -52,6 +70,21 @@ export default defineComponent({
       }
     })
 
-    return { user, displayName, initials, links, isSigningOut, signOut }
+    const signOutLabel = computed<string>(() =>
+      isSigningOut.value ? i18n.t('portal_header_signing_out') : i18n.t('portal_header_sign_out')
+    )
+
+    return {
+      user,
+      displayName,
+      initials,
+      links,
+      currentLabel,
+      isSigningOut,
+      signOut,
+      signOutLabel,
+      brandName: PORTAL_BRAND_NAME,
+      brandDescriptor: PORTAL_BRAND_DESCRIPTOR
+    }
   }
 })

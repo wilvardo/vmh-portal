@@ -7,10 +7,10 @@
 //
 // Todo valor sale de tokens: este archivo lo lintea Stylelint igual que el resto.
 
-// Densidad de panel (MASTER 14). El preset controla el padding, pero la altura
-// final de un campo depende del interlineado del texto: se fija el piso para que
-// un `<InputText>`, un `<Select>` y un `<Button>` de la misma fila midan lo
-// mismo (36px) sin depender de la tipografia cargada.
+// Densidad de app (VMH-31, `_density.scss`). El preset controla el padding,
+// pero la altura final de un campo depende del interlineado del texto: se fija
+// el piso para que un `<InputText>`, un `<Select>` y un `<Button>` de la misma
+// fila midan lo mismo (32px) sin depender de la tipografia cargada.
 .p-inputtext,
 .p-select,
 .p-multiselect,
@@ -20,18 +20,18 @@
 .p-togglebutton,
 .p-selectbutton .p-togglebutton,
 .p-button {
-  min-height: var(--field-height-sm);
+  min-height: var(--app-control-h);
 }
 
-// Los campos multilinea crecen: el piso de 36px los dejaria de una sola linea.
+// Los campos multilinea crecen: el piso de 32px los dejaria de una sola linea.
 .p-textarea {
-  min-height: calc(var(--field-height-sm) * 2);
+  min-height: calc(var(--app-control-h) * 2);
 }
 
 // El boton de solo icono es cuadrado a la altura del campo, y su area util
 // llega al minimo tactil aunque el panel se use en una tableta (MASTER 2.7).
 .p-button-icon-only {
-  min-width: var(--field-height-sm);
+  min-width: var(--app-control-h);
   padding-inline: 0;
 }
 
@@ -78,9 +78,21 @@
   font-variant-numeric: tabular-nums;
 }
 
-// Fila de tabla de 44px (MASTER 14) y separadores solo horizontales.
+// Fila de tabla de 42px (VMH-31) y separadores solo horizontales. La celda
+// lee a 13: la tabla es la vista principal del panel y tiene que caber entera.
 .p-datatable-tbody > tr > td {
-  block-size: var(--touch-target);
+  block-size: var(--app-row-h);
+  font-size: var(--app-fs-table);
+}
+
+// Encabezado de columna como etiqueta del sitio: geometrica, caja alta y muy
+// espaciada. Nombra la columna sin competir con el dato.
+.p-datatable-thead > tr > th .p-datatable-column-title {
+  font-family: var(--font-display);
+  font-size: var(--app-fs-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 // El icono de un campo es un SVG propio de tablericons, no la fuente de iconos
@@ -92,27 +104,44 @@
   block-size: var(--icon-md);
 }
 
-// Tamaño base de los controles (MASTER 14: el cuerpo del panel es de 14px).
+// Tamaño base de los controles (VMH-31: 13px, uno menos que el cuerpo).
 //
 // La libreria solo expone token de tamaño para las variantes `sm` y `lg`; el
 // tamaño normal lo deja al navegador, y un `<button>` o un `<input>` no heredan
-// el del documento: se quedan en los 16px del agente de usuario. El resultado
-// era un panel de 14 con botones y campos de 16.
-.p-button,
+// el del documento: se quedan en los 16px del agente de usuario.
 .p-inputtext,
 .p-select-label,
+.p-select-option,
 .p-textarea,
 .p-togglebutton-label {
-  font-size: var(--fs-body-sm);
+  font-size: var(--app-fs-table);
 }
 
-// Altura unica de boton (MASTER 14: 36px). El preset solo controla el relleno,
-// asi que la altura acababa dependiendo del contenido: el interlineado de
-// lectura del cuerpo -1.6- hacia dos pixeles mas alto a todo boton con icono
-// que a uno de solo texto, y una fila con los dos se veia desalineada.
+// El boton es el del sitio publico (pill en la geometrica de la marca) a escala
+// de app: 12px y 32 de alto. Altura unica: el preset solo controla el relleno,
+// y el interlineado de lectura hacia mas alto a todo boton con icono que a uno
+// de solo texto, asi que una fila con los dos se veia desalineada.
 .p-button {
-  min-block-size: var(--field-height-sm);
+  min-block-size: var(--app-control-h);
+  font-family: var(--font-display);
+  font-size: var(--app-fs-meta);
   line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-button);
+}
+
+// El primario lleva la caja alta del boton del sitio. Solo el primario: una
+// fila de acciones toda en mayusculas grita, y la jerarquia se pierde.
+.p-button:not(
+    .p-button-secondary,
+    .p-button-outlined,
+    .p-button-text,
+    .p-button-link,
+    .p-button-danger,
+    .p-button-contrast,
+    .p-button-icon-only
+  ) {
+  font-size: var(--app-fs-label);
+  text-transform: uppercase;
 }
 
 // El icono de un boton es un SVG propio de tablericons, y sin tamaño se estira
@@ -133,4 +162,17 @@
 // abajo rompe la fila donde vive y deja de parecer un boton.
 .p-button-label {
   white-space: nowrap;
+}
+
+// Tarjeta de lista (VMH-31): el relleno lo ponen sus filas, que van de borde a
+// borde con su separador. El preset solo tiene un relleno para toda tarjeta, asi
+// que la excepcion se declara aqui con un modificador explicito y no en la
+// pagina. `overflow` recorta las filas al radio de la tarjeta.
+.p-card.is-flush {
+  overflow: hidden;
+
+  .p-card-body {
+    padding: 0;
+    gap: 0;
+  }
 }

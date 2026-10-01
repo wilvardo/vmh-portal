@@ -1,5 +1,6 @@
 {
   "home_greeting": "Hola, {name}",
+  "home_eyebrow": "Mi entrenamiento",
   "home_subtitle": "Este es tu espacio en el estudio.",
   "home_load_error": "No se pudo cargar tu información",
   "home_retry": "Volver a intentar",

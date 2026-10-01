@@ -14,14 +14,16 @@
 .input-box {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
   width: 100%;
   color: var(--color-fg);
 
+  // La etiqueta acompaña al campo, no compite con el: un punto mas chica que
+  // el valor y en la tinta secundaria (VMH-31).
   label {
-    font-size: var(--fs-body-sm);
+    font-size: var(--app-fs-meta);
     font-weight: var(--fw-medium);
-    color: var(--color-fg);
+    color: var(--color-fg-secondary);
     cursor: pointer;
   }
 

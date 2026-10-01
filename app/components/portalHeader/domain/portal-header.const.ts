@@ -13,7 +13,7 @@ import type { PortalNavItem } from './portal-header.interface'
  * plantilla.
  */
 export const PORTAL_NAV_ITEMS: readonly PortalNavItem[] = [
-  { path: POST_LOGIN_REDIRECT_PATH, labelKey: 'portal_header_nav_home' },
-  { path: SCHEDULE_PATH, labelKey: 'portal_header_nav_schedule' },
-  { path: PAYMENTS_PATH, labelKey: 'portal_header_nav_payments' }
+  { path: POST_LOGIN_REDIRECT_PATH, labelKey: 'portal_header_nav_home', icon: 'home' },
+  { path: SCHEDULE_PATH, labelKey: 'portal_header_nav_schedule', icon: 'schedule' },
+  { path: PAYMENTS_PATH, labelKey: 'portal_header_nav_payments', icon: 'payments' }
 ]

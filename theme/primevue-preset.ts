@@ -10,7 +10,8 @@
 //   - Light-first sin tema oscuro (MASTER 4.3): el esquema `dark` es una copia
 //     del claro para que la marca nunca se vea invertida aunque alguien active
 //     el conmutador de la libreria.
-//   - Densidad de panel (MASTER 14): campo de 36px, cuerpo de 14px.
+//   - Densidad de app (VMH-31): control de 32px, celda y campo de 13px, la
+//     escala `--app-*` de `app/assets/design-system/_density.scss`.
 //
 // Si un componente no obedece al preset, el arreglo vive en
 // `app/assets/design-system/_primevue-overrides.scss`, nunca en la pagina.
@@ -211,13 +212,16 @@ const VmhPreset = definePreset(Aura, {
     iconSize: 'var(--icon-md)',
     anchorGutter: 'var(--space-1)',
 
-    // Densidad de panel (MASTER 14): el campo mide 36px, no 48px.
+    // Densidad de app (VMH-31): el campo mide 32px; la altura la fija el piso
+    // de `_primevue-overrides.scss` y aqui solo se da el relleno.
     formField: {
       paddingX: 'var(--space-3)',
-      paddingY: 'var(--space-2)',
+      paddingY: 'var(--space-1)',
       sm: { fontSize: 'var(--fs-caption)', paddingX: 'var(--space-2)', paddingY: 'var(--space-1)' },
       lg: { fontSize: 'var(--fs-body)', paddingX: 'var(--space-4)', paddingY: 'var(--space-3)' },
-      borderRadius: 'var(--radius-sm)',
+      // Radio de 8: el mismo del alternador y del bloque, para que una fila de
+      // controles se lea como una sola pieza.
+      borderRadius: 'var(--radius-md)',
       focusRing: {
         width: 'var(--focus-ring-width)',
         style: 'solid',
@@ -264,7 +268,7 @@ const VmhPreset = definePreset(Aura, {
       popover: { borderRadius: 'var(--radius-md)', padding: 'var(--space-4)' },
       modal: {
         borderRadius: 'var(--radius-lg)',
-        padding: 'var(--space-6)',
+        padding: 'var(--space-5)',
         shadow: 'var(--elevation-3)'
       }
     },
@@ -278,15 +282,17 @@ const VmhPreset = definePreset(Aura, {
   },
 
   components: {
-    // El boton de la marca es pill (MASTER 12.1) y en el panel mide 36px.
+    // El boton de la marca es pill (MASTER 12.1) y en las apps mide 32px
+    // (VMH-31). La tipografia y la caja alta del primario viven en
+    // `_primevue-overrides.scss`: el preset no tiene token para ellas.
     button: {
       root: {
         borderRadius: 'var(--radius-pill)',
         roundedBorderRadius: 'var(--radius-pill)',
         gap: 'var(--space-2)',
-        paddingX: 'var(--space-5)',
-        paddingY: 'var(--space-2)',
-        iconOnlyWidth: 'var(--field-height-sm)',
+        paddingX: 'var(--space-4)',
+        paddingY: 'var(--space-1)',
+        iconOnlyWidth: 'var(--app-control-h)',
         sm: {
           fontSize: 'var(--fs-caption)',
           paddingX: 'var(--space-3)',
@@ -317,20 +323,24 @@ const VmhPreset = definePreset(Aura, {
         // borde para la tarjeta.
         shadow: '0 0 0 1px var(--color-border)'
       },
-      // Aire dentro de la tarjeta: 24px (VMH-13 3.3).
-      body: { padding: 'var(--space-6)', gap: 'var(--space-4)' },
-      caption: { gap: 'var(--space-2)' },
-      title: { fontSize: 'var(--fs-body-lg)', fontWeight: 'var(--fw-semibold)' },
+      // Aire dentro de la tarjeta: 16px (VMH-31). Los 24 de VMH-13 inflaban
+      // cada bloque, y una pantalla de cinco bloques bajaba media pantalla.
+      body: { padding: 'var(--app-block-pad)', gap: 'var(--space-3)' },
+      caption: { gap: 'var(--space-1)' },
+      title: { fontSize: 'var(--app-fs-section)', fontWeight: 'var(--fw-medium)' },
       subtitle: { color: 'var(--color-fg-secondary)' }
     },
     datatable: {
-      // Fila de 44px con separadores horizontales (MASTER 12.5).
+      // Fila de 42px con separadores horizontales (MASTER 12.5, VMH-31). El
+      // encabezado va sobre gris de un punto para separarse del dato sin linea
+      // extra; su tipografia de etiqueta vive en `_primevue-overrides.scss`.
       headerCell: {
-        background: 'var(--color-surface)',
-        color: 'var(--color-fg-secondary)',
-        borderColor: 'var(--color-border)'
+        background: 'var(--color-neutral-50)',
+        color: 'var(--color-fg-muted)',
+        borderColor: 'var(--color-border)',
+        padding: 'var(--space-2) var(--app-block-pad)'
       },
-      bodyCell: { borderColor: 'var(--color-border)' },
+      bodyCell: { borderColor: 'var(--color-border)', padding: '0 var(--app-block-pad)' },
       row: { background: 'var(--color-surface)', hoverBackground: 'var(--color-surface-sunken)' },
       columnTitle: { fontWeight: 'var(--fw-semibold)' }
     },
@@ -392,20 +402,21 @@ const VmhPreset = definePreset(Aura, {
     // puede resolver con superficie, no se resuelve con color (VMH-13 3.1).
     togglebutton: {
       root: {
-        background: 'var(--color-bg-body)',
-        checkedBackground: 'var(--color-bg-body)',
-        hoverBackground: 'var(--color-bg-body)',
-        borderColor: 'var(--color-border)',
+        background: 'var(--color-neutral-100)',
+        checkedBackground: 'var(--color-neutral-100)',
+        hoverBackground: 'var(--color-neutral-100)',
+        borderColor: 'var(--color-neutral-100)',
         borderRadius: 'var(--radius-md)',
         color: 'var(--color-fg-secondary)',
         hoverColor: 'var(--color-fg)',
         checkedColor: 'var(--color-fg)',
-        checkedBorderColor: 'var(--color-border)',
+        checkedBorderColor: 'var(--color-neutral-100)',
         fontWeight: 'var(--fw-medium)'
       },
       content: {
         borderRadius: 'var(--radius-sm)',
-        checkedBackground: 'var(--color-surface)'
+        checkedBackground: 'var(--color-surface)',
+        checkedShadow: 'var(--elevation-1)'
       }
     },
     // El dialogo no traia ajuste propio y se quedaba con el titulo de la
@@ -414,17 +425,27 @@ const VmhPreset = definePreset(Aura, {
     // pantalla-, asi que sus encabezados miden igual.
     dialog: {
       root: { background: 'var(--color-surface)', borderColor: 'var(--color-border)' },
-      header: { padding: 'var(--space-5)' },
+      header: { padding: 'var(--space-4) var(--space-5)' },
       content: { padding: '0 var(--space-5) var(--space-5)' },
-      footer: { padding: 'var(--space-5)' },
-      title: { fontSize: 'var(--fs-body-lg)', fontWeight: 'var(--fw-semibold)' }
+      footer: { padding: 'var(--space-4) var(--space-5)' },
+      title: { fontSize: 'var(--app-fs-section)', fontWeight: 'var(--fw-medium)' }
     },
     drawer: {
       root: { background: 'var(--color-surface)', borderColor: 'var(--color-border)' },
-      header: { padding: 'var(--space-5)' },
+      header: { padding: 'var(--space-4) var(--space-5)' },
       content: { padding: '0 var(--space-5) var(--space-5)' },
-      footer: { padding: 'var(--space-5)' },
-      title: { fontSize: 'var(--fs-body-lg)', fontWeight: 'var(--fw-semibold)' }
+      footer: { padding: 'var(--space-4) var(--space-5)' },
+      title: { fontSize: 'var(--app-fs-section)', fontWeight: 'var(--fw-medium)' }
+    },
+    // Etiqueta de estado compacta (VMH-31): acompaña al dato, no compite con
+    // el titulo del bloque.
+    tag: {
+      root: {
+        fontSize: 'var(--app-fs-label)',
+        fontWeight: 'var(--fw-medium)',
+        padding: '0.125rem var(--space-2)',
+        borderRadius: 'var(--radius-pill)'
+      }
     },
     tooltip: {
       root: {

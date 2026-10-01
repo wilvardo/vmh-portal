@@ -4,5 +4,8 @@
   "portal_header_nav_schedule": "Horarios",
   "portal_header_nav_payments": "Mis pagos",
   "portal_header_sign_out": "Salir",
-  "portal_header_signing_out": "Saliendo…"
+  "portal_header_signing_out": "Saliendo…",
+  "portal_header_brand_tag": "Portal",
+  "portal_header_nav_group": "Mi entrenamiento",
+  "portal_header_role": "Atleta"
 }

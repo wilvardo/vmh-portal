@@ -3,8 +3,10 @@
 // transiciones) y los ajustes de PrimeVue que el preset no alcanza a cubrir.
 //
 // Todo estilo de componente vive en el `style.scss` de su slice (BEM + tokens).
-// El orden importa: la base define el documento, las utilidades dependen de sus
-// tokens y los overrides deben ganarle a la hoja de la libreria.
+// El orden importa: la densidad declara la escala de las apps, la base define
+// el documento, las utilidades dependen de sus tokens y los overrides deben
+// ganarle a la hoja de la libreria.
+@use 'density';
 @use 'base';
 @use 'utilities';
 @use 'shell';

@@ -41,7 +41,7 @@ describe('preset de PrimeVue de VMH', () => {
   })
 
   it('respeta la densidad del panel en el boton de solo icono', () => {
-    expect(components.button.root.iconOnlyWidth).toBe('var(--field-height-sm)')
+    expect(components.button.root.iconOnlyWidth).toBe('var(--app-control-h)')
   })
 
   it('alinea el foco de la libreria con el anillo unico del sistema', () => {
