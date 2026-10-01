@@ -8,6 +8,14 @@ import { AUTH_ROLE, type AuthRole } from './auth-role.enum'
 export const SESSION_STORAGE_KEY = 'vmh-portal-session'
 
 /**
+ * Nombre del candado del navegador bajo el que se renueva la sesion. Lo
+ * comparten todas las pestanas del portal en el mismo navegador: solo una
+ * renueva a la vez. Lleva el nombre del portal por lo mismo que la clave de
+ * almacenamiento.
+ */
+export const SESSION_REFRESH_LOCK = 'vmh-portal-session-refresh'
+
+/**
  * Ruta de la pantalla de acceso.
  *
  * Es la raiz, no `/login` como en el panel. El portal se comparte por enlace y

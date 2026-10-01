@@ -1,5 +1,5 @@
 // @vitest-environment nuxt
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AUTH_ROLE } from '~/resources/scripts/domain/auth-role.enum'
 import { SESSION_STORAGE_KEY } from '~/resources/scripts/domain/session.const'
 import type { AuthSession } from '~/resources/scripts/domain/session.interface'
@@ -45,5 +45,25 @@ describe('plugin de sesion', () => {
     )
 
     expect(useSession().session.value).toEqual(incoming)
+  })
+
+  it('si otra pestana cierra sesion, esta sale a la pantalla de acceso', async () => {
+    writeStoredSession({ session: buildSession() })
+    await sessionPlugin(useNuxtApp())
+    const router = useRouter()
+    await router.push('/pagos')
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: SESSION_STORAGE_KEY,
+        oldValue: JSON.stringify(buildSession()),
+        newValue: null
+      })
+    )
+
+    expect(useSession().session.value).toBeNull()
+    await vi.waitFor(() => {
+      expect(router.currentRoute.value.path).toBe('/')
+    })
   })
 })

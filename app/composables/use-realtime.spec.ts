@@ -131,6 +131,18 @@ describe('useRealtime', () => {
     expect(onChange).not.toHaveBeenCalled()
   })
 
+  it('si la sesion se cierra, cierra el canal privado aunque la pantalla siga montada', async () => {
+    const scope = effectScope()
+    scope.run(() => useRealtime({ channels: [PRIVATE_CHANNEL], onChange: vi.fn() }))
+
+    accessToken.value = null
+    await nextTick()
+
+    expect(socket.disconnect).toHaveBeenCalledTimes(1)
+    scope.stop()
+    accessToken.value = 'pase'
+  })
+
   it('manda el pase de la sesion al conectar', () => {
     const scope = effectScope()
     scope.run(() => useRealtime({ channels: [PRIVATE_CHANNEL], onChange: vi.fn() }))

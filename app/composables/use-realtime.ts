@@ -20,7 +20,8 @@ interface UseRealtimeParams {
  * privado), varios canales a la vez, **antirrebote** -abrir la semana o bloquear
  * un rango llega como una rafaga y debe costar una sola consulta-, reconexion
  * que vuelve a consultar lo que se perdio mientras no hubo canal, y limpieza al
- * desmontar.
+ * desmontar o cuando la sesion se cierra (en esta pestana o en otra): un canal
+ * privado no se queda abierto sin nadie firmado.
  *
  * **Degradacion obligatoria.** Si el canal no conecta, la pantalla funciona
  * igual: el canal es una comodidad para no recargar y la fuente de verdad sigue
@@ -77,6 +78,20 @@ export const useRealtime = (params: UseRealtimeParams): void => {
     return connection
   }
 
+  /** Suelta la conexion y lo pendiente. */
+  const teardown = (): void => {
+    if (timer !== null) clearTimeout(timer)
+    timer = null
+
+    connection?.close()
+    connection = null
+    subscribed = []
+  }
+
+  watch(accessToken, (token) => {
+    if (token === null) teardown()
+  })
+
   watch(
     () => [...new Set(toValue(params.channels))],
     (next) => {
@@ -93,12 +108,5 @@ export const useRealtime = (params: UseRealtimeParams): void => {
     { immediate: true }
   )
 
-  onScopeDispose(() => {
-    if (timer !== null) clearTimeout(timer)
-    timer = null
-
-    connection?.close()
-    connection = null
-    subscribed = []
-  })
+  onScopeDispose(teardown)
 }

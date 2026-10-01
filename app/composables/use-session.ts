@@ -8,6 +8,7 @@ import {
   watchStoredSession,
   writeStoredSession
 } from '~/resources/scripts/infrastructure/session-storage.repository'
+import { runWithSessionLock } from '~/resources/scripts/infrastructure/session-lock.repository'
 import { canAccessPortal } from '~/resources/scripts/domain/session.helpers'
 import { SESSION_STORAGE_KEY } from '~/resources/scripts/domain/session.const'
 import type { AuthSession, AuthUser } from '~/resources/scripts/domain/session.interface'
@@ -18,14 +19,22 @@ import type { AuthSession, AuthUser } from '~/resources/scripts/domain/session.i
  * Si cada una renovara por su cuenta, la segunda usaria un token ya rotado, el
  * API lo leeria como reuso y revocaria toda la familia de la sesion.
  *
- * Es seguro como estado de modulo porque el portal es una SPA: un modulo cargado
- * equivale a una pestaña.
+ * Cubre una pestaña (un modulo cargado equivale a una pestaña en una SPA). Entre
+ * pestañas lo cubre el candado del navegador de `runWithSessionLock`.
  */
 let refreshInFlight: Promise<AuthSession | null> | null = null
 
 interface StartSessionParams {
   /** Sesion emitida por el API. */
   session: AuthSession
+}
+
+interface SyncAcrossTabsParams {
+  /**
+   * Otra pestaña cerro la sesion (o la perdio). Quien escucha saca a la persona
+   * de las pantallas privadas: lo que se ve ahi ya no le pertenece a nadie.
+   */
+  onSignedOut?: () => void
 }
 
 interface UseSessionReturn {
@@ -48,7 +57,7 @@ interface UseSessionReturn {
   /** Cierra sesion en el servidor y localmente. */
   closeSession: () => Promise<void>
   /** Mantiene la sesion sincronizada con las demas pestañas abiertas. */
-  syncAcrossTabs: () => () => void
+  syncAcrossTabs: (params?: SyncAcrossTabsParams) => () => void
 }
 
 /**
@@ -90,6 +99,41 @@ export const useSession = (): UseSessionReturn => {
     return stored
   }
 
+  /**
+   * Renueva dentro del candado entre pestañas.
+   *
+   * Lo primero, ya con el candado, es releer el almacenamiento: si otra pestaña
+   * renovo mientras esta esperaba, el par guardado ya es otro y se adopta en vez
+   * de gastar el token viejo (que el API leeria como reuso). Si otra pestaña
+   * cerro sesion, no hay nada que renovar. Si el almacenamiento no responde
+   * (modo privado), se sigue con la sesion en memoria.
+   *
+   * @param stale Sesion con la que esta pestaña recibio el 401.
+   * @returns La sesion vigente, o `null` si ya no hay sesion.
+   */
+  const renewUnderLock = (stale: AuthSession): Promise<AuthSession | null> =>
+    runWithSessionLock({
+      task: async (): Promise<AuthSession | null> => {
+        const latest = readStoredSession() ?? session.value
+        if (latest === null) {
+          session.value = null
+          return null
+        }
+
+        if (latest.refreshToken !== stale.refreshToken) {
+          session.value = latest
+          return latest
+        }
+
+        const renewed = await refreshSessionRequest({
+          baseUrl,
+          refreshToken: latest.refreshToken
+        })
+        startSession({ session: renewed })
+        return renewed
+      }
+    })
+
   const renewSession = async (): Promise<AuthSession | null> => {
     const current = session.value
     if (current === null) return null
@@ -97,11 +141,7 @@ export const useSession = (): UseSessionReturn => {
     // Segunda llamada concurrente: se cuelga del intento ya en vuelo.
     if (refreshInFlight !== null) return refreshInFlight
 
-    refreshInFlight = refreshSessionRequest({ baseUrl, refreshToken: current.refreshToken })
-      .then((renewed) => {
-        startSession({ session: renewed })
-        return renewed
-      })
+    refreshInFlight = renewUnderLock(current)
       .catch((error: unknown) => {
         // Token vencido, revocado o detectado como reuso: la sesion murio.
         console.error('useSession: error al renovar la sesion', error)
@@ -133,10 +173,11 @@ export const useSession = (): UseSessionReturn => {
     }
   }
 
-  const syncAcrossTabs = (): (() => void) =>
+  const syncAcrossTabs = (params: SyncAcrossTabsParams = {}): (() => void) =>
     watchStoredSession({
-      onChange: (incoming) => {
+      onChange: (incoming, hadSession) => {
         session.value = incoming
+        if (incoming === null && hadSession) params.onSignedOut?.()
       }
     })
 

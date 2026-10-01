@@ -100,6 +100,62 @@ describe('useSession', () => {
     expect(refreshSessionRequest).toHaveBeenCalledTimes(1)
   })
 
+  it('renueva bajo el candado del navegador compartido con las demas pestanas', async () => {
+    const request = vi.fn((_name: string, _options: unknown, callback: () => Promise<unknown>) =>
+      callback()
+    )
+    Object.defineProperty(navigator, 'locks', { value: { request }, configurable: true })
+    refreshSessionRequest.mockResolvedValue(buildSession({ refreshToken: 'refresh-2' }))
+    const { startSession, renewSession } = useSession()
+    startSession({ session: buildSession() })
+
+    await renewSession()
+
+    expect(request).toHaveBeenCalledWith(
+      'vmh-portal-session-refresh',
+      { mode: 'exclusive' },
+      expect.any(Function)
+    )
+    Object.defineProperty(navigator, 'locks', { value: null, configurable: true })
+  })
+
+  it('si otra pestana renovo mientras esperaba, adopta su par y no gasta el token viejo', async () => {
+    const { startSession, renewSession, session } = useSession()
+    startSession({ session: buildSession() })
+    // La otra pestana ya roto el par y lo dejo guardado.
+    const renewedElsewhere = buildSession({ accessToken: 'access-9', refreshToken: 'refresh-9' })
+    window.localStorage.setItem('vmh-portal-session', JSON.stringify(renewedElsewhere))
+
+    const result = await renewSession()
+
+    expect(refreshSessionRequest).not.toHaveBeenCalled()
+    expect(result).toEqual(renewedElsewhere)
+    expect(session.value).toEqual(renewedElsewhere)
+  })
+
+  it('si otra pestana cerro sesion mientras esperaba el candado, no renueva', async () => {
+    const { startSession, renewSession, syncAcrossTabs, session } = useSession()
+    startSession({ session: buildSession() })
+    const stop = syncAcrossTabs()
+    const request = vi.fn((_name: string, _options: unknown, callback: () => Promise<unknown>) => {
+      // Mientras esta pestana esperaba, la otra salio.
+      window.localStorage.removeItem('vmh-portal-session')
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: 'vmh-portal-session', newValue: null })
+      )
+      return callback()
+    })
+    Object.defineProperty(navigator, 'locks', { value: { request }, configurable: true })
+
+    const result = await renewSession()
+
+    expect(result).toBeNull()
+    expect(refreshSessionRequest).not.toHaveBeenCalled()
+    expect(session.value).toBeNull()
+    Object.defineProperty(navigator, 'locks', { value: null, configurable: true })
+    stop()
+  })
+
   it('cierra la sesion cuando la renovacion falla', async () => {
     refreshSessionRequest.mockRejectedValue({ response: { status: 401 } })
     const { startSession, renewSession, session } = useSession()
@@ -140,6 +196,35 @@ describe('useSession', () => {
     await closeSession()
 
     expect(session.value).toBeNull()
+  })
+
+  it('avisa para salir cuando otra pestana cierra la sesion', () => {
+    const onSignedOut = vi.fn()
+    const { startSession, syncAcrossTabs, session } = useSession()
+    startSession({ session: buildSession() })
+    const stop = syncAcrossTabs({ onSignedOut })
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: 'vmh-portal-session',
+        oldValue: JSON.stringify(buildSession()),
+        newValue: null
+      })
+    )
+
+    expect(session.value).toBeNull()
+    expect(onSignedOut).toHaveBeenCalledTimes(1)
+    stop()
+  })
+
+  it('sin sesion previa, un cierre en otra pestana no saca a nadie', () => {
+    const onSignedOut = vi.fn()
+    const stop = useSession().syncAcrossTabs({ onSignedOut })
+
+    window.dispatchEvent(new StorageEvent('storage', { key: 'vmh-portal-session', newValue: null }))
+
+    expect(onSignedOut).not.toHaveBeenCalled()
+    stop()
   })
 
   it('adopta la sesion que otra pestana inicio', () => {

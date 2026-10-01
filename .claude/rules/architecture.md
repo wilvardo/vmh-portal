@@ -80,9 +80,10 @@ Tres piezas, cada una con una sola responsabilidad:
 
 Reglas que no se relajan:
 
-1. **Un solo intento de renovacion a la vez.** El API rota el refresh en cada uso: dos renovaciones concurrentes con el mismo token se leen como reuso y el servidor revoca toda la familia de la sesion. El single-flight de `use-session.ts` es lo que evita cerrar la sesion de una persona por abrir dos pestañas.
+1. **Un solo intento de renovacion a la vez.** El API rota el refresh en cada uso: dos renovaciones concurrentes con el mismo token se leen como reuso y el servidor revoca toda la familia de la sesion. Dentro de una pestaña lo evita el single-flight de `use-session.ts`; entre pestañas (y la app instalada), el candado del navegador de `session-lock.repository.ts` (Web Locks), dentro del cual se relee el almacenamiento antes de renovar: si otra pestaña ya roto el par, se adopta en vez de gastar el token viejo.
 2. **El rol se valida en el panel Y en el API.** La frontera dura es del servidor; el guardia del panel existe para no mostrar una pantalla en blanco a quien no tiene acceso.
 3. **La contrasena no se guarda en ningun lado**, ni siquiera en memoria despues del intento.
+4. **Cerrar sesion en una pestaña saca a las demas.** `syncAcrossTabs` avisa y el plugin de sesion manda a la pantalla de acceso; `useRealtime` cierra el canal privado en cuanto no hay pase.
 
 ## Consumo del API
 

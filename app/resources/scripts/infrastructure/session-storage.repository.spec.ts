@@ -67,17 +67,23 @@ describe('repositorio de sesion en almacenamiento local', () => {
       })
     )
 
-    expect(onChange).toHaveBeenCalledWith(buildSession())
+    expect(onChange).toHaveBeenCalledWith(buildSession(), false)
     stop()
   })
 
-  it('avisa con null cuando otra pestana cierra sesion', () => {
+  it('avisa con null cuando otra pestana cierra sesion, y que antes habia una', () => {
     const onChange = vi.fn()
     const stop = watchStoredSession({ onChange })
 
-    window.dispatchEvent(new StorageEvent('storage', { key: SESSION_STORAGE_KEY, newValue: null }))
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: SESSION_STORAGE_KEY,
+        oldValue: JSON.stringify(buildSession()),
+        newValue: null
+      })
+    )
 
-    expect(onChange).toHaveBeenCalledWith(null)
+    expect(onChange).toHaveBeenCalledWith(null, true)
     stop()
   })
 

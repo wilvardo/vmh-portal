@@ -10,9 +10,9 @@ interface WriteSessionParams {
 interface WatchSessionParams {
   /**
    * Se invoca cuando OTRA pestaña cambia la sesion. Recibe la sesion nueva, o
-   * `null` si la otra pestaña cerro sesion.
+   * `null` si la otra pestaña cerro sesion, y si antes del cambio habia una.
    */
-  onChange: (session: AuthSession | null) => void
+  onChange: (session: AuthSession | null, hadSession: boolean) => void
 }
 
 /**
@@ -81,16 +81,20 @@ export const watchStoredSession = (params: WatchSessionParams): (() => void) => 
   const handler = (event: StorageEvent): void => {
     if (event.key !== SESSION_STORAGE_KEY) return
 
+    // Se lee del evento y no de la memoria: otro oyente de esta misma pestaña
+    // pudo haber vaciado ya la sesion en memoria.
+    const hadSession = event.oldValue !== null
+
     if (event.newValue === null) {
-      params.onChange(null)
+      params.onChange(null, hadSession)
       return
     }
 
     try {
-      params.onChange(parseAuthSession(JSON.parse(event.newValue)))
+      params.onChange(parseAuthSession(JSON.parse(event.newValue)), hadSession)
     } catch (error: unknown) {
       console.error('watchStoredSession: error al leer la sesion de otra pestana', error)
-      params.onChange(null)
+      params.onChange(null, hadSession)
     }
   }
 
