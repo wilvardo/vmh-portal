@@ -1,0 +1,47 @@
+// Aviso flotante abajo a la derecha; en el telefono, encima de las pestañas.
+.app-update-prompt {
+  position: fixed;
+  inset-inline-end: var(--space-4);
+  inset-block-end: var(--space-4);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  max-inline-size: 28rem;
+  padding: var(--space-3) var(--app-block-pad);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+
+  @media (--bp-md-down) {
+    inset-inline: var(--space-3);
+    inset-block-end: calc(4.5rem + env(safe-area-inset-bottom));
+    max-inline-size: none;
+  }
+
+  &__text {
+    flex: 1 1 12rem;
+    min-inline-size: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--app-fs-table);
+    font-weight: var(--fw-semibold);
+    color: var(--color-fg);
+  }
+
+  &__detail {
+    margin: 0;
+    font-size: var(--app-fs-meta);
+    color: var(--color-fg-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--space-2);
+    margin-inline-start: auto;
+  }
+}

@@ -27,6 +27,12 @@
 	@mutable not path /_nuxt/*
 	header @mutable Cache-Control "no-cache"
 
+	# App instalable (PWA): `sw.js` y el manifiesto ya caen en `no-cache` arriba,
+	# asi el navegador se entera de cada version nueva. El manifiesto declara su
+	# tipo: sin el, algunos navegadores no lo reconocen como manifiesto.
+	@manifest path /manifest.webmanifest
+	header @manifest Content-Type application/manifest+json
+
 	# Regreso de SPA: cualquier ruta que no sea un archivo la resuelve el router.
 	try_files {path} /index.html
 	file_server

@@ -23,7 +23,79 @@ export default defineNuxtConfig({
     enabled: false
   },
 
-  modules: ['@primevue/nuxt-module', '@nuxtjs/i18n', '@nuxt/eslint'],
+  modules: ['@primevue/nuxt-module', '@nuxtjs/i18n', '@nuxt/eslint', '@vite-pwa/nuxt'],
+
+  // App instalable (PWA). El service worker guarda SOLO la cascara de la app
+  // -JS, CSS, iconos y fuentes- para que abra sin red y diga que no hay
+  // conexion. NUNCA guarda respuestas del API: traen datos personales del
+  // atleta y su sesion, y lo que se muestra siempre sale del servidor.
+  pwa: {
+    registerType: 'prompt',
+    manifest: {
+      id: '/',
+      name: `${PORTAL_BRAND_NAME} · ${PORTAL_BRAND_DESCRIPTOR}`,
+      short_name: PORTAL_BRAND_NAME,
+      description: PORTAL_DESCRIPTION,
+      lang: 'es-MX',
+      dir: 'ltr',
+      start_url: '/inicio',
+      scope: '/',
+      display: 'standalone',
+      orientation: 'portrait',
+      // Superficie de la barra superior y nieve del lienzo (tokens.css).
+      theme_color: '#ffffff',
+      background_color: '#f7f7f7',
+      categories: ['health', 'fitness', 'lifestyle'],
+      icons: [
+        { src: '/pwa/pwa-64x64.png', sizes: '64x64', type: 'image/png' },
+        { src: '/pwa/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/pwa/pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+        {
+          src: '/pwa/maskable-icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable'
+        }
+      ]
+    },
+    workbox: {
+      // `nuxt generate` escribe la misma cascara HTML por cada ruta (~590 KB
+      // cada una por los estilos en linea del tema). Basta `index.html`: es el
+      // respaldo de toda navegacion. Precargar las nueve sumaba 5 MB.
+      globPatterns: ['**/*.{js,css,png,svg,ico,webmanifest}', 'index.html'],
+      // SPA: toda navegacion sin red cae en la cascara y el router resuelve. El
+      // modulo precarga `index.html` con la URL `/`, asi que el respaldo es `/`.
+      navigateFallback: '/',
+      cleanupOutdatedCaches: true,
+      // Toma el control de la pestaña apenas se activa: sin esto, en la primera
+      // visita la pagina no queda controlada y "Actualizar" no recargaba.
+      clientsClaim: true,
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+          handler: 'StaleWhileRevalidate',
+          options: { cacheName: 'vmh-fonts-css' }
+        },
+        {
+          urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'vmh-fonts',
+            expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            cacheableResponse: { statuses: [0, 200] }
+          }
+        }
+      ]
+    },
+    client: {
+      // La invitacion a instalar se descarta una vez y no vuelve a insistir.
+      installPrompt: 'vmh-portal-install-dismissed',
+      // Una sesion abierta toda la tarde tambien se entera de la version nueva.
+      periodicSyncForUpdates: 60 * 60
+    },
+    // En desarrollo no hay service worker: cachearia el servidor de Vite.
+    devOptions: { enabled: false }
+  },
 
   // Lo retirado con prefijo __DELETED__ se conserva en disco hasta borrarlo a
   // mano. Nuxt no lo enruta, no lo auto-importa ni lo compila aunque alguien lo
@@ -86,7 +158,9 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       charset: 'utf-8',
-      viewport: 'width=device-width, initial-scale=1',
+      // `viewport-fit=cover`: instalada, la app ocupa la pantalla entera y las
+      // pestañas inferiores respetan la zona segura con `env(safe-area-inset-*)`.
+      viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
       // El titulo base es el descriptor: la plantilla ya agrega la marca, y
       // usar la marca en ambos lados produce "VMH · VMH".
       title: PORTAL_BRAND_DESCRIPTOR,
@@ -96,13 +170,26 @@ export default defineNuxtConfig({
       },
       meta: [
         { name: 'description', content: PORTAL_DESCRIPTION },
-        { name: 'theme-color', content: '#f7f7f7' },
+        // Mismo color que `theme_color` del manifiesto: la barra del sistema
+        // continua la barra superior del portal.
+        { name: 'theme-color', content: '#ffffff' },
+        // iOS no lee el manifiesto para esto: sin estas metas la app instalada
+        // abre como pestaña de Safari.
+        { name: 'mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
+        { name: 'apple-mobile-web-app-title', content: PORTAL_BRAND_NAME },
         // Superficie privada: fuera de buscadores. Se refuerza con public/robots.txt
         // y, si el hosting lo permite, con el header `X-Robots-Tag: noindex`.
         { name: 'robots', content: 'noindex, nofollow' }
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/logos/isotipo.svg' },
+        { rel: 'icon', href: '/pwa/favicon.ico', sizes: '48x48' },
+        { rel: 'apple-touch-icon', href: '/pwa/apple-touch-icon-180x180.png' },
+        // Manifiesto en el HTML que sale del build, no inyectado en el cliente:
+        // Safari de iOS y los validadores leen el documento tal como llega.
+        { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
