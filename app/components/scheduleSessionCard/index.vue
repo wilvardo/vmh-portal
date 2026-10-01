@@ -2,7 +2,9 @@
   <article class="schedule-session-card" :data-state="state">
     <header class="schedule-session-card__header">
       <span class="schedule-session-card__time">{{ time }}</span>
-      <Tag v-if="stateLabel" :severity="stateSeverity" :value="stateLabel" />
+      <span v-if="stateLabel" class="schedule-session-card__state">
+        <Tag :severity="stateSeverity" :value="stateLabel" />
+      </span>
     </header>
 
     <p class="schedule-session-card__title">{{ title }}</p>

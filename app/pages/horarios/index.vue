@@ -1,88 +1,92 @@
 <template>
   <section class="schedule">
-    <header class="schedule__heading">
-      <div class="schedule__heading-text">
-        <h1 class="schedule__title">{{ $t('schedule_title') }}</h1>
-        <p class="schedule__subtitle">{{ $t('schedule_subtitle') }}</p>
+    <pageHeader
+      :eyebrow="$t('schedule_eyebrow')"
+      :title="$t('schedule_title')"
+      :support="$t('schedule_subtitle')"
+    >
+      <template #actions>
+        <Button
+          variant="outlined"
+          severity="secondary"
+          :label="$t('schedule_current_week')"
+          :disabled="week.isLoading.value"
+          @click="week.current()"
+        />
+      </template>
+    </pageHeader>
+
+    <!-- Una sola barra: que semana se ve y, si hay varias, con quien. -->
+    <div class="schedule__toolbar">
+      <nav class="schedule__week-nav" :aria-label="$t('schedule_title')">
+        <Button
+          v-tooltip.bottom="$t('schedule_previous_week')"
+          class="schedule__week-step"
+          variant="text"
+          severity="secondary"
+          :aria-label="$t('schedule_previous_week')"
+          :disabled="week.isLoading.value"
+          @click="week.previous()"
+        >
+          <svg
+            class="schedule__week-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M15 6l-6 6l6 6" />
+          </svg>
+        </Button>
+
+        <span class="schedule__range" aria-live="polite">{{ view?.range ?? '' }}</span>
+
+        <Button
+          v-tooltip.bottom="$t('schedule_next_week')"
+          class="schedule__week-step"
+          variant="text"
+          severity="secondary"
+          :aria-label="$t('schedule_next_week')"
+          :disabled="week.isLoading.value"
+          @click="week.next()"
+        >
+          <svg
+            class="schedule__week-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M9 6l6 6l-6 6" />
+          </svg>
+        </Button>
+      </nav>
+
+      <div v-if="professionals.length > 1" class="schedule__professionals">
+        <span id="schedule-professional-label" class="schedule__professionals-label">
+          {{ $t('schedule_professional_label') }}
+        </span>
+        <SelectButton
+          v-model="selectedProfessional"
+          :options="professionalOptions"
+          option-label="label"
+          option-value="value"
+          :allow-empty="false"
+          aria-labelledby="schedule-professional-label"
+        />
       </div>
-
-      <Button
-        variant="text"
-        severity="secondary"
-        :label="$t('schedule_current_week')"
-        :disabled="week.isLoading.value"
-        @click="week.current()"
-      />
-    </header>
-
-    <nav class="schedule__week-nav" :aria-label="$t('schedule_title')">
-      <Button
-        v-tooltip.bottom="$t('schedule_previous_week')"
-        class="schedule__week-step"
-        variant="text"
-        severity="secondary"
-        :aria-label="$t('schedule_previous_week')"
-        :disabled="week.isLoading.value"
-        @click="week.previous()"
-      >
-        <svg
-          class="schedule__week-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path d="M15 6l-6 6l6 6" />
-        </svg>
-      </Button>
-
-      <span class="schedule__range" aria-live="polite">{{ view?.range ?? '' }}</span>
-
-      <Button
-        v-tooltip.bottom="$t('schedule_next_week')"
-        class="schedule__week-step"
-        variant="text"
-        severity="secondary"
-        :aria-label="$t('schedule_next_week')"
-        :disabled="week.isLoading.value"
-        @click="week.next()"
-      >
-        <svg
-          class="schedule__week-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path d="M9 6l6 6l-6 6" />
-        </svg>
-      </Button>
-    </nav>
-
-    <div v-if="professionals.length > 1" class="schedule__professionals">
-      <span id="schedule-professional-label" class="schedule__professionals-label">
-        {{ $t('schedule_professional_label') }}
-      </span>
-      <SelectButton
-        v-model="selectedProfessional"
-        :options="professionalOptions"
-        option-label="label"
-        option-value="value"
-        :allow-empty="false"
-        aria-labelledby="schedule-professional-label"
-      />
     </div>
 
     <div v-if="week.isLoading.value && !view" class="schedule__loading" aria-busy="true">
-      <Skeleton v-for="index in 3" :key="index" height="7rem" border-radius="1rem" />
+      <Skeleton v-for="index in 3" :key="index" height="9rem" border-radius="0.5rem" />
     </div>
 
     <!-- Un fallo no deja pintada la semana anterior: se dice y se reintenta. -->

@@ -1,9 +1,10 @@
 <template>
   <section class="my-payments">
-    <header class="my-payments__heading">
-      <h1 class="my-payments__title">{{ $t('my_payments_title') }}</h1>
-      <p class="my-payments__subtitle">{{ $t('my_payments_subtitle') }}</p>
-    </header>
+    <pageHeader
+      :eyebrow="$t('my_payments_eyebrow')"
+      :title="$t('my_payments_title')"
+      :support="$t('my_payments_subtitle')"
+    />
 
     <div
       v-if="list.isLoading.value && list.payments.value.length === 0"
@@ -11,7 +12,7 @@
       aria-busy="true"
       :aria-label="$t('my_payments_loading')"
     >
-      <Skeleton v-for="index in 3" :key="index" height="5rem" border-radius="1rem" />
+      <Skeleton v-for="index in 3" :key="index" height="3rem" border-radius="0.5rem" />
     </div>
 
     <Message v-else-if="list.errorTitle.value" severity="error" :closable="false" role="alert">
@@ -44,35 +45,48 @@
     </div>
 
     <template v-else>
-      <ul class="my-payments__list">
-        <li
-          v-for="payment in list.payments.value"
-          :key="payment.paymentId"
-          class="my-payments__item"
-          :class="{ 'my-payments__item--voided': payment.isVoided }"
-        >
-          <div class="my-payments__main">
-            <span class="my-payments__plan">{{ payment.planName }}</span>
-            <span class="my-payments__when">{{ dateLabel(payment.paidAtLocal) }}</span>
-            <span class="my-payments__detail">
-              {{ $t('my_payments_folio', { folio: payment.paymentId }) }} ·
-              {{ methodLabel(payment.method) }}
-            </span>
-            <span v-if="payment.isVoided" class="my-payments__voided">
-              {{ $t('my_payments_voided') }}
-            </span>
-          </div>
+      <!-- Un solo bloque de lista con columnas en escritorio; en el telefono
+           cada pago se apila con su monto a la derecha. -->
+      <div class="my-payments__block">
+        <div class="my-payments__columns" aria-hidden="true">
+          <span>{{ $t('my_payments_col_plan') }}</span>
+          <span>{{ $t('my_payments_col_date') }}</span>
+          <span>{{ $t('my_payments_col_detail') }}</span>
+          <span class="my-payments__columns-amount">{{ $t('my_payments_col_amount') }}</span>
+        </div>
 
-          <span
-            class="my-payments__amount"
-            :class="{ 'my-payments__amount--struck': payment.isVoided }"
+        <ul class="my-payments__list">
+          <li
+            v-for="payment in list.payments.value"
+            :key="payment.paymentId"
+            class="my-payments__item"
+            :class="{ 'my-payments__item--voided': payment.isVoided }"
           >
-            {{ amountLabel(payment.amount) }}
-          </span>
-        </li>
-      </ul>
+            <div class="my-payments__main">
+              <span class="my-payments__plan-cell">
+                <span class="my-payments__plan">{{ payment.planName }}</span>
+                <span v-if="payment.isVoided" class="my-payments__voided">
+                  {{ $t('my_payments_voided') }}
+                </span>
+              </span>
+              <span class="my-payments__when">{{ dateLabel(payment.paidAtLocal) }}</span>
+              <span class="my-payments__detail">
+                {{ $t('my_payments_folio', { folio: payment.paymentId }) }} ·
+                {{ methodLabel(payment.method) }}
+              </span>
+            </div>
 
-      <p class="my-payments__count">{{ countLabel }}</p>
+            <span
+              class="my-payments__amount"
+              :class="{ 'my-payments__amount--struck': payment.isVoided }"
+            >
+              {{ amountLabel(payment.amount) }}
+            </span>
+          </li>
+        </ul>
+
+        <p class="my-payments__count">{{ countLabel }}</p>
+      </div>
 
       <Button
         v-if="list.hasMore.value"

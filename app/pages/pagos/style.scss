@@ -1,33 +1,17 @@
-// Mis pagos. Una columna a cualquier ancho: se consulta desde el telefono y a
-// 360 px nada obliga a desplazarse de lado.
+// Mis pagos (VMH-31): un bloque de lista a todo el ancho. En escritorio cada pago
+// es un renglon con columnas alineadas; en el telefono se apila y a 360 px nada
+// obliga a desplazarse de lado.
+$payment-columns: minmax(8rem, 1fr) 16rem 13rem 8rem;
+
 .my-payments {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-
-  &__heading {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  &__title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: var(--fs-h3);
-    color: var(--color-fg);
-  }
-
-  &__subtitle {
-    margin: 0;
-    font-size: var(--fs-body-sm);
-    color: var(--color-fg-secondary);
-  }
+  gap: var(--app-gap);
 
   &__loading {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
   &__empty {
@@ -35,32 +19,69 @@
     flex-direction: column;
     gap: var(--space-2);
     align-items: center;
-    padding: var(--space-8) var(--space-4);
+    padding: var(--space-10) var(--space-4);
     text-align: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
   }
 
   &__empty-icon {
-    inline-size: 2rem;
-    block-size: 2rem;
-    color: var(--color-fg-secondary);
+    inline-size: var(--icon-xl);
+    block-size: var(--icon-xl);
+    color: var(--color-fg-muted);
   }
 
   &__empty-title {
     margin: 0;
-    font-weight: var(--fw-semibold);
+    font-family: var(--font-display);
+    font-size: var(--app-fs-section);
     color: var(--color-fg);
   }
 
   &__empty-detail {
     margin: 0;
-    font-size: var(--fs-body-sm);
+    max-inline-size: 40ch;
+    font-size: var(--app-fs-table);
     color: var(--color-fg-secondary);
+  }
+
+  &__block {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  // Encabezado de columnas: la etiqueta del sitio sobre gris de un punto.
+  &__columns {
+    display: none;
+
+    @media (--bp-md) {
+      display: grid;
+      grid-template-columns: $payment-columns;
+      column-gap: var(--space-4);
+      align-items: center;
+      block-size: var(--space-8);
+      padding-inline: var(--app-block-pad);
+      background: var(--color-neutral-50);
+      border-block-end: 1px solid var(--color-border);
+      font-family: var(--font-display);
+      font-size: var(--app-fs-label);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-fg-muted);
+    }
+  }
+
+  &__columns-amount {
+    text-align: end;
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -71,39 +92,69 @@
     gap: var(--space-3);
     align-items: flex-start;
     justify-content: space-between;
-    padding: var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
+    padding: var(--space-3) var(--app-block-pad);
+    border-block-end: 1px solid var(--color-border);
+    font-size: var(--app-fs-table);
+
+    @media (--bp-md) {
+      display: grid;
+      grid-template-columns: $payment-columns;
+      column-gap: var(--space-4);
+      align-items: center;
+      min-block-size: var(--app-row-h);
+      padding-block: 0;
+    }
   }
 
   // Un pago anulado cambia de superficie y lo dice con palabras.
   &__item--voided {
-    background: var(--color-surface-sunken);
+    background: var(--color-neutral-50);
   }
 
   &__main {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: 2px;
+    min-inline-size: 0;
+
+    // En escritorio sus piezas son columnas del renglon.
+    @media (--bp-md) {
+      display: contents;
+    }
+  }
+
+  &__plan-cell {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
     min-inline-size: 0;
   }
 
   &__plan {
-    font-weight: var(--fw-semibold);
+    font-weight: var(--fw-medium);
     color: var(--color-fg);
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   &__when,
   &__detail {
-    font-size: var(--fs-body-sm);
+    font-size: var(--app-fs-meta);
     color: var(--color-fg-secondary);
     font-variant-numeric: tabular-nums;
+
+    @media (--bp-md) {
+      font-size: var(--app-fs-table);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 
   &__voided {
-    font-size: var(--fs-body-sm);
+    flex-shrink: 0;
+    font-size: var(--app-fs-meta);
     color: var(--color-fg);
   }
 
@@ -111,18 +162,20 @@
     flex: 0 0 auto;
     font-weight: var(--fw-semibold);
     color: var(--color-fg);
+    text-align: end;
     font-variant-numeric: tabular-nums;
   }
 
   &__amount--struck {
     text-decoration: line-through;
-    color: var(--color-fg-secondary);
+    color: var(--color-fg-muted);
   }
 
   &__count {
     margin: 0;
-    font-size: var(--fs-body-sm);
-    color: var(--color-fg-secondary);
+    padding: var(--space-3) var(--app-block-pad);
+    font-size: var(--app-fs-meta);
+    color: var(--color-fg-muted);
   }
 
   &__more {
@@ -131,7 +184,7 @@
 
   &__more-failed {
     margin: 0;
-    font-size: var(--fs-body-sm);
+    font-size: var(--app-fs-table);
     color: var(--color-danger-fg);
     text-align: center;
   }

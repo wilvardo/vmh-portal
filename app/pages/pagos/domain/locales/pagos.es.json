@@ -1,5 +1,10 @@
 {
   "my_payments_title": "Mis pagos",
+  "my_payments_eyebrow": "Mi entrenamiento",
+  "my_payments_col_plan": "Concepto",
+  "my_payments_col_date": "Fecha",
+  "my_payments_col_detail": "Folio y forma de pago",
+  "my_payments_col_amount": "Monto",
   "my_payments_subtitle": "Lo que has pagado en el estudio, lo más reciente primero.",
   "my_payments_loading": "Cargando tus pagos…",
   "my_payments_error": "No pudimos cargar tus pagos",

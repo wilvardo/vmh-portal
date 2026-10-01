@@ -1,75 +1,115 @@
-// Tarjeta de una sesion. Tactil primero: la accion ocupa el ancho en el
-// telefono y ningun dato obliga a desplazarse de lado a 360 px.
+// Sesion de la semana como renglon de su dia (VMH-31). En escritorio se lee en
+// una linea: hora, sesion, estado y accion. En el telefono se apila y la accion
+// ocupa el ancho, al alcance del pulgar; nada obliga a desplazarse a 360 px.
 .schedule-session-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  display: grid;
+  grid-template-areas:
+    'time state'
+    'title title'
+    'with with'
+    'meta meta'
+    'actions actions';
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-4);
+  align-items: center;
+  padding: var(--space-3) var(--app-block-pad);
+  border-block-end: 1px solid var(--color-border);
 
-  // Con reserva: acento de marca en el borde, lo primero que se busca.
+  &:last-child {
+    border-block-end: none;
+  }
+
+  @media (--bp-md) {
+    grid-template-areas:
+      'time title state actions'
+      'time with state actions'
+      'time meta state actions';
+    grid-template-columns: 4.5rem minmax(0, 1fr) 8rem 9rem;
+    row-gap: 0;
+  }
+
+  // Con reserva: filo del acento al borde interior, lo primero que se busca.
   &[data-state='mine'] {
-    border-color: var(--color-primary-600);
+    box-shadow: inset 3px 0 0 var(--color-primary);
   }
 
   // Llena, no disponible o pasada: se lee, pero ya no invita.
   &[data-state='full'],
   &[data-state='unavailable'],
   &[data-state='past'] {
-    background: var(--color-surface-sunken);
+    background: var(--color-neutral-50);
+    color: var(--color-fg-muted);
   }
 
+  // La cabecera reparte sus dos piezas en la reticula del renglon.
   &__header {
-    display: flex;
-    gap: var(--space-2);
-    align-items: center;
-    justify-content: space-between;
+    display: contents;
   }
 
   &__time {
+    grid-area: time;
     font-family: var(--font-display);
-    font-size: var(--fs-body-lg);
-    font-weight: var(--fw-semibold);
+    font-size: var(--app-fs-section);
+    font-weight: var(--fw-medium);
     color: var(--color-fg);
     font-variant-numeric: tabular-nums;
   }
 
+  &__state {
+    grid-area: state;
+    justify-self: end;
+
+    @media (--bp-md) {
+      justify-self: start;
+    }
+  }
+
   &__title {
+    grid-area: title;
     margin: 0;
-    font-weight: var(--fw-semibold);
+    font-size: var(--fs-body-sm);
+    font-weight: var(--fw-medium);
     color: var(--color-fg);
   }
 
   &__with {
+    grid-area: with;
     margin: 0;
     overflow: hidden;
-    font-size: var(--fs-body-sm);
+    font-size: var(--app-fs-meta);
     color: var(--color-fg-secondary);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   &__meta {
+    grid-area: meta;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-1) var(--space-3);
     margin: 0;
-    font-size: var(--fs-body-sm);
-    color: var(--color-fg-secondary);
+    font-size: var(--app-fs-meta);
+    color: var(--color-fg-muted);
+    font-variant-numeric: tabular-nums;
   }
 
   &__actions {
+    grid-area: actions;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    margin-block-start: var(--space-1);
+    margin-block-start: var(--space-2);
+
+    @media (--bp-md) {
+      align-items: flex-end;
+      margin-block-start: 0;
+    }
   }
 
   &__note {
     margin: 0;
-    font-size: var(--fs-body-sm);
+    font-size: var(--app-fs-meta);
     color: var(--color-fg-secondary);
+    text-align: end;
   }
 }
