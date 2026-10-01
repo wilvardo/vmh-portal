@@ -76,12 +76,17 @@
   &__legal {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
-    padding: var(--space-3) var(--app-block-pad);
+    gap: 0 var(--space-5);
+    padding: var(--space-1) var(--app-block-pad);
     border-block-start: 1px solid var(--color-border);
   }
 
+  // Alto de control: en el telefono `--app-control-h` es el minimo tactil
+  // (MASTER 2.7, `_density.scss`), igual que los demas enlaces de accion.
   &__link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--app-control-h);
     font-size: var(--app-fs-meta);
     color: var(--color-fg-muted);
     text-decoration: underline;
