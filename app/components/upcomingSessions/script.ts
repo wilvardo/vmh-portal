@@ -49,6 +49,11 @@ export default defineComponent({
     now: {
       type: Date,
       required: true
+    },
+    /** Ventana de cancelacion del API en minutos; `null` si no la publico. */
+    cancelWindowMinutes: {
+      type: Number as PropType<number | null>,
+      default: null
     }
   },
   emits: {
@@ -73,7 +78,7 @@ export default defineComponent({
           reservation.professionalName === null
             ? ''
             : i18n.t('home_session_with', { name: reservation.professionalName }),
-        isCancellable: isCancellableAt(reservation, props.now)
+        isCancellable: isCancellableAt(reservation, props.now, props.cancelWindowMinutes)
       }))
     )
 

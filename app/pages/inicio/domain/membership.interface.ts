@@ -63,4 +63,9 @@ export interface MyProfileView {
   initialEvaluationCompletedAt: string | null
   /** Reservas activas por venir, de la mas proxima a la mas lejana. */
   upcomingReservations: MyUpcomingReservation[]
+  /**
+   * Minutos antes del inicio en que se cierra la cancelacion desde el portal;
+   * `null` si el API no la publico (entonces solo la apaga el inicio).
+   */
+  cancelWindowMinutes: number | null
 }

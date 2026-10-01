@@ -149,6 +149,20 @@ describe('parseProfileView', () => {
     expect(view).toBeNull()
   })
 
+  it('lee la ventana de cancelacion que publica el API', () => {
+    expect(
+      parseProfileView({ ...(buildView() as object), cancelWindowMinutes: 120 })
+        ?.cancelWindowMinutes
+    ).toBe(120)
+  })
+
+  it('sin ventana publicada o con una rota no tira el tablero: queda en null', () => {
+    expect(parseProfileView(buildView())?.cancelWindowMinutes).toBeNull()
+    expect(
+      parseProfileView({ ...(buildView() as object), cancelWindowMinutes: -5 })?.cancelWindowMinutes
+    ).toBeNull()
+  })
+
   it('descarta una respuesta sin perfil', () => {
     expect(parseProfileView({ membership: { displayStatus: 'activa' } })).toBeNull()
     expect(parseProfileView(null)).toBeNull()

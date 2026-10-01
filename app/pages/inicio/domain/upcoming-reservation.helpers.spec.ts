@@ -106,4 +106,9 @@ describe('isCancellableAt', () => {
   it('una sesion que ya empezo deja de ofrecer cancelar', () => {
     expect(isCancellableAt(reservation, new Date('2026-09-30T18:00:00.000Z'))).toBe(false)
   })
+
+  it('con la ventana del API deja de ofrecer cancelar al cruzarla, antes del inicio', () => {
+    expect(isCancellableAt(reservation, new Date('2026-09-30T15:59:00.000Z'), 120)).toBe(true)
+    expect(isCancellableAt(reservation, new Date('2026-09-30T16:00:00.000Z'), 120)).toBe(false)
+  })
 })

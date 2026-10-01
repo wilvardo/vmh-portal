@@ -51,6 +51,7 @@
         <upcomingSessions
           :reservations="tablero.view.value.upcomingReservations"
           :now="clock"
+          :cancel-window-minutes="tablero.view.value.cancelWindowMinutes"
           @cancel="askCancel"
         />
       </div>

@@ -55,6 +55,7 @@ export const parseProfileView = (value: unknown): MyProfileView | null => {
     membership?: unknown
     initialEvaluationCompletedAt?: unknown
     upcomingReservations?: unknown
+    cancelWindowMinutes?: unknown
   }
   const profile = candidate.profile as Record<string, unknown> | undefined
   const membership = candidate.membership as Record<string, unknown> | undefined
@@ -94,7 +95,13 @@ export const parseProfileView = (value: unknown): MyProfileView | null => {
     // que es lo unico que decide como se pinta la tarjeta.
     membership: membership as unknown as MyMembership,
     initialEvaluationCompletedAt: evaluatedAt,
-    upcomingReservations
+    upcomingReservations,
+    // Una ventana ausente o rota no descarta el tablero: solo deja de adelantar
+    // el cierre, y el API sigue rechazando la cancelacion fuera de tiempo.
+    cancelWindowMinutes:
+      typeof candidate.cancelWindowMinutes === 'number' && candidate.cancelWindowMinutes >= 0
+        ? candidate.cancelWindowMinutes
+        : null
   }
 }
 
