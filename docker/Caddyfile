@@ -11,10 +11,34 @@
 	root * /srv
 	encode zstd gzip
 
+	# Cabeceras de seguridad. Los tokens de la sesion viven en `localStorage`:
+	# la CSP es lo que impide que un script ajeno los lea.
+	#
+	# Origenes en tiempo de ejecucion: `vmh-infra` pasa al contenedor
+	# `API_ORIGIN` (https del API), `API_WS_ORIGIN` (wss del canal en vivo) y
+	# `MEDIA_ORIGIN` (CDN de medios). Caddy los sustituye al arrancar; si falta
+	# alguno queda vacio y la directiva se cierra a `'self'` (falla cerrado: el
+	# portal no habla con el API y se nota en el primer intento).
+	#
+	# Directivas que no son obvias:
+	# - script-src: sin `'unsafe-inline'`. Nuxt escribe dos scripts en linea en
+	#   cada HTML (el mapa de importacion y `window.__NUXT__.config`); sus hashes
+	#   se calculan en el build (`scripts/csp/inline-script-hashes.mjs`) y viajan
+	#   en la imagen en `/etc/caddy/csp-script-hashes`, que se lee al servir.
+	# - style-src `'unsafe-inline'`: PrimeVue inyecta su tema como etiquetas
+	#   `<style>` en el arranque (182 en la cascara y mas al montar cada
+	#   componente). No hay forma de hashearlas; es la excepcion minima y no
+	#   habilita scripts. Google Fonts sirve la hoja de las familias.
+	# - connect-src incluye Google Fonts: el service worker guarda las fuentes
+	#   con `fetch`, y en el worker eso cuenta como conexion.
+	# - worker-src y manifest-src `'self'`: la app instalable (PWA).
 	header {
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Referrer-Policy strict-origin-when-cross-origin
+		X-Robots-Tag "noindex, nofollow"
+		Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), browsing-topics=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' {file.{$CSP_SCRIPT_HASHES_FILE:/etc/caddy/csp-script-hashes}}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: {$MEDIA_ORIGIN}; connect-src 'self' {$API_ORIGIN} {$API_WS_ORIGIN} https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
 		-Server
 	}
 

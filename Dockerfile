@@ -36,9 +36,13 @@ ARG SITE_BASE_URL
 ENV BASE_API_PATH=${BASE_API_PATH} \
     SITE_BASE_URL=${SITE_BASE_URL}
 RUN pnpm generate
+# Hashes CSP de los scripts en linea de la cascara recien generada: cambian con
+# cada build y cada entorno, asi que se calculan aqui y viajan con ella.
+RUN node scripts/csp/inline-script-hashes.mjs .output/public .output/csp-script-hashes
 
 FROM caddy:2-alpine AS runtime
 COPY docker/Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/.output/csp-script-hashes /etc/caddy/csp-script-hashes
 COPY --from=build /app/.output/public /srv
 EXPOSE 8080
 
