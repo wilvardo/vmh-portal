@@ -176,3 +176,19 @@
     gap: 0;
   }
 }
+
+// Ancho de los cajones laterales (VMH-31). La libreria los deja en 20rem, que no
+// alcanza para un formulario de dos columnas ni para su pie de acciones; el
+// preset no tiene token de ancho. `is-wide` es para los que llevan un editor de
+// texto largo (documentos legales). En el telefono ocupan la pantalla entera.
+// La posicion la lleva la mascara, no el cajon; la especificidad le gana a la
+// regla de la libreria (`.p-drawer-right .p-drawer`), que se inyecta despues.
+.p-drawer-mask.p-drawer-right > .p-drawer,
+.p-drawer-mask.p-drawer-left > .p-drawer {
+  inline-size: min(30rem, 100vw);
+}
+
+.p-drawer-mask.p-drawer-right > .p-drawer.is-wide,
+.p-drawer-mask.p-drawer-left > .p-drawer.is-wide {
+  inline-size: min(52rem, 100vw);
+}
