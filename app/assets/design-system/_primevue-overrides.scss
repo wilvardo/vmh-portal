@@ -167,9 +167,11 @@
 // Tarjeta de lista (VMH-31): el relleno lo ponen sus filas, que van de borde a
 // borde con su separador. El preset solo tiene un relleno para toda tarjeta, asi
 // que la excepcion se declara aqui con un modificador explicito y no en la
-// pagina. `overflow` recorta las filas al radio de la tarjeta.
+// pagina. `overflow: clip` recorta las filas al radio de la tarjeta sin volverla
+// contenedor de scroll: con `hidden`, un encabezado fijo adentro (el del
+// calendario) se anclaba a la tarjeta y no a la ventana.
 .p-card.is-flush {
-  overflow: hidden;
+  overflow: clip;
 
   .p-card-body {
     padding: 0;
