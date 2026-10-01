@@ -15,12 +15,15 @@ const session: ScheduleSession = {
   serviceName: null,
   professionalId: null,
   professionalName: null,
+  startsAt: '2026-10-05T13:00:00.000Z',
   startsAtLocal: '2026-10-05T07:00',
   durationMinutes: 60,
   capacity: 6,
   remaining: 1,
   status: 'available',
-  myReservation: null
+  myReservation: null,
+  canBook: true,
+  bookingBlockedBy: null
 }
 
 const booked = {

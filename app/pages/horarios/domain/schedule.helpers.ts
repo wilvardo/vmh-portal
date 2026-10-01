@@ -1,3 +1,4 @@
+import { FOREIGN_SESSION_CODES } from './booking-notice.const'
 import {
   DATE_LOCALE,
   DAYS_PER_WEEK,
@@ -19,6 +20,9 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
 /** Forma de una hora local del estudio. */
 const LOCAL_STAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/
+
+/** Milisegundos de un minuto. */
+const MS_PER_MINUTE = 60_000
 
 /**
  * Lee mi reserva de una sesion.
@@ -74,6 +78,8 @@ const parseSession = (value: unknown): ScheduleSession | null => {
     typeof raw.sessionType === 'string' &&
     SESSION_TYPES.includes(raw.sessionType) &&
     (raw.serviceName === null || typeof raw.serviceName === 'string') &&
+    typeof raw.startsAt === 'string' &&
+    !Number.isNaN(Date.parse(raw.startsAt)) &&
     typeof raw.startsAtLocal === 'string' &&
     LOCAL_STAMP_PATTERN.test(raw.startsAtLocal) &&
     typeof raw.durationMinutes === 'number' &&
@@ -81,7 +87,9 @@ const parseSession = (value: unknown): ScheduleSession | null => {
     typeof raw.remaining === 'number' &&
     typeof raw.status === 'string' &&
     SESSION_STATUSES.includes(raw.status) &&
-    myReservation !== undefined
+    myReservation !== undefined &&
+    typeof raw.canBook === 'boolean' &&
+    (raw.bookingBlockedBy === null || typeof raw.bookingBlockedBy === 'string')
 
   if (!isValid) return null
 
@@ -90,12 +98,15 @@ const parseSession = (value: unknown): ScheduleSession | null => {
     sessionType: raw.sessionType as ScheduleSession['sessionType'],
     serviceName: raw.serviceName as string | null,
     ...readProfessional(raw),
+    startsAt: raw.startsAt as string,
     startsAtLocal: raw.startsAtLocal as string,
     durationMinutes: raw.durationMinutes as number,
     capacity: raw.capacity as number,
     remaining: raw.remaining as number,
     status: raw.status as ScheduleSession['status'],
-    myReservation
+    myReservation,
+    canBook: raw.canBook as boolean,
+    bookingBlockedBy: raw.bookingBlockedBy as string | null
   }
 }
 
@@ -130,17 +141,27 @@ const parseDay = (value: unknown): ScheduleDay | null => {
 export const parseWeekSchedule = (value: unknown): WeekSchedule | null => {
   if (typeof value !== 'object' || value === null) return null
 
-  const { weekStart, weekEnd, evaluationPending, days } = value as Record<string, unknown>
+  const { weekStart, weekEnd, evaluationPending, cancelWindowMinutes, days } = value as Record<
+    string,
+    unknown
+  >
 
   if (typeof weekStart !== 'string' || !DATE_PATTERN.test(weekStart)) return null
   if (typeof weekEnd !== 'string' || !DATE_PATTERN.test(weekEnd)) return null
   if (typeof evaluationPending !== 'boolean' || !Array.isArray(days)) return null
+  if (typeof cancelWindowMinutes !== 'number' || cancelWindowMinutes < 0) return null
   if (days.length !== DAYS_PER_WEEK) return null
 
   const parsed = days.map(parseDay)
   if (parsed.some((day) => day === null)) return null
 
-  return { weekStart, weekEnd, evaluationPending, days: parsed as ScheduleDay[] }
+  return {
+    weekStart,
+    weekEnd,
+    evaluationPending,
+    cancelWindowMinutes,
+    days: parsed as ScheduleDay[]
+  }
 }
 
 /**
@@ -163,15 +184,99 @@ export const resolveCardState = (session: ScheduleSession): SessionCardState => 
 /**
  * Indica si la tarjeta ofrece reservar.
  *
- * Solo se ofrece en una sesion disponible y sin reserva mia. Si aun asi el
- * atleta no puede -evaluacion pendiente, membresia- el servidor lo rechaza con
- * su causa y su salida, que es la unica fuente de ese texto.
+ * Lo decide el API (`canBook`), con las mismas reglas con las que rechazaria
+ * la reserva: ofrecerla cuando ya dijo que no es mandar a la persona a un
+ * rechazo seguro. El estado visual se exige ademas para no ofrecer reservar en
+ * una tarjeta que dice "Llena" o "Tienes reserva".
  *
  * @param session Sesion.
  * @returns `true` si se muestra la accion de reservar.
  */
 export const canOfferBooking = (session: ScheduleSession): boolean =>
-  resolveCardState(session) === 'available'
+  session.canBook && resolveCardState(session) === 'available'
+
+/**
+ * Deja la semana con las sesiones que son para la persona.
+ *
+ * Las de otro servicio, y las de evaluacion cuando ya hizo la suya o ya tiene
+ * una agendada, no se le pueden ofrecer y no hay nada que hacer con ellas: se
+ * ocultan en vez de pintarse sin accion. Mis reservas se quedan siempre.
+ *
+ * @param schedule Semana cargada.
+ * @returns La semana con sus siete dias y solo las sesiones propias.
+ */
+export const keepOwnSessions = (schedule: WeekSchedule): WeekSchedule => ({
+  ...schedule,
+  days: schedule.days.map((day) => ({
+    date: day.date,
+    sessions: day.sessions.filter(
+      (session) =>
+        session.myReservation !== null ||
+        session.bookingBlockedBy === null ||
+        !FOREIGN_SESSION_CODES.includes(session.bookingBlockedBy)
+    )
+  }))
+})
+
+/**
+ * Indica si una sesion todavia esta fuera de la ventana de cancelacion.
+ *
+ * Es la misma regla del API (`isOutsideCancelWindow`) con la ventana que el API
+ * publica: el borde cuenta a favor del atleta y una sesion que ya empezo nunca
+ * se cancela desde el portal.
+ *
+ * @param startsAt Inicio, instante ISO 8601.
+ * @param now Momento de referencia.
+ * @param windowMinutes Ventana que publica el API.
+ * @returns `true` si todavia se puede cancelar desde el portal.
+ */
+export const isOutsideCancelWindow = (
+  startsAt: string,
+  now: Date,
+  windowMinutes: number
+): boolean => {
+  const remainingMs = Date.parse(startsAt) - now.getTime()
+  if (remainingMs <= 0) return false
+
+  return remainingMs >= windowMinutes * MS_PER_MINUTE
+}
+
+/**
+ * Pone la semana al dia con el reloj.
+ *
+ * `canBook` e `isCancellable` los calcula el API al momento de responder; una
+ * pantalla abierta un rato los deja viejos. Aqui solo se apagan, nunca se
+ * encienden: una sesion que ya empezo deja de ofrecerse y una reserva que entro
+ * a la ventana deja de ofrecer cancelar. Lo contrario lo decide siempre el API.
+ *
+ * @param schedule Semana cargada.
+ * @param now Momento de referencia.
+ * @returns La misma semana con lo que el reloj ya cerro, apagado.
+ */
+export const applyClockToWeek = (schedule: WeekSchedule, now: Date): WeekSchedule => ({
+  ...schedule,
+  days: schedule.days.map((day) => ({
+    date: day.date,
+    sessions: day.sessions.map((session) => {
+      const hasStarted = Date.parse(session.startsAt) <= now.getTime()
+      const reservation = session.myReservation
+
+      return {
+        ...session,
+        canBook: session.canBook && !hasStarted,
+        myReservation:
+          reservation === null
+            ? null
+            : {
+                ...reservation,
+                isCancellable:
+                  reservation.isCancellable &&
+                  isOutsideCancelWindow(session.startsAt, now, schedule.cancelWindowMinutes)
+              }
+      }
+    })
+  }))
+})
 
 /**
  * Suma semanas a un lunes sin pasar por zonas horarias.

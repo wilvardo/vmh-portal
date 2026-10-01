@@ -21,6 +21,8 @@ export interface ScheduleSession {
   professionalId: number | null
   /** Nombre de pila e inicial del apellido de la profesional; `null` si es del estudio. */
   professionalName: string | null
+  /** Inicio, instante UTC ISO 8601: contra el se mide el reloj. */
+  startsAt: string
   /** Inicio en hora del estudio, `YYYY-MM-DDTHH:mm`. */
   startsAtLocal: string
   /** Duracion en minutos. */
@@ -33,6 +35,10 @@ export interface ScheduleSession {
   status: SessionStatus
   /** Mi reserva aqui, o `null`. */
   myReservation: MySessionReservation | null
+  /** Si la puedo reservar ahora. Lo decide el API con las mismas reglas del `POST`. */
+  canBook: boolean
+  /** Codigo del rechazo que daria reservarla, o `null` si puedo. */
+  bookingBlockedBy: string | null
 }
 
 /** Un dia de la semana. */
@@ -51,6 +57,8 @@ export interface WeekSchedule {
   weekEnd: string
   /** No ha hecho su evaluacion ni tiene una agendada. */
   evaluationPending: boolean
+  /** Minutos antes del inicio en que ya no se cancela desde el portal. */
+  cancelWindowMinutes: number
   /** Los siete dias. */
   days: ScheduleDay[]
 }

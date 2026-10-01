@@ -19,9 +19,11 @@ const STATE_SEVERITY: Record<Exclude<SessionCardState, 'available'>, string> = {
  * Una sesion de la semana del atleta.
  *
  * Es de presentacion pura: recibe la sesion ya resuelta por el API y avisa al
- * padre cuando la persona quiere reservarla o cancelarla. Que se pueda cancelar
- * lo decide el API (`isCancellable`); la tarjeta solo muestra la accion o, en
- * su lugar, a quien acudir.
+ * padre cuando la persona quiere reservarla o cancelarla. Que se pueda reservar
+ * (`canBook`) o cancelar (`isCancellable`) lo decide el API; la tarjeta solo
+ * muestra la accion o, al cancelar, a quien acudir. Por que no se puede
+ * reservar no se dice aqui: si es por algo de la persona, lo dice una vez el
+ * aviso de la semana.
  *
  * Nunca muestra quien mas va: solo cuantos lugares quedan.
  */
@@ -60,6 +62,8 @@ export default defineComponent({
         : i18n.t('session_card_book')
     )
 
+    const canBook = computed<boolean>(() => canOfferBooking(props.session))
+
     return {
       state,
       stateLabel,
@@ -67,10 +71,11 @@ export default defineComponent({
       title,
       bookLabel,
       time: computed<string>(() => formatSessionTime(props.session.startsAtLocal)),
-      canBook: computed<boolean>(() => canOfferBooking(props.session)),
+      canBook,
       // Los lugares solo informan donde se puede actuar: en una sesion llena,
-      // cerrada o pasada, "quedan 3" invita a algo que no se puede hacer.
-      showsSpots: computed<boolean>(() => state.value === 'available' || state.value === 'mine'),
+      // cerrada, pasada o que la persona no puede reservar (el aviso de la
+      // semana dice por que), "quedan 3" invita a algo que no se puede hacer.
+      showsSpots: computed<boolean>(() => canBook.value || state.value === 'mine'),
       reservation: computed(() => props.session.myReservation)
     }
   }

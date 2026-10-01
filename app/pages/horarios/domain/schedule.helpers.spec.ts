@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { ScheduleDay, ScheduleSession, WeekSchedule } from './schedule.interface'
 import {
+  applyClockToWeek,
   canOfferBooking,
+  isOutsideCancelWindow,
+  keepOwnSessions,
   collectWeekProfessionals,
   filterWeekByProfessional,
   formatDayHeading,
@@ -22,12 +25,15 @@ const session = (overrides: Partial<ScheduleSession> = {}): ScheduleSession => (
   serviceName: null,
   professionalId: null,
   professionalName: null,
+  startsAt: '2026-10-05T13:00:00.000Z',
   startsAtLocal: '2026-10-05T07:00',
   durationMinutes: 60,
   capacity: 6,
   remaining: 2,
   status: 'available',
   myReservation: null,
+  canBook: true,
+  bookingBlockedBy: null,
   ...overrides
 })
 
@@ -35,6 +41,7 @@ const week = (days: ScheduleDay[], evaluationPending = false): WeekSchedule => (
   weekStart: '2026-10-05',
   weekEnd: '2026-10-11',
   evaluationPending,
+  cancelWindowMinutes: 120,
   days
 })
 
@@ -57,9 +64,8 @@ const rawWeek = (): Record<string, unknown> => ({
         ? [
             {
               ...session(),
-              startsAt: '2026-10-05T13:00:00.000Z',
-              canBook: true,
-              bookingBlockedBy: null
+              endsAt: '2026-10-05T14:00:00.000Z',
+              endsAtLocal: '2026-10-05T08:00'
             }
           ]
         : []
@@ -71,7 +77,28 @@ describe('parseWeekSchedule', () => {
     const parsed = parseWeekSchedule(rawWeek())
 
     expect(parsed?.days).toHaveLength(7)
+    expect(parsed?.cancelWindowMinutes).toBe(120)
     expect(parsed?.days[0]?.sessions[0]).toEqual(session())
+  })
+
+  it('una semana sin ventana de cancelacion no cumple el contrato', () => {
+    const raw = rawWeek()
+    delete raw.cancelWindowMinutes
+
+    expect(parseWeekSchedule(raw)).toBeNull()
+  })
+
+  it('una sesion sin canBook o con un bloqueo que no es texto rompe el contrato', () => {
+    const withoutFlag = rawWeek()
+    const flagDays = withoutFlag.days as { sessions: Record<string, unknown>[] }[]
+    if (flagDays[0]?.sessions[0]) delete flagDays[0].sessions[0].canBook
+
+    const wrongBlock = rawWeek()
+    const blockDays = wrongBlock.days as { sessions: Record<string, unknown>[] }[]
+    if (blockDays[0]?.sessions[0]) blockDays[0].sessions[0].bookingBlockedBy = 42
+
+    expect(parseWeekSchedule(withoutFlag)).toBeNull()
+    expect(parseWeekSchedule(wrongBlock)).toBeNull()
   })
 
   it('una sesion rota invalida la semana entera', () => {
@@ -116,6 +143,107 @@ describe('canOfferBooking', () => {
     expect(
       canOfferBooking(session({ myReservation: { reservationId: 3, isCancellable: true } }))
     ).toBe(false)
+  })
+
+  it('no ofrece reservar cuando el API ya dijo que no, aunque haya lugar', () => {
+    expect(
+      canOfferBooking(session({ canBook: false, bookingBlockedBy: 'VMH.RSV.MEMBERSHIP_REQUIRED' }))
+    ).toBe(false)
+  })
+})
+
+describe('keepOwnSessions', () => {
+  it('oculta las sesiones de otro servicio y las evaluaciones que ya no tocan', () => {
+    const schedule = week(
+      sevenDays([
+        session({ sessionSlotId: 1 }),
+        session({ sessionSlotId: 2, bookingBlockedBy: 'VMH.RSV.SERVICE_NOT_INCLUDED' }),
+        session({ sessionSlotId: 3, bookingBlockedBy: 'VMH.RSV.EVALUATION_ALREADY_COMPLETED' }),
+        session({ sessionSlotId: 4, bookingBlockedBy: 'VMH.RSV.EVALUATION_ALREADY_BOOKED' }),
+        session({ sessionSlotId: 5, bookingBlockedBy: 'VMH.RSV.MEMBERSHIP_REQUIRED' }),
+        session({ sessionSlotId: 6, bookingBlockedBy: 'VMH.RSV.SLOT_FULL' })
+      ])
+    )
+
+    const ids = keepOwnSessions(schedule).days[0]?.sessions.map((item) => item.sessionSlotId)
+
+    expect(ids).toEqual([1, 5, 6])
+  })
+
+  it('mi reserva se queda aunque el API la marque de otro modo', () => {
+    const mine = session({
+      bookingBlockedBy: 'VMH.RSV.EVALUATION_ALREADY_BOOKED',
+      myReservation: { reservationId: 9, isCancellable: true }
+    })
+
+    expect(keepOwnSessions(week(sevenDays([mine]))).days[0]?.sessions).toEqual([mine])
+  })
+
+  it('conserva los siete dias', () => {
+    expect(keepOwnSessions(week(sevenDays())).days).toHaveLength(7)
+  })
+})
+
+describe('isOutsideCancelWindow', () => {
+  const startsAt = '2026-10-05T13:00:00.000Z'
+
+  it('fuera de la ventana todavia se cancela', () => {
+    expect(isOutsideCancelWindow(startsAt, new Date('2026-10-05T10:59:00.000Z'), 120)).toBe(true)
+  })
+
+  it('el borde cuenta a favor del atleta, como en el API', () => {
+    expect(isOutsideCancelWindow(startsAt, new Date('2026-10-05T11:00:00.000Z'), 120)).toBe(true)
+  })
+
+  it('dentro de la ventana ya no se cancela', () => {
+    expect(isOutsideCancelWindow(startsAt, new Date('2026-10-05T11:00:01.000Z'), 120)).toBe(false)
+  })
+
+  it('una sesion que ya empezo nunca se cancela, aun sin ventana', () => {
+    expect(isOutsideCancelWindow(startsAt, new Date('2026-10-05T13:00:00.000Z'), 0)).toBe(false)
+  })
+})
+
+describe('applyClockToWeek', () => {
+  const mine = session({
+    sessionSlotId: 2,
+    myReservation: { reservationId: 9, isCancellable: true }
+  })
+
+  it('antes de la ventana deja todo como lo dijo el API', () => {
+    const schedule = week(sevenDays([session(), mine]))
+
+    expect(applyClockToWeek(schedule, new Date('2026-10-05T10:00:00.000Z'))).toEqual(schedule)
+  })
+
+  it('dentro de la ventana apaga cancelar, pero se puede seguir reservando', () => {
+    const timed = applyClockToWeek(
+      week(sevenDays([session(), mine])),
+      new Date('2026-10-05T12:00:00.000Z')
+    )
+
+    expect(timed.days[0]?.sessions[0]?.canBook).toBe(true)
+    expect(timed.days[0]?.sessions[1]?.myReservation?.isCancellable).toBe(false)
+  })
+
+  it('una sesion que ya empezo deja de ofrecerse', () => {
+    const timed = applyClockToWeek(
+      week(sevenDays([session()])),
+      new Date('2026-10-05T13:00:00.000Z')
+    )
+
+    expect(timed.days[0]?.sessions[0]?.canBook).toBe(false)
+  })
+
+  it('nunca enciende lo que el API apago', () => {
+    const closed = session({
+      canBook: false,
+      myReservation: { reservationId: 9, isCancellable: false }
+    })
+    const timed = applyClockToWeek(week(sevenDays([closed])), new Date('2026-10-01T00:00:00.000Z'))
+
+    expect(timed.days[0]?.sessions[0]?.canBook).toBe(false)
+    expect(timed.days[0]?.sessions[0]?.myReservation?.isCancellable).toBe(false)
   })
 })
 

@@ -128,6 +128,17 @@
     </div>
 
     <template v-else-if="view">
+      <!-- Lo que le impide reservar a la persona, una sola vez y arriba: en cada
+           tarjeta seria la misma frase repetida. Las tarjetas no ofrecen
+           reservar mientras tanto. -->
+      <Message v-if="notice" severity="warn" :closable="false" role="status">
+        <p class="schedule__notice-title">{{ notice.title }}</p>
+        <p class="schedule__notice-detail">{{ notice.detail }}</p>
+        <a v-if="notice.exitUrl" class="schedule__notice-action" :href="notice.exitUrl">
+          {{ notice.exitLabel }}
+        </a>
+      </Message>
+
       <section
         v-if="view.evaluationPending"
         class="schedule__evaluation"

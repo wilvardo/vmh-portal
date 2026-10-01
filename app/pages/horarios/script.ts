@@ -1,10 +1,15 @@
 import { bookMySpot } from '~/resources/scripts/infrastructure/my-reservations.repository'
 import { fetchMySchedule } from './infrastructure/schedule.repository'
+import { useBookingNotice } from './application/use-booking-notice'
 import { useSessionBooking } from './application/use-session-booking'
 import { useWeekSchedule } from './application/use-week-schedule'
 import { useWeekView } from './application/use-week-view'
 import { ANY_PROFESSIONAL } from './domain/schedule.const'
-import { collectWeekProfessionals, filterWeekByProfessional } from './domain/schedule.helpers'
+import {
+  collectWeekProfessionals,
+  filterWeekByProfessional,
+  keepOwnSessions
+} from './domain/schedule.helpers'
 import type {
   ScheduleProfessional,
   ScheduleSession,
@@ -13,6 +18,7 @@ import type {
 import type { SessionSummary } from './domain/week-view.interface'
 import horariosEs from './domain/locales/horarios.es.json'
 import { SCHEDULE_AVAILABILITY_CHANNEL } from '~/resources/scripts/domain/realtime.const'
+import { API_ERROR_CODE } from '~/resources/scripts/domain/api-error.const'
 
 /**
  * Semana del atleta: ver, reservar y cancelar (HU 32, 34, 35 y 36).
@@ -28,13 +34,21 @@ export default defineComponent({
     const i18n = useI18n()
     i18n.mergeLocaleMessage('es', horariosEs)
 
+    const config = useRuntimeConfig()
     const apiFetch = useApi()
     const toast = useToast()
+    const clock = useClock()
 
     const week = useWeekSchedule({
       load: (weekStart) => fetchMySchedule({ apiFetch, weekStart }),
       loadErrorTitle: i18n.t('schedule_load_error')
     })
+
+    // Solo lo que es para la persona: lo de otro servicio, o una evaluacion que
+    // ya no le toca, se oculta en lugar de pintarse sin accion.
+    const ownSchedule = computed<WeekSchedule | null>(() =>
+      week.schedule.value === null ? null : keepOwnSessions(week.schedule.value)
+    )
 
     // Con quien (D8): se ofrece elegir solo si la semana tiene mas de una
     // profesional. Es un recorte de pantalla; el API ya decide que sesiones son
@@ -42,7 +56,7 @@ export default defineComponent({
     const selectedProfessional = ref<number | typeof ANY_PROFESSIONAL>(ANY_PROFESSIONAL)
 
     const professionals = computed<ScheduleProfessional[]>(() =>
-      week.schedule.value === null ? [] : collectWeekProfessionals(week.schedule.value)
+      ownSchedule.value === null ? [] : collectWeekProfessionals(ownSchedule.value)
     )
 
     const professionalOptions = computed(() => [
@@ -62,7 +76,7 @@ export default defineComponent({
     })
 
     const visibleSchedule = computed<WeekSchedule | null>(() => {
-      const schedule = week.schedule.value
+      const schedule = ownSchedule.value
       if (schedule === null) return null
 
       const chosen = selectedProfessional.value
@@ -70,12 +84,43 @@ export default defineComponent({
       return filterWeekByProfessional(schedule, chosen === ANY_PROFESSIONAL ? null : chosen)
     })
 
+    // El reloj avanza solo: lo que el tiempo cierra se apaga sin recargar.
     const { view, summarize } = useWeekView({
       schedule: visibleSchedule,
-      now: () => new Date(),
+      now: () => clock.value,
       labels: {
         evaluation: i18n.t('schedule_label_evaluation'),
         training: i18n.t('schedule_label_training')
+      }
+    })
+
+    // Por que no puede reservar, si es por algo suyo: una vez, arriba.
+    const { notice } = useBookingNotice({
+      schedule: week.schedule,
+      siteUrl: (config.public.SITE_BASE_URL as string | undefined) ?? '',
+      messages: {
+        notices: {
+          [API_ERROR_CODE.EVALUATION_REQUIRED]: {
+            title: i18n.t('schedule_block_evaluation_required_title'),
+            detail: i18n.t('schedule_block_evaluation_required_detail')
+          },
+          [API_ERROR_CODE.MEMBERSHIP_REQUIRED]: {
+            title: i18n.t('schedule_block_membership_required_title'),
+            detail: i18n.t('schedule_block_membership_required_detail')
+          },
+          [API_ERROR_CODE.MEMBERSHIP_NOT_ACTIVE]: {
+            title: i18n.t('schedule_block_membership_not_active_title'),
+            detail: i18n.t('schedule_block_membership_not_active_detail')
+          },
+          [API_ERROR_CODE.PAYMENT_OVERDUE]: {
+            title: i18n.t('schedule_block_payment_overdue_title'),
+            detail: i18n.t('schedule_block_payment_overdue_detail')
+          }
+        },
+        exits: {
+          plans: i18n.t('schedule_block_exit_plans'),
+          contact: i18n.t('schedule_block_exit_contact')
+        }
       }
     })
 
@@ -125,6 +170,7 @@ export default defineComponent({
       isOnline,
       week,
       view,
+      notice,
       booking,
       selectedSummary,
       professionals,

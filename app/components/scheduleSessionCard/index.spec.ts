@@ -10,12 +10,15 @@ const session = (overrides: Partial<ScheduleSession> = {}): ScheduleSession => (
   serviceName: null,
   professionalId: null,
   professionalName: null,
+  startsAt: '2026-10-05T13:00:00.000Z',
   startsAtLocal: '2026-10-05T07:00',
   durationMinutes: 60,
   capacity: 6,
   remaining: 2,
   status: 'available',
   myReservation: null,
+  canBook: true,
+  bookingBlockedBy: null,
   ...overrides
 })
 
@@ -28,6 +31,18 @@ describe('scheduleSessionCard', () => {
 
     await wrapper.find('button').trigger('click')
     expect(wrapper.emitted('book')?.[0]).toEqual([session()])
+  })
+
+  it('si el API dice que no se puede reservar, no lo ofrece ni presume lugares', async () => {
+    const wrapper = await mountSuspended(scheduleSessionCard, {
+      props: {
+        session: session({ canBook: false, bookingBlockedBy: 'VMH.RSV.MEMBERSHIP_REQUIRED' })
+      }
+    })
+
+    expect(wrapper.find('button').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Quedan')
+    expect(wrapper.text()).not.toContain('membresía')
   })
 
   it('una sesion llena no ofrece reservar y lo dice', async () => {

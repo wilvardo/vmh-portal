@@ -29,5 +29,15 @@
   "schedule_professional_label": "Con quién",
   "schedule_professional_any": "Cualquiera",
   "schedule_book_with": "Con {name}.",
-  "schedule_load_error_detail": "Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio."
+  "schedule_load_error_detail": "Vuelve a intentarlo en un momento. Si sigue pasando, avisa al estudio.",
+  "schedule_block_evaluation_required_title": "Primero tu evaluación inicial",
+  "schedule_block_evaluation_required_detail": "Tus entrenamientos se abren cuando completes tu evaluación inicial.",
+  "schedule_block_membership_required_title": "Necesitas una membresía para reservar",
+  "schedule_block_membership_required_detail": "Tus entrenamientos se abren al contratar un plan. Conoce los planes o contrátalo en recepción.",
+  "schedule_block_membership_not_active_title": "Tu membresía no está activa",
+  "schedule_block_membership_not_active_detail": "Está pendiente de pago, en pausa o vencida. Regularízala con el estudio para volver a reservar.",
+  "schedule_block_payment_overdue_title": "Tu mensualidad está vencida",
+  "schedule_block_payment_overdue_detail": "Ya pasaron los días de gracia. Págala en recepción para volver a reservar.",
+  "schedule_block_exit_plans": "Ver los planes del estudio",
+  "schedule_block_exit_contact": "Escribir al estudio"
 }

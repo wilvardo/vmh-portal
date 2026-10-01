@@ -1,4 +1,5 @@
 import {
+  applyClockToWeek,
   formatDayHeading,
   formatSessionWhen,
   formatWeekRange,
@@ -13,7 +14,10 @@ import type { SessionLabels, SessionSummary, WeekView } from '../domain/week-vie
 interface UseWeekViewParams {
   /** Semana cargada. */
   schedule: Ref<WeekSchedule | null>
-  /** Reloj; inyectado para que las pruebas no dependan del dia en que corren. */
+  /**
+   * Reloj; inyectado para que las pruebas no dependan del dia en que corren.
+   * Si lee un estado reactivo, la vista se pone al dia sola con el tiempo.
+   */
   now: () => Date
   /** Nombres de las sesiones, ya traducidos. */
   labels: SessionLabels
@@ -29,8 +33,11 @@ interface UseWeekViewReturn {
 /**
  * Convierte la semana del API en lo que la pantalla pinta.
  *
- * Dos decisiones de presentacion, ninguna de negocio:
+ * Tres decisiones de presentacion, ninguna de negocio:
  *
+ * - Lo que el API calculo al responder se pone al dia con el reloj: una sesion
+ *   que ya empezo deja de ofrecerse y una reserva que entro a la ventana de
+ *   cancelacion deja de ofrecer cancelar, con la ventana que publica el API.
  * - Con la evaluacion pendiente, sus sesiones van aparte y primero: quien no la
  *   ha hecho no puede entrenar, y ofrecerle primero la parrilla es mandarlo a
  *   un rechazo seguro.
@@ -42,10 +49,12 @@ interface UseWeekViewReturn {
  */
 export const useWeekView = (params: UseWeekViewParams): UseWeekViewReturn => {
   const view = computed<WeekView | null>(() => {
-    const schedule = params.schedule.value
-    if (schedule === null) return null
+    const loaded = params.schedule.value
+    if (loaded === null) return null
 
-    const today = studioToday(params.now())
+    const now = params.now()
+    const schedule = applyClockToWeek(loaded, now)
+    const today = studioToday(now)
     const split = splitEvaluationFirst(schedule)
 
     return {

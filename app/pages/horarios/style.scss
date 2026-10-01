@@ -116,6 +116,31 @@
     box-shadow: inset 3px 0 0 var(--color-primary);
   }
 
+  // Aviso unico de por que la persona no puede reservar: causa, salida y nada
+  // mas. El tono y el marco los pone el preset de Message.
+  &__notice-title {
+    margin: 0;
+    font-weight: var(--fw-semibold);
+  }
+
+  &__notice-detail {
+    margin: var(--space-1) 0 0;
+  }
+
+  &__notice-action {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--app-control-h);
+    margin-block-start: var(--space-1);
+    font-weight: var(--fw-medium);
+    color: var(--color-primary-strong);
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
   &__section-title,
   &__day-title {
     display: flex;

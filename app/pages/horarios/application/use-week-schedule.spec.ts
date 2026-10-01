@@ -6,6 +6,7 @@ const weekOf = (weekStart: string): WeekSchedule => ({
   weekStart,
   weekEnd: weekStart,
   evaluationPending: false,
+  cancelWindowMinutes: 120,
   days: []
 })
 
