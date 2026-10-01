@@ -344,9 +344,13 @@ const VmhPreset = definePreset(Aura, {
       row: { background: 'var(--color-surface)', hoverBackground: 'var(--color-surface-sunken)' },
       columnTitle: { fontWeight: 'var(--fw-semibold)' }
     },
+    // Toast en la escala de app: titulo a 13 y detalle a 12 (VMH-31).
     toast: {
-      root: { borderWidth: '1px', width: '24rem' },
-      icon: { size: 'var(--icon-lg)' },
+      root: { borderWidth: '1px', width: '22rem' },
+      icon: { size: 'var(--icon-md)' },
+      content: { padding: 'var(--space-3)', gap: 'var(--space-3)' },
+      summary: { fontSize: 'var(--app-fs-table)', fontWeight: 'var(--fw-semibold)' },
+      detail: { fontSize: 'var(--app-fs-meta)', fontWeight: 'var(--fw-regular)' },
       success: {
         background: 'var(--color-success-bg)',
         borderColor: 'var(--color-success-border)',
@@ -372,26 +376,49 @@ const VmhPreset = definePreset(Aura, {
         detailColor: 'var(--color-fg)'
       }
     },
+    // Mensaje en linea (VMH-31): acompaña al contenido, no lo encabeza. Texto
+    // de celda (13) y peso normal, sin la sombra de color de la libreria; el
+    // titulo del aviso lo marca cada vista con su propio `strong`.
     message: {
-      success: {
-        background: 'var(--color-success-bg)',
-        borderColor: 'var(--color-success-border)',
-        color: 'var(--color-success-fg)'
-      },
-      error: {
-        background: 'var(--color-danger-bg)',
-        borderColor: 'var(--color-danger-border)',
-        color: 'var(--color-danger-fg)'
-      },
-      warn: {
-        background: 'var(--color-warning-bg)',
-        borderColor: 'var(--color-warning-border)',
-        color: 'var(--color-warning-fg)'
-      },
-      info: {
-        background: 'var(--color-info-bg)',
-        borderColor: 'var(--color-info-border)',
-        color: 'var(--color-info-fg)'
+      root: { borderRadius: 'var(--radius-md)' },
+      content: { padding: 'var(--space-2) var(--space-3)', gap: 'var(--space-2)' },
+      text: { fontSize: 'var(--app-fs-table)', fontWeight: 'var(--fw-regular)' },
+      icon: { size: 'var(--icon-sm)' },
+      colorScheme: {
+        light: {
+          success: {
+            background: 'var(--color-success-bg)',
+            borderColor: 'var(--color-success-border)',
+            color: 'var(--color-success-fg)',
+            shadow: 'none'
+          },
+          error: {
+            background: 'var(--color-danger-bg)',
+            borderColor: 'var(--color-danger-border)',
+            color: 'var(--color-danger-fg)',
+            shadow: 'none'
+          },
+          warn: {
+            background: 'var(--color-warning-bg)',
+            borderColor: 'var(--color-warning-border)',
+            color: 'var(--color-warning-fg)',
+            shadow: 'none'
+          },
+          info: {
+            background: 'var(--color-info-bg)',
+            borderColor: 'var(--color-info-border)',
+            color: 'var(--color-info-fg)',
+            shadow: 'none'
+          },
+          // Nota neutra: gris de un punto y tinta secundaria, no la caja gris
+          // con sombra de la libreria.
+          secondary: {
+            background: 'var(--color-neutral-50)',
+            borderColor: 'var(--color-border)',
+            color: 'var(--color-fg-secondary)',
+            shadow: 'none'
+          }
+        }
       }
     },
     skeleton: {
