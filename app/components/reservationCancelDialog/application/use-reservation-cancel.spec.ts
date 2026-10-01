@@ -58,7 +58,7 @@ describe('useReservationCancel', () => {
     expect(shouldClose).toBe(true)
   })
 
-  it('dentro de la ventana muestra el texto del API y no cierra', async () => {
+  it('si la ventana ya se cerro, explica con el texto del API, cierra y refresca', async () => {
     const cancel = vi
       .fn()
       .mockRejectedValue(
@@ -73,9 +73,26 @@ describe('useReservationCancel', () => {
     const shouldClose = await flow.confirm(7)
 
     expect(notify).toHaveBeenCalledWith({
-      severity: 'error',
+      severity: 'info',
       summary: 'Fuera de la ventana de cancelación',
       detail: 'Contacta a recepción.'
+    })
+    expect(onSettled).toHaveBeenCalledTimes(1)
+    expect(shouldClose).toBe(true)
+  })
+
+  it('un rechazo que hay que leer deja el dialogo abierto y no refresca', async () => {
+    const cancel = vi
+      .fn()
+      .mockRejectedValue(apiRejection('VMH.RSV.ATHLETE_NOT_FOUND', 'Perfil', 'No está listo.'))
+    const flow = useReservationCancel({ cancel, notify, onSettled, messages })
+
+    const shouldClose = await flow.confirm(7)
+
+    expect(notify).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Perfil',
+      detail: 'No está listo.'
     })
     expect(onSettled).not.toHaveBeenCalled()
     expect(shouldClose).toBe(false)

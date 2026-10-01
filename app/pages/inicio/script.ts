@@ -23,6 +23,7 @@ export default defineComponent({
     const config = useRuntimeConfig()
     const apiFetch = useApi()
     const { user } = useSession()
+    const clock = useClock()
 
     const tablero = useMyProfile({
       load: () => fetchMyProfile({ apiFetch }),
@@ -78,6 +79,7 @@ export default defineComponent({
 
     return {
       isOnline,
+      clock,
       tablero,
       editor,
       greeting,

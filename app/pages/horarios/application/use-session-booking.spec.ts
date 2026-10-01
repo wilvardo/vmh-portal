@@ -81,7 +81,22 @@ describe('useSessionBooking', () => {
     expect(refresh).toHaveBeenCalledTimes(1)
   })
 
-  it('una membresia no activa se explica con el texto del API, sin refrescar', async () => {
+  it.each(['VMH.RSV.SLOT_ALREADY_STARTED', 'VMH.RSV.SLOT_NOT_OPEN'])(
+    'si la sesion %s, cierra, avisa en tono informativo y refresca',
+    async (code) => {
+      const book = vi.fn().mockRejectedValue(apiRejection(code))
+      const flow = useSessionBooking({ book, notify, refresh, messages })
+
+      flow.open(session)
+      await flow.confirm()
+
+      expect(notify).toHaveBeenCalledWith(expect.objectContaining({ severity: 'info' }))
+      expect(flow.isOpen.value).toBe(false)
+      expect(refresh).toHaveBeenCalledTimes(1)
+    }
+  )
+
+  it('una membresia que dejo de estar activa se explica y refresca la semana', async () => {
     const book = vi.fn().mockRejectedValue(apiRejection('VMH.RSV.MEMBERSHIP_NOT_ACTIVE'))
     const flow = useSessionBooking({ book, notify, refresh, messages })
 
@@ -95,7 +110,7 @@ describe('useSessionBooking', () => {
       })
     )
     expect(flow.isOpen.value).toBe(false)
-    expect(refresh).not.toHaveBeenCalled()
+    expect(refresh).toHaveBeenCalledTimes(1)
   })
 
   it('un fallo de red deja la confirmacion abierta para reintentar', async () => {

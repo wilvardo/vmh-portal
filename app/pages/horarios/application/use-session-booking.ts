@@ -5,14 +5,16 @@ import type { BookingNotice } from '../domain/booking.interface'
 import type { ScheduleSession } from '../domain/schedule.interface'
 
 /**
- * Rechazos que significan que la semana que se ve ya no es la real: se llena
- * mientras se decidia, ya estaba reservada desde otra pestana o ya hay otra
- * evaluacion agendada. Se explican y se refresca.
+ * Rechazos que son una carrera y no un error: se lleno mientras se decidia, ya
+ * estaba reservada desde otra pestana, ya hay otra evaluacion agendada, la
+ * sesion empezo o el estudio la cerro. Se avisan en tono informativo.
  */
-const REFRESH_CODES: readonly string[] = [
+const RACE_CODES: readonly string[] = [
   API_ERROR_CODE.SLOT_FULL,
   API_ERROR_CODE.ALREADY_RESERVED,
-  API_ERROR_CODE.EVALUATION_ALREADY_BOOKED
+  API_ERROR_CODE.EVALUATION_ALREADY_BOOKED,
+  API_ERROR_CODE.SLOT_ALREADY_STARTED,
+  API_ERROR_CODE.SLOT_NOT_OPEN
 ]
 
 interface BookingMessages {
@@ -61,10 +63,11 @@ interface UseSessionBookingReturn {
  *
  * - Exito: aviso y semana refrescada. **Nunca** se descuenta un lugar en local
  *   sin confirmar: el numero que se ve es siempre el del servidor.
- * - Llena, ya reservada o evaluacion ya agendada: la semana que se ve esta
- *   vieja; se explica y se refresca.
- * - Cualquier otro rechazo del API: se explica y se cierra; reintentar no
- *   cambiaria la respuesta.
+ * - Cualquier rechazo del API: la semana que se ve esta vieja, porque el API
+ *   calcula `canBook` con las mismas reglas con las que rechaza. Se explica, se
+ *   cierra y se refresca, asi la tarjeta deja de ofrecer lo que ya no se puede.
+ *   Las carreras (llena, ya reservada, ya empezo, cerrada) van en tono
+ *   informativo; lo demas, como error.
  * - Fallo sin contrato (red): se explica y el dialogo queda abierto para
  *   reintentar.
  *
@@ -114,14 +117,13 @@ export const useSessionBooking = (params: UseSessionBookingParams): UseSessionBo
         return
       }
 
-      const isStale = REFRESH_CODES.includes(apiError.code)
       params.notify({
-        severity: isStale ? 'info' : 'error',
+        severity: RACE_CODES.includes(apiError.code) ? 'info' : 'error',
         summary: apiError.title,
         detail: apiError.detail
       })
       isOpen.value = false
-      if (isStale) await params.refresh()
+      await params.refresh()
     } finally {
       isBooking.value = false
     }

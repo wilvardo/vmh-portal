@@ -3,10 +3,16 @@ import { extractApiError } from '~/resources/scripts/domain/api-error.helpers'
 import type { MyReservationResult } from '~/resources/scripts/domain/my-reservation.interface'
 import type { CancelNotice } from '../domain/reservation-cancel-dialog.interface'
 
-/** Rechazos que significan "el estado ya cambio en otra pestana": se refresca. */
+/**
+ * Rechazos que significan que lo que se ve ya no es lo real: la reserva cambio
+ * en otra pestana, o el reloj cerro la ventana mientras la persona decidia. Se
+ * explican con el texto del API, se cierra el dialogo y se refresca: insistir
+ * no cambiaria la respuesta.
+ */
 const STALE_CODES: readonly string[] = [
   API_ERROR_CODE.ALREADY_CANCELLED,
-  API_ERROR_CODE.RESERVATION_NOT_FOUND
+  API_ERROR_CODE.RESERVATION_NOT_FOUND,
+  API_ERROR_CODE.CANCEL_WINDOW_CLOSED
 ]
 
 interface CancelMessages {
@@ -48,8 +54,8 @@ interface UseReservationCancelReturn {
  *
  * El texto de cada rechazo es el del API, tal cual: la ventana cerrada ya dice
  * "contacta a recepcion". Lo unico que el portal decide es la salida: si la
- * reserva ya estaba cancelada o no existe, el estado cambio en otra pestana y
- * lo que corresponde es refrescar, no insistir.
+ * reserva ya estaba cancelada, no existe o ya entro a la ventana, lo que se ve
+ * esta viejo y lo que corresponde es refrescar, no insistir.
  *
  * @param params Peticion, avisos, refresco y textos.
  * @returns El estado de la accion y la confirmacion.

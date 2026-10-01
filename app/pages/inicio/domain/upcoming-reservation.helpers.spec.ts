@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   formatSessionDay,
   formatSessionTime,
+  isCancellableAt,
   parseUpcomingReservations
 } from './upcoming-reservation.helpers'
+import type { MyUpcomingReservation } from './upcoming-reservation.interface'
 
 /** Evaluacion del miercoles 30 de septiembre a las 12:00 del estudio (18:00 UTC). */
 const evaluation = {
@@ -81,5 +83,27 @@ describe('formato de la sesion en la zona del estudio', () => {
     // 21:00 del estudio son las 03:00 UTC del dia siguiente.
     expect(formatSessionDay('2026-10-01T03:00:00.000Z')).toBe('miércoles, 30 de septiembre')
     expect(formatSessionTime('2026-10-01T03:00:00.000Z')).toBe('21:00')
+  })
+})
+
+describe('isCancellableAt', () => {
+  const reservation: MyUpcomingReservation = {
+    id: 1,
+    reservationType: 'training',
+    startsAt: '2026-09-30T18:00:00.000Z',
+    serviceName: null,
+    professionalName: null,
+    isCancellable: true
+  }
+
+  it('antes del inicio respeta lo que dijo el API', () => {
+    const before = new Date('2026-09-30T17:59:00.000Z')
+
+    expect(isCancellableAt(reservation, before)).toBe(true)
+    expect(isCancellableAt({ ...reservation, isCancellable: false }, before)).toBe(false)
+  })
+
+  it('una sesion que ya empezo deja de ofrecer cancelar', () => {
+    expect(isCancellableAt(reservation, new Date('2026-09-30T18:00:00.000Z'))).toBe(false)
   })
 })

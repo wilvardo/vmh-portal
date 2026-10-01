@@ -2,7 +2,8 @@ import type { PropType } from 'vue'
 import { SCHEDULE_PATH } from '~/resources/scripts/domain/session.const'
 import {
   formatSessionDay,
-  formatSessionTime
+  formatSessionTime,
+  isCancellableAt
 } from '~/pages/inicio/domain/upcoming-reservation.helpers'
 import type { MyUpcomingReservation } from '~/pages/inicio/domain/upcoming-reservation.interface'
 
@@ -18,7 +19,7 @@ export interface SessionRow {
   time: string
   /** "con {nombre}" (D8); vacio si la sesion es del estudio. */
   withLabel: string
-  /** Si todavia se cancela desde el portal, segun el API. */
+  /** Si todavia se cancela desde el portal, segun el API y el reloj. */
   isCancellable: boolean
 }
 
@@ -33,7 +34,8 @@ export interface SessionRow {
  *
  * Cancelar no ocurre aqui: el componente avisa al tablero con el renglon y el
  * tablero abre la confirmacion. Si el API dice que ya no se cancela desde el
- * portal (ventana cerrada), en lugar del boton va la salida a recepcion.
+ * portal (ventana cerrada), o la sesion ya empezo segun el reloj que recibe, en
+ * lugar del boton va la salida a recepcion.
  */
 export default defineComponent({
   name: 'upcomingSessions',
@@ -41,6 +43,11 @@ export default defineComponent({
     /** Reservas por venir, de la mas proxima a la mas lejana. */
     reservations: {
       type: Array as PropType<MyUpcomingReservation[]>,
+      required: true
+    },
+    /** Hora actual; reactiva en el tablero para que lo que el tiempo cierra se apague solo. */
+    now: {
+      type: Date,
       required: true
     }
   },
@@ -66,7 +73,7 @@ export default defineComponent({
           reservation.professionalName === null
             ? ''
             : i18n.t('home_session_with', { name: reservation.professionalName }),
-        isCancellable: reservation.isCancellable
+        isCancellable: isCancellableAt(reservation, props.now)
       }))
     )
 

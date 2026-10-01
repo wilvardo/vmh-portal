@@ -50,6 +50,7 @@
 
         <upcomingSessions
           :reservations="tablero.view.value.upcomingReservations"
+          :now="clock"
           @cancel="askCancel"
         />
       </div>

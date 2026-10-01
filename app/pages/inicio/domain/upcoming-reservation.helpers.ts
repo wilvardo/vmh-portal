@@ -59,6 +59,22 @@ export const parseUpcomingReservations = (value: unknown): MyUpcomingReservation
 }
 
 /**
+ * Indica si una reserva todavia ofrece cancelar, puesta al dia con el reloj.
+ *
+ * El API decide `isCancellable` al responder; un tablero abierto un rato lo deja
+ * viejo. El reloj solo lo apaga cuando la sesion ya empezo, que el API nunca
+ * cancela desde el portal. La ventana de cancelacion no se aplica aqui porque
+ * el perfil no la publica; si la persona intenta dentro de ella, el API lo
+ * rechaza y el tablero se relee.
+ *
+ * @param reservation Reserva tal como la mando el API.
+ * @param now Momento de referencia.
+ * @returns `true` si se muestra la accion de cancelar.
+ */
+export const isCancellableAt = (reservation: MyUpcomingReservation, now: Date): boolean =>
+  reservation.isCancellable && Date.parse(reservation.startsAt) > now.getTime()
+
+/**
  * Escribe el dia de una sesion en la zona del estudio.
  *
  * @param startsAt Instante ISO 8601 de inicio.
