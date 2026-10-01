@@ -51,7 +51,11 @@ describe('setPasswordPage', () => {
 
     await submit(wrapper)
 
-    expect(resetPasswordMock).toHaveBeenCalledWith(expect.any(String), 'abc123', PASSWORD)
+    expect(resetPasswordMock).toHaveBeenCalledWith({
+      baseUrl: expect.any(String),
+      token: 'abc123',
+      password: PASSWORD
+    })
     expect(wrapper.find('h1').text()).toBe('Listo, ya puedes entrar.')
     expect(wrapper.find('.set-password__link').attributes('href')).toBe('/')
   })

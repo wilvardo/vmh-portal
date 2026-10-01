@@ -51,7 +51,10 @@ describe('passwordRecoveryPage', () => {
     await wrapper.find('form').trigger('submit')
     await flush()
 
-    expect(requestRecoveryMock).toHaveBeenCalledWith(expect.any(String), 'ana@correo.test')
+    expect(requestRecoveryMock).toHaveBeenCalledWith({
+      baseUrl: expect.any(String),
+      email: 'ana@correo.test'
+    })
     expect(wrapper.text()).toContain('Si la cuenta existe, te llegará un correo.')
   })
 

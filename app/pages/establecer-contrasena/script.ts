@@ -27,7 +27,7 @@ export default defineComponent({
 
     const form = useSetPassword({
       token: typeof rawToken === 'string' ? rawToken : '',
-      submitPassword: (token, password) => resetPassword(baseUrl, token, password),
+      submitPassword: (token, password) => resetPassword({ baseUrl, token, password }),
       messages: {
         tooShort: i18n.t('set_password_error_short'),
         mismatch: i18n.t('set_password_error_mismatch'),

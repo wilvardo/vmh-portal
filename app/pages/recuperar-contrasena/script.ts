@@ -19,7 +19,7 @@ export default defineComponent({
     const baseUrl = config.public.BASE_API_PATH as string
 
     const form = usePasswordRecovery({
-      requestLink: (email) => requestPasswordRecovery(baseUrl, email),
+      requestLink: (email) => requestPasswordRecovery({ baseUrl, email }),
       messages: {
         invalidEmail: i18n.t('recovery_error_email'),
         unexpectedTitle: i18n.t('recovery_error_unexpected_title'),

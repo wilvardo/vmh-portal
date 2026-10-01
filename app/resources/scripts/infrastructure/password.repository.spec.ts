@@ -18,7 +18,7 @@ describe('repositorio de contrasena', () => {
   it('pide el enlace con el correo capturado', async () => {
     fetchMock.mockResolvedValue({ data: { message: 'Si ese correo tiene una cuenta…' } })
 
-    const result = await requestPasswordRecovery(BASE_URL, 'ana@correo.mx')
+    const result = await requestPasswordRecovery({ baseUrl: BASE_URL, email: 'ana@correo.mx' })
 
     expect(result.message).toBe('Si ese correo tiene una cuenta…')
     expect(fetchMock).toHaveBeenCalledWith(
@@ -30,7 +30,11 @@ describe('repositorio de contrasena', () => {
   it('manda token y contrasena nueva al restablecer', async () => {
     fetchMock.mockResolvedValue({ data: { message: 'Tu contraseña quedó lista.' } })
 
-    await resetPassword(BASE_URL, 'c'.repeat(64), 'contrasena-larga-de-verdad')
+    await resetPassword({
+      baseUrl: BASE_URL,
+      token: 'c'.repeat(64),
+      password: 'contrasena-larga-de-verdad'
+    })
 
     expect(fetchMock).toHaveBeenCalledWith(
       AUTH_ENDPOINT.PASSWORD_RESET,
@@ -43,7 +47,9 @@ describe('repositorio de contrasena', () => {
   it('propaga el rechazo de un enlace vencido', async () => {
     fetchMock.mockRejectedValue({ data: { code: 'VMH.AUTH.TOKEN_EXPIRED' } })
 
-    await expect(resetPassword(BASE_URL, 'c'.repeat(64), 'otra-contrasena-larga')).rejects.toMatchObject({
+    await expect(
+      resetPassword({ baseUrl: BASE_URL, token: 'c'.repeat(64), password: 'otra-contrasena-larga' })
+    ).rejects.toMatchObject({
       data: { code: 'VMH.AUTH.TOKEN_EXPIRED' }
     })
   })
